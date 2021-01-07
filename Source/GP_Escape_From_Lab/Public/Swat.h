@@ -9,8 +9,10 @@
 class UCameraComponent;
 class USpotLightComponent;
 class UStaticMeshComponent;
+class USkeletalMeshComponent;
 class UAnimMontage;
 class UStaticMesh;
+class USkeletalMesh;
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ASwat : public ACharacter
@@ -50,41 +52,43 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-		void EndStabbing();
+	void EndStabbing();
 	UFUNCTION(BlueprintCallable)
-		void EndThrowing();
+	void EndThrowing();
 	UFUNCTION(BlueprintCallable)
-		void EndReloading();
+	void EndReloading();
 	UFUNCTION(BlueprintCallable)
-		void SpawnGrenade();
+	void SpawnGrenade();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UCameraComponent* cameraComp = nullptr;
+	UCameraComponent* cameraComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USpotLightComponent* spotComp = nullptr;
+	USpotLightComponent* spotComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* weaponMesh = nullptr;
+	USkeletalMeshComponent* weaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* knifeMesh = nullptr;
+	UStaticMeshComponent* knifeMesh = nullptr; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float forwardAxisVal = 0.0f;
+	UStaticMeshComponent* magMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float strafeAxisVal = 0.0f;
+	float forwardAxisVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int stamina = 100;
+	float strafeAxisVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool isDashing = false;
+	int stamina = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool isCanFire = true;
+	bool isDashing = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isCanFire = true;
 	UPROPERTY(BlueprintReadOnly)
-		UAnimMontage* fireMontage;
+	UAnimMontage* fireMontage;
 	UPROPERTY(BlueprintReadOnly)
-		UAnimMontage* knifeMontage;
+	UAnimMontage* knifeMontage;
 	UPROPERTY(BlueprintReadOnly)
-		UAnimMontage* throwMontage;
+	UAnimMontage* throwMontage;
 	UPROPERTY(BlueprintReadOnly)
-		UAnimMontage* reloadMontage;
+	UAnimMontage* reloadMontage;
 
 private:
 	bool isLightOn = false;
@@ -98,7 +102,5 @@ private:
 	const float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
 	UPROPERTY()
-		UStaticMesh* SMGrenade = nullptr;
-	UPROPERTY()
-		UStaticMesh* SMGun = nullptr;
+	USkeletalMesh* rifleMesh = nullptr;
 };

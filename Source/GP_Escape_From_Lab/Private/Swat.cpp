@@ -63,22 +63,20 @@ ASwat::ASwat()
 		spotComp->SetVisibility(false);
 	}
 
-	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("weaponComp"));
+	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
 	if (IsValid(weaponMesh))
 	{
 		weaponMesh->SetSimulatePhysics(false);
-		weaponMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
 	}
-	SMGun = ConstructorHelpers::FObjectFinder<UStaticMesh>
-		(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SM_AR4.SM_AR4")).Object;
-	SMGrenade = ConstructorHelpers::FObjectFinder<UStaticMesh>
-		(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/G67_Grenade/SM_G67_Thrown.SM_G67_Thrown")).Object;
+	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
+		(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
 
-	if (SMGun)
+	if (rifleMesh)
 	{
-		weaponMesh->SetStaticMesh(SMGun);
+		weaponMesh->SetSkeletalMesh(rifleMesh);
 	}
 
 	knifeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("knifeComp"));
@@ -95,6 +93,13 @@ ASwat::ASwat()
 	{
 		knifeMesh->SetStaticMesh(knifeSM.Object);
 		knifeMesh->SetVisibility(false);
+	}
+	magMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magMesh"));
+	if (magMesh)
+	{
+		magMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			TEXT("MagHand"));
+		magMesh->SetVisibility(false);
 	}
 
 	this->bUseControllerRotationYaw = true;
@@ -125,13 +130,15 @@ void ASwat::EndThrowing()
 {
 	isThrowing = false;
 	isCanFire = true;
-	weaponMesh->SetStaticMesh(SMGun);
+	weaponMesh->SetVisibility(true);
 }
 
 void ASwat::EndReloading()
 {
 	isReloading = false;
 	isCanFire = true;
+	weaponMesh->UnHideBoneByName("b_gun_mag");
+	magMesh->SetVisibility(false);
 }
 
 void ASwat::SpawnGrenade()
@@ -219,7 +226,7 @@ void ASwat::ThrowGrenade()
 		isCanFire = false;
 		isThrowing = true;
 		animInstance->Montage_Play(throwMontage);
-		weaponMesh->SetStaticMesh(SMGrenade);
+		weaponMesh->SetVisibility(false);
 	}
 }
 
@@ -243,6 +250,7 @@ void ASwat::ReloadGun()
 		isReloading = true;
 		isCanFire = false;
 		animInstance->Montage_Play(reloadMontage);
+		weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
 	}
 }
 
