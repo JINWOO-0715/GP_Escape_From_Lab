@@ -55,24 +55,12 @@ ASwat::ASwat()
 	if (IsValid(spotComp))
 	{
 		spotComp->SetRelativeLocation(FVector(90.0f, 0.0f, 40.0f));
-		spotComp->Intensity = 80000.0f;
+		spotComp->Intensity = 0.0f;
 		spotComp->AttenuationRadius = 1200.0f;
 		spotComp->InnerConeAngle = 18.0f;
 		spotComp->OuterConeAngle = 24.0f;
 		spotComp->SetupAttachment(cameraComp);
-		spotComp->SetVisibility(false);
-	}
-
-	aimSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("aimSpotComp"));
-	if (IsValid(aimSpotLight))
-	{
-		aimSpotLight->SetRelativeLocation(FVector(90.0f, 0.0f, 40.0f));
-		aimSpotLight->Intensity = 80000.0f;
-		aimSpotLight->AttenuationRadius = 1200.0f;
-		aimSpotLight->InnerConeAngle = 18.0f;
-		aimSpotLight->OuterConeAngle = 24.0f;
-		aimSpotLight->SetupAttachment(aimCamera);
-		aimSpotLight->SetVisibility(false);
+		spotComp->SetVisibility(true);
 	}
 
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
@@ -99,6 +87,19 @@ ASwat::ASwat()
 		aimCamera->SetRelativeScale3D(FVector(0.05f, 0.05f, 0.05f));
 		aimCamera->SetRelativeLocation(FVector(-68.0f, 0.0f, 16.5f));
 		aimCamera->SetAutoActivate(false);
+		aimCamera->SetFieldOfView(85.0f);
+	}
+
+	aimSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("aimSpotComp"));
+	if (IsValid(aimSpotLight))
+	{
+		aimSpotLight->SetRelativeLocation(FVector(2000.0f, 20.0f, 600.0f));
+		aimSpotLight->Intensity = 0.0f;
+		aimSpotLight->AttenuationRadius = 1200.0f;
+		aimSpotLight->InnerConeAngle = 18.0f;
+		aimSpotLight->OuterConeAngle = 24.0f;
+		aimSpotLight->SetupAttachment(aimCamera);
+		aimSpotLight->SetVisibility(true);
 	}
 
 	knifeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("knifeComp"));
@@ -198,16 +199,17 @@ void ASwat::LookupRate(float value)
 
 void ASwat::TurnOnOffFlashLight()
 {
-	if (spotComp->GetVisibleFlag())
+	if (isLightOn)
 	{
-		spotComp->SetVisibility(false);
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "Light off");
+		isLightOn = false;
+		//spotComp->SetIntensity(0.0f);
+		//aimSpotLight->SetIntensity(0.0f);
 	}
 	else
 	{
-		spotComp->SetVisibility(true);
-		if(cameraComp->GetVisibleFlag())
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "Light on");
+		isLightOn = true;
+		//spotComp->SetIntensity(80000.0f);
+		//aimSpotLight->SetIntensity(80000.0f);
 	}
 }
 
@@ -246,6 +248,8 @@ void ASwat::ThrowGrenade()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isThrowing && isCanFire)
 	{
+		isAiming = false;
+		UnAimGun();
 		isCanFire = false;
 		isThrowing = true;
 		animInstance->Montage_Play(throwMontage);
@@ -259,6 +263,8 @@ void ASwat::StabKnife()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isStabbing && isCanFire)
 	{
+		isAiming = false;
+		UnAimGun();
 		isCanFire = false;
 		isStabbing = true;
 		animInstance->Montage_Play(knifeMontage);
@@ -270,6 +276,8 @@ void ASwat::ReloadGun()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isReloading)
 	{
+		isAiming = false;
+		UnAimGun();
 		isReloading = true;
 		isCanFire = false;
 		animInstance->Montage_Play(reloadMontage);
@@ -279,14 +287,19 @@ void ASwat::ReloadGun()
 
 void ASwat::AimGun()
 {
-	cameraComp->SetActiveFlag(false);
-	aimCamera->SetActiveFlag(true);
+	if (isCanFire)
+	{
+		cameraComp->SetActiveFlag(false);
+		aimCamera->SetActiveFlag(true);
+		isAiming = true;
+	}
 }
 
 void ASwat::UnAimGun()
 {
 	cameraComp->SetActiveFlag(true);
 	aimCamera->SetActiveFlag(false);
+	isAiming = false;
 }
 
 // Called every frame
@@ -295,7 +308,6 @@ void ASwat::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	auto rot = GetControlRotation();
 	cameraComp->SetRelativeRotation(rot);
-
 
 	if (stamina > 0 && isDashing)
 	{
@@ -332,7 +344,34 @@ void ASwat::Tick(float DeltaTime)
 	}
 	curFireRate -= DeltaTime;
 
-
+	if (isAiming)
+	{
+		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), AR_AK47AimPos, 0.6f);
+		aimCamera->SetRelativeLocation(result);
+	}
+	else
+	{
+		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), initCameraPos, 0.6f);
+		aimCamera->SetRelativeLocation(result);
+	}
+	if (isLightOn)
+	{
+		if (isAiming)
+		{
+			spotComp->SetIntensity(0.0f);
+			aimSpotLight->SetIntensity(80000.0f);
+		}
+		else
+		{
+			spotComp->SetIntensity(0.0f);
+			aimSpotLight->SetIntensity(80000.0f);
+		}
+	}
+	else
+	{
+		spotComp->SetIntensity(0.0f);
+		aimSpotLight->SetIntensity(0.0f);
+	}
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

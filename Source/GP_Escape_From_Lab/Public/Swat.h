@@ -102,11 +102,13 @@ private:
 	bool isStabbing = false;
 	bool isThrowing = false;
 	bool isReloading = false;
+	bool isAiming = false;
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
 	const float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
+	const FVector initCameraPos{ -68, 0, 16.5 };
 	const FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
 	const FVector AK74AimPos{ -60, 0.0, 7.0 };
 	const FVector VSSAimPos{ -72, 0.0, 5.0 };
