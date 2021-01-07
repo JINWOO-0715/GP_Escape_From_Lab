@@ -5,7 +5,7 @@
 ###########
 # 파일 무시할건 이런식으로 쓰기.
 Content/Asset
-
+Content/CrosshairHUD
 Content/FPS_Weapon_Bundle
 Content/Sound
 Content/StarterContent
