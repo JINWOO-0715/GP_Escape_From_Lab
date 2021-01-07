@@ -41,6 +41,8 @@ protected:
 	void ThrowGrenade();
 	void StabKnife();
 	void ReloadGun();
+	void AimGun();
+	void UnAimGun();
 
 
 public:
@@ -62,9 +64,13 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCameraComponent* cameraComp = nullptr;
+	UCameraComponent* cameraComp = nullptr; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCameraComponent* aimCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USpotLightComponent* spotComp = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USpotLightComponent* aimSpotLight = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* weaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -101,6 +107,29 @@ private:
 	const float walkSpeed = 500.0f;
 	const float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
+	const FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
+	const FVector AK74AimPos{ -60, 0.0, 7.0 };
+	const FVector VSSAimPos{ -72, 0.0, 5.0 };
 	UPROPERTY()
 	USkeletalMesh* rifleMesh = nullptr;
 };
+
+//조준기능 트랜스폼 벨류
+//auto activate off
+//attach to gun socket is muzzle
+//AR& AK
+//- 72, 0.0, 7.3
+//0.5, -1.32, 1.82
+//0.05, 0.05, 0.05
+//
+//SK_KA_VAL_Y
+//- 72, 0.0, 5.0
+//0.5, -1.32, 1.82
+//0.05, 0.05, 0.05
+//
+//AK74
+//- 60, 0.0, 7.0
+//0.5, -1.32, 1.82
+//0.05, 0.05, 0.05
+//카메라 시작 위치(여기서 출발해서 lerp로 조준 위치로 이동한다)
+//- 68, 0, 16.5

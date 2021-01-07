@@ -63,6 +63,18 @@ ASwat::ASwat()
 		spotComp->SetVisibility(false);
 	}
 
+	aimSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("aimSpotComp"));
+	if (IsValid(aimSpotLight))
+	{
+		aimSpotLight->SetRelativeLocation(FVector(90.0f, 0.0f, 40.0f));
+		aimSpotLight->Intensity = 80000.0f;
+		aimSpotLight->AttenuationRadius = 1200.0f;
+		aimSpotLight->InnerConeAngle = 18.0f;
+		aimSpotLight->OuterConeAngle = 24.0f;
+		aimSpotLight->SetupAttachment(aimCamera);
+		aimSpotLight->SetVisibility(false);
+	}
+
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
 	if (IsValid(weaponMesh))
 	{
@@ -77,6 +89,16 @@ ASwat::ASwat()
 	if (rifleMesh)
 	{
 		weaponMesh->SetSkeletalMesh(rifleMesh);
+	}
+
+	aimCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("aimingCameraComp"));
+	if (IsValid(aimCamera))
+	{
+		aimCamera->AttachToComponent(weaponMesh,
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Muzzle"));
+		aimCamera->SetRelativeScale3D(FVector(0.05f, 0.05f, 0.05f));
+		aimCamera->SetRelativeLocation(FVector(-68.0f, 0.0f, 16.5f));
+		aimCamera->SetAutoActivate(false);
 	}
 
 	knifeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("knifeComp"));
@@ -95,7 +117,7 @@ ASwat::ASwat()
 		knifeMesh->SetVisibility(false);
 	}
 	magMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magMesh"));
-	if (magMesh)
+	if (IsValid(magMesh))
 	{
 		magMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 			TEXT("MagHand"));
@@ -184,6 +206,7 @@ void ASwat::TurnOnOffFlashLight()
 	else
 	{
 		spotComp->SetVisibility(true);
+		if(cameraComp->GetVisibleFlag())
 		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, "Light on");
 	}
 }
@@ -254,6 +277,18 @@ void ASwat::ReloadGun()
 	}
 }
 
+void ASwat::AimGun()
+{
+	cameraComp->SetActiveFlag(false);
+	aimCamera->SetActiveFlag(true);
+}
+
+void ASwat::UnAimGun()
+{
+	cameraComp->SetActiveFlag(true);
+	aimCamera->SetActiveFlag(false);
+}
+
 // Called every frame
 void ASwat::Tick(float DeltaTime)
 {
@@ -297,6 +332,7 @@ void ASwat::Tick(float DeltaTime)
 	}
 	curFireRate -= DeltaTime;
 
+
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -317,7 +353,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Knife", IE_Pressed, this, &ASwat::StabKnife);
 	PlayerInputComponent->BindAction("Grenade", IE_Pressed, this, &ASwat::ThrowGrenade);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASwat::ReloadGun);
-
+	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &ASwat::AimGun);
+	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &ASwat::UnAimGun);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
