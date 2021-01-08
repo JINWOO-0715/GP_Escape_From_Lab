@@ -24,7 +24,7 @@ ASwat::ASwat()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/Asset/swat.swat"));
+	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat.swat"));
 	if (SKMesh.Succeeded())
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
@@ -34,7 +34,7 @@ ASwat::ASwat()
 	}
 
 	const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP
-	(TEXT("/Game/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player"));
+	(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player"));
 
 	if (AnimBP.Succeeded())
 	{
@@ -72,7 +72,7 @@ ASwat::ASwat()
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
 	}
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
-		(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
+		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
 
 	if (rifleMesh)
 	{
@@ -111,7 +111,7 @@ ASwat::ASwat()
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("KnifeHand"));
 	}
 	const ConstructorHelpers::FObjectFinder<UStaticMesh> knifeSM
-	(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/M9_Knife/SM_M9_Knife.SM_M9_Knife"));
+	(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/M9_Knife/SM_M9_Knife.SM_M9_Knife"));
 	if (knifeSM.Succeeded())
 	{
 		knifeMesh->SetStaticMesh(knifeSM.Object);
@@ -130,10 +130,10 @@ ASwat::ASwat()
 		(GetCharacterMovement());
 	movement->MaxWalkSpeed = walkSpeed;
 
-	fireMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/AnimationBP/PlayerCharacter/Firing_Rifle_Montage.Firing_Rifle_Montage")).Object;
-	knifeMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/AnimationBP/PlayerCharacter/stabbing_Montage.stabbing_Montage")).Object;
-	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/AnimationBP/PlayerCharacter/Throw_Montage.Throw_Montage")).Object;
-	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
+	fireMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Firing_Rifle_Montage.Firing_Rifle_Montage")).Object;
+	knifeMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/stabbing_Montage.stabbing_Montage")).Object;
+	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Throw_Montage.Throw_Montage")).Object;
+	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
 
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
