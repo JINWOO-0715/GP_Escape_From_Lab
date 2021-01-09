@@ -86,6 +86,7 @@ ASwat::ASwat()
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Muzzle"));
 		aimCamera->SetRelativeScale3D(FVector(0.05f, 0.05f, 0.05f));
 		aimCamera->SetRelativeLocation(FVector(-68.0f, 0.0f, 16.5f));
+		aimCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, -1.0f).Quaternion());
 		aimCamera->SetAutoActivate(false);
 		aimCamera->SetFieldOfView(85.0f);
 	}
