@@ -61,6 +61,9 @@ public:
 	void EndReloading();
 	UFUNCTION(BlueprintCallable)
 	void SpawnGrenade();
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* GetWeaponMeshComponent(){return weaponMesh;}
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
