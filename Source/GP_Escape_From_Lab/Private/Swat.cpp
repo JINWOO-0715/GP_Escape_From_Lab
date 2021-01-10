@@ -75,6 +75,7 @@ ASwat::ASwat()
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
 	if (IsValid(weaponMesh))
 	{
+		
 		weaponMesh->SetSimulatePhysics(false);
 		weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		weaponMesh->AttachToComponent(GetMesh(),
@@ -324,24 +325,43 @@ void ASwat::Interact()
 {
 	
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
-	// 머리부터 어디까지
-	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;//1.5미터안까지 충돌검사
-	AActor * Actor = LineTraceComp->LineTraceSingle(Start,End,true);
+	// 머리부터 카메라 방향 2m까지 직선쏘기
+	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;
+	
+	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
+
+	//if (Actor)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("히트"));
+	//	UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
+	//}
+
+
 
 	if (Actor)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("히트"));
-		UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
-	}
-	// 무기 바꾸는 액션 
-	if (Weapon)
-	{
+	{	
+		//충돌이 무기라면
+		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
+		{
+			
+			Weapon = HitWeapon;
+			Weapon->SetActorEnableCollision(false);
+
+			//이런식으로 가져다가 사용하면 됩니다.!!
+			rifleMesh = Weapon->WeaponData->WeaponMesh;
+			weaponMesh->SetSkeletalMesh(rifleMesh);
+			//Weapon->SetupWeapon(FName("AR4"));
+
+			
+			UE_LOG(LogTemp, Warning, TEXT("히트"));
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
+
+		}
+
+
 
 	}
-	else // 무기를 떨군다.
-	{
 
-	}
 }
 
 // Called every frame

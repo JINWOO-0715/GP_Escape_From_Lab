@@ -62,22 +62,28 @@ protected:
 	UPROPERTY(EditAnyWhere)
 	class USkeletalMeshComponent* MeshComp;
 
-	//넣을 데이터 테이블.
+	//밖에서 넣을 데이터 테이블.
 	UPROPERTY(EditAnyWhere)
 		class UDataTable* WeaponDataTable;
 
-	FWeaponData* WeaponData;
+
 	// 조준경 위치 
 	FVector AimPos;
+
+	// 디폴트 무기.
+	UPROPERTY(EditAnyWhere)
+		FName DefaultWeaponName;
 
 
 
 
 public:
-
+	void SetupWeapon(FName WeaponName);
 	// 총기 애니메이션 혹시 있으면 임시용.
 	//void Fire();
 
+	//가져올 데이터 테이블 행1
+	FWeaponData* WeaponData;
 };
 
 
