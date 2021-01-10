@@ -11,9 +11,18 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+
+
+#include "WeaponBase.h"
+#include "LineTrace.h"
+
 #include "Animation/AnimMontage.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
+
+
+
 
 //캐릭터 클래스는 상속시 캡슐, 캐릭터 무브먼트, 스켈레탈 메쉬를 상속받는다.
 //직접 접근은 허용되지 않으며 Get 메소드를 통해 접근할 수 있다.
@@ -66,11 +75,14 @@ ASwat::ASwat()
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
 	if (IsValid(weaponMesh))
 	{
+		
 		weaponMesh->SetSimulatePhysics(false);
 		weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
 	}
+
+
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
 
@@ -136,10 +148,16 @@ ASwat::ASwat()
 	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Throw_Montage.Throw_Montage")).Object;
 	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
 
+
+	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
+
+
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 
 }
 
@@ -303,6 +321,49 @@ void ASwat::UnAimGun()
 	isAiming = false;
 }
 
+void ASwat::Interact()
+{
+	
+	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
+	// 머리부터 카메라 방향 2m까지 직선쏘기
+	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;
+	
+	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
+
+	//if (Actor)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("히트"));
+	//	UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
+	//}
+
+
+
+	if (Actor)
+	{	
+		//충돌이 무기라면
+		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
+		{
+			
+			Weapon = HitWeapon;
+			Weapon->SetActorEnableCollision(false);
+
+			//이런식으로 가져다가 사용하면 됩니다.!!
+			rifleMesh = Weapon->WeaponData->WeaponMesh;
+			weaponMesh->SetSkeletalMesh(rifleMesh);
+			//Weapon->SetupWeapon(FName("AR4"));
+
+			
+			UE_LOG(LogTemp, Warning, TEXT("히트"));
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
+
+		}
+
+
+
+	}
+
+}
+
 // Called every frame
 void ASwat::Tick(float DeltaTime)
 {
@@ -347,6 +408,7 @@ void ASwat::Tick(float DeltaTime)
 
 	if (isAiming)
 	{
+		// 조준경 위치 잡아놈.
 		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), AR_AK47AimPos, 0.6f);
 		aimCamera->SetRelativeLocation(result);
 	}
@@ -396,6 +458,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &ASwat::AimGun);
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &ASwat::UnAimGun);
 
+	// 무기 줍는 기 누르면.
+	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
 	PlayerInputComponent->BindAxis("MoveBackward", this, &ASwat::MoveForward);
@@ -404,5 +468,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+
+
 }
 
