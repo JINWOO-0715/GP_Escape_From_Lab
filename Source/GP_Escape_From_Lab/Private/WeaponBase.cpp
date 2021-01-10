@@ -23,12 +23,15 @@ void AWeaponBase::BeginPlay()
 	{
 		static const FString PString = FString("AR-4DT");
 		WeaponData = WeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString, true);
+		
+
 		if (WeaponData)
 		{
 			MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+			
 		}
 	}
-	
+			
 }
 
 // 총기애니메이션 혹시 있으면 

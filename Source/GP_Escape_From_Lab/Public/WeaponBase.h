@@ -9,19 +9,36 @@
 
 
 // 무기 구조체 
+
+
 USTRUCT (BlueprintType)
 struct FWeaponData : public FTableRowBase
 {
 	GENERATED_BODY()
+		
 
-	UPROPERTY(EditAnyWhere)
-		class USkeletalMesh* WeaponMesh;
-
+	// 무기 이름
 	UPROPERTY(EditAnyWhere)
 		FString WeaponName;
 
-	// 혹시 발사 애니메이션이 있으면...
+	//무기 스켈레탈 메쉬
+	UPROPERTY(EditAnyWhere)
+		class USkeletalMesh* WeaponMesh;
+
+	//무기 에임 포스
+	UPROPERTY(EditAnyWhere)
+		FVector WeaponAimPos;
 	
+	// 맥스 저장가능 탄약수  30/100 100발
+	UPROPERTY(EditAnyWhere)
+		int32 WeaponSaveMagazine;
+
+	//발사 가능 탄약수 30/100   30발
+	UPROPERTY(EditAnyWhere)
+		int32 WeaponMagazine;
+
+
+	// 혹시 발사 애니메이션이 있으면...
 	//UPROPERTY(EditAnyWhere)
 	//	class UAimationAsset* FireAnimation;
 
@@ -41,7 +58,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	//메시
+	//무기 메시
+	UPROPERTY(EditAnyWhere)
 	class USkeletalMeshComponent* MeshComp;
 
 	//넣을 데이터 테이블.
@@ -49,11 +67,17 @@ protected:
 		class UDataTable* WeaponDataTable;
 
 	FWeaponData* WeaponData;
+	// 조준경 위치 
+	FVector AimPos;
+
+
+
 
 public:
+
 	// 총기 애니메이션 혹시 있으면 임시용.
 	//void Fire();
 
-
-
 };
+
+

@@ -11,8 +11,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+
 
 #include "WeaponBase.h"
+#include "LineTrace.h"
 
 #include "Animation/AnimMontage.h"
 #include <EngineGlobals.h>
@@ -143,6 +146,10 @@ ASwat::ASwat()
 	knifeMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/stabbing_Montage.stabbing_Montage")).Object;
 	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Throw_Montage.Throw_Montage")).Object;
 	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
+
+
+	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
+
 
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
@@ -313,6 +320,30 @@ void ASwat::UnAimGun()
 	isAiming = false;
 }
 
+void ASwat::Interact()
+{
+	
+	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
+	// 머리부터 어디까지
+	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;//1.5미터안까지 충돌검사
+	AActor * Actor = LineTraceComp->LineTraceSingle(Start,End,true);
+
+	if (Actor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("히트"));
+		UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
+	}
+	// 무기 바꾸는 액션 
+	if (Weapon)
+	{
+
+	}
+	else // 무기를 떨군다.
+	{
+
+	}
+}
+
 // Called every frame
 void ASwat::Tick(float DeltaTime)
 {
@@ -357,6 +388,7 @@ void ASwat::Tick(float DeltaTime)
 
 	if (isAiming)
 	{
+		// 조준경 위치 잡아놈.
 		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), AR_AK47AimPos, 0.6f);
 		aimCamera->SetRelativeLocation(result);
 	}
@@ -406,6 +438,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &ASwat::AimGun);
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &ASwat::UnAimGun);
 
+	// 무기 줍는 기 누르면.
+	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
 	PlayerInputComponent->BindAxis("MoveBackward", this, &ASwat::MoveForward);
@@ -414,5 +448,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+
+
 }
 
