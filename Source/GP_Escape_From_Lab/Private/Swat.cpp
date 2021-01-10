@@ -11,9 +11,15 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+
+#include "WeaponBase.h"
+
 #include "Animation/AnimMontage.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
+
+
+
 
 //캐릭터 클래스는 상속시 캡슐, 캐릭터 무브먼트, 스켈레탈 메쉬를 상속받는다.
 //직접 접근은 허용되지 않으며 Get 메소드를 통해 접근할 수 있다.
@@ -71,6 +77,8 @@ ASwat::ASwat()
 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
 	}
+
+
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
 
@@ -140,6 +148,8 @@ ASwat::ASwat()
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 
 }
 

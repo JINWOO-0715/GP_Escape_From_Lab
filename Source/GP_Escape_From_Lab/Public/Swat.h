@@ -45,6 +45,13 @@ protected:
 	void UnAimGun();
 
 
+	//박진우 제작
+	UPROPERTY(EditAnyWhere)
+		TSubclassOf<class AWeaponBase> WeaponClass;
+
+	class AWeaponBase* Weapon;
+
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
