@@ -145,9 +145,9 @@ private:
 
 
 	// 조준경 위치 
-	const FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
-	const FVector AK74AimPos{ -60, 0.0, 7.0 };
-	const FVector VSSAimPos{ -72, 0.0, 5.0 };
+	FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
+	FVector AK74AimPos{ -60, 0.0, 7.0 };
+	FVector VSSAimPos{ -72, 0.0, 5.0 };
 
 	UPROPERTY()
 	USkeletalMesh* rifleMesh = nullptr;
