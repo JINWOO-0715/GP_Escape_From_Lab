@@ -13,7 +13,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
-
+#include "PickUps.h"
 #include "WeaponBase.h"
 #include "LineTrace.h"
 
@@ -351,7 +351,13 @@ void ASwat::Interact()
 	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;
 	
 	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
+	if (Actor)
+	{
+		if (APickups* Pickup = Cast<APickups>(Actor))
+		{
 
+		}
+	}
 	//if (Actor)
 	//{
 	//	UE_LOG(LogTemp, Warning, TEXT("히트"));
@@ -372,11 +378,15 @@ void ASwat::Interact()
 			//이런식으로 가져다가 사용하면 됩니다.!!
 			rifleMesh = Weapon->WeaponData->WeaponMesh;
 			weaponMesh->SetSkeletalMesh(rifleMesh);
+			leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+			// 아래 줌 위치 적용하는거. 
+			//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
+
 			//Weapon->SetupWeapon(FName("AR4"));
 
-			
+			/*
 			UE_LOG(LogTemp, Warning, TEXT("히트"));
-			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());*/
 
 		}
 
