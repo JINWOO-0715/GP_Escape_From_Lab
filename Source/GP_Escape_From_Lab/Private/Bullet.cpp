@@ -15,7 +15,7 @@
 // Sets default values
 ABullet::ABullet()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	boxCollision = CreateDefaultSubobject<UBoxComponent>("boxComp");
@@ -47,9 +47,9 @@ ABullet::ABullet()
 	projMovComp = CreateDefaultSubobject<UProjectileMovementComponent>("projectileMovComp");
 	if (IsValid(projMovComp))
 	{
-		projMovComp->InitialSpeed = 6000.0f;
-		projMovComp->MaxSpeed = 6000.0f;
-		projMovComp->UpdatedComponent = boxCollision;	
+		projMovComp->InitialSpeed = bulletSpeed;
+		projMovComp->MaxSpeed = bulletSpeed;
+		projMovComp->UpdatedComponent = boxCollision;
 	}
 }
 
@@ -67,7 +67,7 @@ void ABullet::Tick(float DeltaTime)
 	if (isFirstCall)
 	{
 		curPos = this->GetActorLocation();
-		befPos = curPos;
+		befPos = startPos;
 		isFirstCall = false;
 	}
 	curPos = this->GetActorLocation();
@@ -75,7 +75,7 @@ void ABullet::Tick(float DeltaTime)
 	FVector startTrace = befPos;
 	FVector endTrace = curPos;
 	FCollisionQueryParams collisionParams;
-	collisionParams.bTraceComplex= true;
+	collisionParams.bTraceComplex = true;
 	collisionParams.AddIgnoredActor(this);
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Pawn,
 		collisionParams))

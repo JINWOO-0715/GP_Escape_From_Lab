@@ -30,7 +30,6 @@
 // Sets default values
 ASwat::ASwat()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat.swat"));
@@ -72,35 +71,46 @@ ASwat::ASwat()
 		spotComp->SetVisibility(true);
 	}
 
-	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
+	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("leftWeaponComp"));
 	if (IsValid(weaponMesh))
 	{
-		
 		weaponMesh->SetSimulatePhysics(false);
 		weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
+		weaponMesh->SetVisibility(false);
 	}
 
-
+	leftWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
+	if (IsValid(leftWeaponMesh))
+	{
+		leftWeaponMesh->SetSimulatePhysics(false);
+		leftWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		leftWeaponMesh->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGunHand"));
+		leftWeaponMesh->SetVisibility(true);
+	}
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
 
 	if (rifleMesh)
 	{
 		weaponMesh->SetSkeletalMesh(rifleMesh);
+		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
 	}
 
 	aimCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("aimingCameraComp"));
 	if (IsValid(aimCamera))
 	{
-		aimCamera->AttachToComponent(weaponMesh,
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Muzzle"));
+		//aimCamera->AttachToComponent(weaponMesh,
+			//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Muzzle"));
+		aimCamera->SetupAttachment(RootComponent);
+		aimCamera->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 		aimCamera->SetRelativeScale3D(FVector(0.05f, 0.05f, 0.05f));
-		aimCamera->SetRelativeLocation(FVector(-68.0f, 0.0f, 16.5f));
-		aimCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, -1.0f).Quaternion());
+		//aimCamera->SetRelativeLocation(FVector(-68.0f, 0.0f, 16.5f));
+		//aimCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, -1.0f).Quaternion());
 		aimCamera->SetAutoActivate(false);
-		aimCamera->SetFieldOfView(85.0f);
+		aimCamera->SetFieldOfView(70.0f);
 	}
 
 	aimSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("aimSpotComp"));
@@ -148,16 +158,24 @@ ASwat::ASwat()
 	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Throw_Montage.Throw_Montage")).Object;
 	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
 
+	curveFloat = ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("/Game/Movable/Curves/ARRecoil.ARRecoil")).Object;
+
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
-
 
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	if (curveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
+		curveTimeline.AddInterpFloat(curveFloat, TimelineProgress);
+		curveTimeline.SetLooping(true);
+		curveTimeline.PlayFromStart();
+	}
 
 }
 
@@ -282,6 +300,7 @@ void ASwat::StabKnife()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isStabbing && isCanFire)
 	{
+		knifeMesh->SetVisibility(true);
 		isAiming = false;
 		UnAimGun();
 		isCanFire = false;
@@ -299,6 +318,9 @@ void ASwat::ReloadGun()
 		UnAimGun();
 		isReloading = true;
 		isCanFire = false;
+		knifeMesh->SetVisibility(false);
+		isStabbing = false;
+		isThrowing = false;
 		animInstance->Montage_Play(reloadMontage);
 		weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
 	}
@@ -364,10 +386,20 @@ void ASwat::Interact()
 
 }
 
+void ASwat::TimelineProgress(float value)
+{
+	recoilValue = value;
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(value));
+}
+
 // Called every frame
 void ASwat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	curveTimeline.TickTimeline(DeltaTime);
+
+
 	auto rot = GetControlRotation();
 	cameraComp->SetRelativeRotation(rot);
 
@@ -435,6 +467,21 @@ void ASwat::Tick(float DeltaTime)
 		spotComp->SetIntensity(0.0f);
 		aimSpotLight->SetIntensity(0.0f);
 	}
+
+	if (isReloading || isStabbing || isThrowing || isAiming)
+	{
+		leftWeaponMesh->SetVisibility(false);
+		weaponMesh->SetVisibility(true);
+	}
+	else
+	{
+		leftWeaponMesh->SetVisibility(true);
+		weaponMesh->SetVisibility(false);
+	}
+
+	auto targetTrans = weaponMesh->GetSocketTransform("IronSight");
+
+	aimCamera->SetWorldTransform(FTransform(targetTrans.GetRotation(), targetTrans.GetLocation(), FVector(0.001f, 0.001f, 0.001f)));
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

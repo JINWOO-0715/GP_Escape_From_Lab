@@ -14,8 +14,8 @@ UCLASS()
 class GP_ESCAPE_FROM_LAB_API ABullet : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABullet();
 
@@ -23,19 +23,24 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UBoxComponent* boxCollision;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UStaticMeshComponent* bulletMeshComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UBoxComponent* boxCollision;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UStaticMeshComponent* bulletMeshComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector startPos {
+		0.0f, 0.0f, 0.0f
+	};
 	UProjectileMovementComponent* projMovComp;
 
 private:
 	FVector befPos{ 0.0f,0.0f,0.0f };
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
+	const float bulletSpeed = 10000.0f;
 };

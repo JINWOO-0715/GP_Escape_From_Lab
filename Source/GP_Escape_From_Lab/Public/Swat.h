@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
 #include "Swat.generated.h"
 
 class UCameraComponent;
@@ -57,7 +58,11 @@ protected:
 	void Interact();
 
 
+protected:
+	FTimeline curveTimeline;
 
+	UPROPERTY(EditAnywhere)
+		UCurveFloat* curveFloat;
 
 
 public:
@@ -78,6 +83,8 @@ public:
 	void SpawnGrenade();
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetWeaponMeshComponent(){return weaponMesh;}
+	UFUNCTION()
+	void TimelineProgress(float value);
 
 
 public:
@@ -92,6 +99,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* weaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* leftWeaponMesh = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* knifeMesh = nullptr; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* magMesh = nullptr;
@@ -102,9 +111,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int stamina = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float recoilValue = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isDashing = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isCanFire = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isAiming = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isGunFire = false;
 	UPROPERTY(BlueprintReadOnly)
 	UAnimMontage* fireMontage;
 	UPROPERTY(BlueprintReadOnly)
@@ -116,11 +131,9 @@ public:
 
 private:
 	bool isLightOn = false;
-	bool isGunFire = false;
 	bool isStabbing = false;
 	bool isThrowing = false;
 	bool isReloading = false;
-	bool isAiming = false;
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
