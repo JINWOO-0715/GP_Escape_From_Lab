@@ -385,16 +385,19 @@ void ASwat::Interact()
 		{
 			if (Pickup->ItemData->ItemName == "Medkit")
 			{
-				this->hasMedkit += 1;
+				hasMedkit += 1;
 			}
-			if (Pickup->ItemData->ItemName == "Anno")
+			if (Pickup->ItemData->ItemName == "Ammo")
 			{
-				this->hasAmmo += 1;
+				hasAmmo += 1;
 			}
 
 
-			 UE_LOG(LogTemp, Warning, TEXT("히트"));
-			 UE_LOG(LogTemp, Warning, TEXT("메디킷 : %d 탄창 %d"), this->hasAmmo,this->hasMedkit);
+		
+			 UE_LOG(LogTemp, Warning, TEXT("HIT")); 
+			 UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
+			 UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
+			
 
 			// 인벤토리에 추가하는 기능을 넣는다.
 			// UE_LOG(LogTemp, Warning, TEXT("히트"));
