@@ -57,6 +57,9 @@ protected:
 	
 	void Interact();
 
+	
+	
+
 
 protected:
 	FTimeline curveTimeline;
@@ -88,6 +91,8 @@ public:
 
 
 public:
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* cameraComp = nullptr; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -128,6 +133,16 @@ public:
 	UAnimMontage* throwMontage;
 	UPROPERTY(BlueprintReadOnly)
 	UAnimMontage* reloadMontage;
+
+	// 플레이어 hp
+	int swatHp= 100;
+
+	// 가지고있는 메디킷
+	int hasMedkit = 0;
+
+	// 가지고있는 탄창수
+	int hasAmmo = 0;
+
 
 private:
 	bool isLightOn = false;

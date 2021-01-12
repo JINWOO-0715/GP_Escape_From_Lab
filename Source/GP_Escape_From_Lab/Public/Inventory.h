@@ -16,13 +16,13 @@ public:
 	// Sets default values for this component's properties
 	UInventory();
 protected:
-	//UPROPERTY(Replicated)
-	//	TArray<class Actor*> Items;
+	UPROPERTY(EditAnywhere)
+		TArray<class APickups*> Items;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-	bool AddItem(class Acotr* Item);
-	void RemoveItem(class Actor* Item);
+	bool AddItem(class APickups* Item);
+	void RemoveItem(class APickups* Item);
 };

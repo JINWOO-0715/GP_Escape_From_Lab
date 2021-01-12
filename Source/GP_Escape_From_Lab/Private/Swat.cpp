@@ -352,21 +352,6 @@ void ASwat::Interact()
 	
 	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
 	if (Actor)
-	{
-		if (APickups* Pickup = Cast<APickups>(Actor))
-		{
-
-		}
-	}
-	//if (Actor)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("히트"));
-	//	UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
-	//}
-
-
-
-	if (Actor)
 	{	
 		//충돌이 무기라면
 		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
@@ -375,22 +360,50 @@ void ASwat::Interact()
 			Weapon = HitWeapon;
 			Weapon->SetActorEnableCollision(false);
 
-			//이런식으로 가져다가 사용하면 됩니다.!!
+			//이런식으로 가져다가 사용하면 된다.
 			rifleMesh = Weapon->WeaponData->WeaponMesh;
+			
+			// 떠있는 무기를 바꾸고...? 
+			//HitWeapon->SetupWeapon();
+
+			// 내가 쓰는 무기를 바꾼다.
 			weaponMesh->SetSkeletalMesh(rifleMesh);
 			leftWeaponMesh->SetSkeletalMesh(rifleMesh);
 			// 아래 줌 위치 적용하는거. 
 			//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
-
 			//Weapon->SetupWeapon(FName("AR4"));
 
 			/*
 			UE_LOG(LogTemp, Warning, TEXT("히트"));
-			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());*/
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
+			*/
 
 		}
 
+		// 충돌이 아이템이라면.
+		if (APickups* Pickup = Cast<APickups>(Actor))
+		{
+			if (Pickup->ItemData->ItemName == "Medkit")
+			{
+				this->hasMedkit += 1;
+			}
+			if (Pickup->ItemData->ItemName == "Anno")
+			{
+				this->hasAmmo += 1;
+			}
 
+
+			 UE_LOG(LogTemp, Warning, TEXT("히트"));
+			 UE_LOG(LogTemp, Warning, TEXT("메디킷 : %d 탄창 %d"), this->hasAmmo,this->hasMedkit);
+
+			// 인벤토리에 추가하는 기능을 넣는다.
+			// UE_LOG(LogTemp, Warning, TEXT("히트"));
+			// UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
+			
+			// 이런식으로 아이템 사용가능.Pickup->UseItem(this);
+
+			 //Destroy(Pickup);
+		}
 
 	}
 
