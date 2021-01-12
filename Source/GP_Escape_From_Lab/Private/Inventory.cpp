@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Inventory.h"
 
+#include "PickUps.h"
 // Sets default values for this component's properties
 UInventory::UInventory()
 {
@@ -19,12 +19,12 @@ void UInventory::BeginPlay()
 	
 }
 
-bool UInventory::AddItem(Acotr* Item)
+bool UInventory::AddItem(APickups* Item)
 {
 	return false;
 }
 
-void UInventory::RemoveItem(Actor* Item)
+void UInventory::RemoveItem(APickups* Item)
 {
 }
 

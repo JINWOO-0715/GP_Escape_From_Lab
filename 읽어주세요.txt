@@ -1,0 +1,11 @@
+아이템 및 무기 bp사용법
+
+BP_Weapon혹은 BP_Item에
+항목중 default name을 원하는 이름으로 바꿉니다.
+ex) default item name을 Medkit
+
+그리고 월드에 배치하면 Medkit이나오고
+default item name이 Ammo인 bp를 배치하면 Ammo가 나옴
+
+Dt에 추가해도 괜찮습니다.
+01/12에 확인완료. 
