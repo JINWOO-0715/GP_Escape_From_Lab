@@ -16,6 +16,8 @@
 #include "PickUps.h"
 #include "WeaponBase.h"
 #include "LineTrace.h"
+#include "Blueprint/UserWidget.h"
+
 
 #include "Animation/AnimMontage.h"
 #include <EngineGlobals.h>
@@ -163,6 +165,9 @@ ASwat::ASwat()
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
 
+	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/Temp"));
+	TempWidget = add.Class;
+
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
@@ -176,7 +181,6 @@ void ASwat::BeginPlay()
 		curveTimeline.SetLooping(true);
 		curveTimeline.PlayFromStart();
 	}
-
 }
 
 void ASwat::EndStabbing()
@@ -412,6 +416,13 @@ void ASwat::Interact()
 
 }
 
+void ASwat::Inventory()
+{
+	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+	UUserWidget* MainMenu = CreateWidget<UUserWidget>(PlayerController, TempWidget);
+	MainMenu->AddToViewport();
+}
+
 void ASwat::TimelineProgress(float value)
 {
 	recoilValue = value;
@@ -533,6 +544,9 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	// 무기 줍는 기 누르면.
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
+
+	// 인벤토리 누르면
+	PlayerInputComponent->BindAction("Inventory", IE_Released, this, &ASwat::Inventory);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
 	PlayerInputComponent->BindAxis("MoveBackward", this, &ASwat::MoveForward);
