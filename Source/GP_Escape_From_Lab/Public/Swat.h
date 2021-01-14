@@ -56,7 +56,7 @@ protected:
 	class ULineTrace* LineTraceComp;
 	
 	void Interact();
-
+	void Inventory();
 	
 	
 
@@ -134,16 +134,24 @@ public:
 
 public:
 	// 플레이어 hp
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int swatHp= 100;
 
 	// 가지고있는 메디킷
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int hasMedkit = 0;
 
 	// 가지고있는 탄창수
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int hasAmmo = 0;
+
+	TSubclassOf<class UUserWidget> TempWidget;
+
 
 	UPROPERTY()
 	FVector initGrenadeSpawnRot {0.0f,0.0f,0.0f};
+
 
 private:
 	bool isLightOn = false;
