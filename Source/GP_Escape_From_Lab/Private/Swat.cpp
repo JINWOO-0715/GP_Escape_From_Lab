@@ -16,8 +16,6 @@
 #include "PickUps.h"
 #include "WeaponBase.h"
 #include "LineTrace.h"
-#include "Blueprint/UserWidget.h"
-
 
 #include "Animation/AnimMontage.h"
 #include <EngineGlobals.h>
@@ -38,9 +36,10 @@ ASwat::ASwat()
 	if (SKMesh.Succeeded())
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
+		GetCapsuleComponent()->SetCapsuleRadius(65.0f);
 		auto mesh = GetMesh();
 		mesh->SetSkeletalMesh(SKMesh.Object);
-		mesh->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+		mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
 	}
 
 	const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP
@@ -66,10 +65,10 @@ ASwat::ASwat()
 	{
 		spotComp->SetRelativeLocation(FVector(90.0f, 0.0f, 40.0f));
 		spotComp->Intensity = 0.0f;
-		spotComp->AttenuationRadius = 1200.0f;
-		spotComp->InnerConeAngle = 18.0f;
-		spotComp->OuterConeAngle = 24.0f;
-		spotComp->SetupAttachment(cameraComp);
+		spotComp->AttenuationRadius = 2500.0f;
+		spotComp->InnerConeAngle = 12.0f;
+		spotComp->OuterConeAngle = 15.0f;
+		spotComp->SetupAttachment(RootComponent);
 		spotComp->SetVisibility(true);
 	}
 
@@ -115,18 +114,6 @@ ASwat::ASwat()
 		aimCamera->SetFieldOfView(70.0f);
 	}
 
-	aimSpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("aimSpotComp"));
-	if (IsValid(aimSpotLight))
-	{
-		aimSpotLight->SetRelativeLocation(FVector(2000.0f, 20.0f, 600.0f));
-		aimSpotLight->Intensity = 0.0f;
-		aimSpotLight->AttenuationRadius = 1200.0f;
-		aimSpotLight->InnerConeAngle = 18.0f;
-		aimSpotLight->OuterConeAngle = 24.0f;
-		aimSpotLight->SetupAttachment(aimCamera);
-		aimSpotLight->SetVisibility(true);
-	}
-
 	knifeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("knifeComp"));
 	if (IsValid(knifeMesh))
 	{
@@ -165,9 +152,6 @@ ASwat::ASwat()
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
 
-	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/Temp"));
-	TempWidget = add.Class;
-
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
@@ -181,6 +165,7 @@ void ASwat::BeginPlay()
 		curveTimeline.SetLooping(true);
 		curveTimeline.PlayFromStart();
 	}
+
 }
 
 void ASwat::EndStabbing()
@@ -243,14 +228,12 @@ void ASwat::TurnOnOffFlashLight()
 	if (isLightOn)
 	{
 		isLightOn = false;
-		//spotComp->SetIntensity(0.0f);
-		//aimSpotLight->SetIntensity(0.0f);
+		spotComp->SetIntensity(0.0f);
 	}
 	else
 	{
 		isLightOn = true;
-		//spotComp->SetIntensity(80000.0f);
-		//aimSpotLight->SetIntensity(80000.0f);
+		spotComp->SetIntensity(100000.0f);
 	}
 }
 
@@ -295,6 +278,8 @@ void ASwat::ThrowGrenade()
 		isThrowing = true;
 		animInstance->Montage_Play(throwMontage);
 		weaponMesh->SetVisibility(false);
+		initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
+		initGrenadeSpawnRot.Normalize();
 	}
 }
 
@@ -416,13 +401,6 @@ void ASwat::Interact()
 
 }
 
-void ASwat::Inventory()
-{
-	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-	UUserWidget* MainMenu = CreateWidget<UUserWidget>(PlayerController, TempWidget);
-	MainMenu->AddToViewport();
-}
-
 void ASwat::TimelineProgress(float value)
 {
 	recoilValue = value;
@@ -486,24 +464,6 @@ void ASwat::Tick(float DeltaTime)
 		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), initCameraPos, 0.6f);
 		aimCamera->SetRelativeLocation(result);
 	}
-	if (isLightOn)
-	{
-		if (isAiming)
-		{
-			spotComp->SetIntensity(0.0f);
-			aimSpotLight->SetIntensity(80000.0f);
-		}
-		else
-		{
-			spotComp->SetIntensity(0.0f);
-			aimSpotLight->SetIntensity(80000.0f);
-		}
-	}
-	else
-	{
-		spotComp->SetIntensity(0.0f);
-		aimSpotLight->SetIntensity(0.0f);
-	}
 
 	if (isReloading || isStabbing || isThrowing || isAiming)
 	{
@@ -517,8 +477,10 @@ void ASwat::Tick(float DeltaTime)
 	}
 
 	auto targetTrans = weaponMesh->GetSocketTransform("IronSight");
-
 	aimCamera->SetWorldTransform(FTransform(targetTrans.GetRotation(), targetTrans.GetLocation(), FVector(0.001f, 0.001f, 0.001f)));
+	
+	auto muzzleTrans = weaponMesh->GetSocketTransform("Muzzle");
+	spotComp->SetWorldTransform(muzzleTrans);
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -544,9 +506,6 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	// 무기 줍는 기 누르면.
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
-
-	// 인벤토리 누르면
-	PlayerInputComponent->BindAction("Inventory", IE_Released, this, &ASwat::Inventory);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
 	PlayerInputComponent->BindAxis("MoveBackward", this, &ASwat::MoveForward);

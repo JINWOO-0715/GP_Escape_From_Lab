@@ -80,19 +80,24 @@ void ABullet::Tick(float DeltaTime)
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Pawn,
 		collisionParams))
 	{
-		DrawDebugSolidBox(GetWorld(), hitResult.ImpactPoint, FVector(10.0f), FColor::Blue, true);
-		APawn* test = Cast<APawn>(hitResult.GetActor());
-		if (test)
+		ASwat* hitActor = Cast<ASwat>(hitResult.GetActor());
+		if (hitActor)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "pawn Hited");
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Swat will be ignored when shoot");
 		}
+		/*
+		이곳에 좀비에게 데미지를 입히는 코드를 추가한다.
+		*/
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan,
+			/*GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan,
 				FString::Printf(TEXT("could not get mesh. type is: %s"),
 					*hitResult.GetComponent()->StaticClass()->GetFName().ToString()));
+			*/
+			DrawDebugSolidBox(GetWorld(), hitResult.ImpactPoint, FVector(10.0f), FColor::Blue, true);
+			Destroy();
+
 		}
-		Destroy();
 	}
 	else
 	{

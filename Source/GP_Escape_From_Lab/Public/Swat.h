@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
-
-
-
 #include "Swat.generated.h"
 
 class UCameraComponent;
@@ -59,8 +56,9 @@ protected:
 	class ULineTrace* LineTraceComp;
 	
 	void Interact();
-	void Inventory();
 
+	
+	
 
 
 protected:
@@ -102,8 +100,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USpotLightComponent* spotComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USpotLightComponent* aimSpotLight = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* weaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* leftWeaponMesh = nullptr;
@@ -136,18 +132,18 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UAnimMontage* reloadMontage;
 
-
-
+public:
 	// 플레이어 hp
 	int swatHp= 100;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
 	// 가지고있는 메디킷
 	int hasMedkit = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
 	// 가지고있는 탄창수
 	int hasAmmo = 0;
 
-	TSubclassOf<class UUserWidget> TempWidget;
+	UPROPERTY()
+	FVector initGrenadeSpawnRot {0.0f,0.0f,0.0f};
 
 private:
 	bool isLightOn = false;
