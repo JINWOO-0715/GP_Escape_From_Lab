@@ -99,6 +99,8 @@ void ABullet::Tick(float DeltaTime)
 		if (hitZombie)
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
+			//UGameplayStatics::ApplyDamage(hitZombie, 10.0f, UGameplayStatics::GetPlayerController(GetWorld(), 0), UGameplayStatics::GetPlayerCharacter(GetWorld(), 0), nullptr);
+			hitZombie->MyReceivePointDmage(50.0f, TEXT("None"), UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			Destroy();
 		}
 		else

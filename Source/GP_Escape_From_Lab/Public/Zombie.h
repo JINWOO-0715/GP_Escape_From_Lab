@@ -26,9 +26,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
+	UFUNCTION()
+	void MyReceivePointDmage(float damage, FName boneName, AActor* damageCauser);
 public:
-	int hp = 100;
+	float hp = 100;
 	float speed;
-	int attackPower;
+	float attackPower;
 };
