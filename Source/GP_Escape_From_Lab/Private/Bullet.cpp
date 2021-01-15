@@ -9,12 +9,13 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "Swat.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Swat.h"
+#include "Zombie.h"
 
 UParticleSystem* wallHitParticle = nullptr;
 UParticleSystem* zombieHitParticle = nullptr;
@@ -90,25 +91,19 @@ void ABullet::Tick(float DeltaTime)
 	FCollisionQueryParams collisionParams;
 	collisionParams.bTraceComplex = false;
 	collisionParams.AddIgnoredActor(this);
+	collisionParams.AddIgnoredActor(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Pawn,
 		collisionParams))
 	{
-		ASwat* hitActor = Cast<ASwat>(hitResult.GetActor());
-		if (hitActor)
+		AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
+		if (hitZombie)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, "Swat will be ignored when shoot");
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
+			Destroy();
 		}
-		/*
-		이곳에 좀비에게 데미지를 입히는 코드를 추가한다.
-		*/
 		else
 		{
-			/*GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan,
-				FString::Printf(TEXT("could not get mesh. type is: %s"),
-					*hitResult.GetComponent()->StaticClass()->GetFName().ToString()));
-			*/
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
-			DrawDebugSolidBox(GetWorld(), hitResult.ImpactPoint, FVector(10.0f), FColor::Blue, true);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
 			Destroy();
 
 		}
