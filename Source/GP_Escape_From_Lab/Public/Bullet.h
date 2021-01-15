@@ -9,6 +9,7 @@
 class UBoxComponent;
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
+class UParticleSystem;
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ABullet : public AActor
@@ -36,6 +37,7 @@ public:
 		FVector startPos {
 		0.0f, 0.0f, 0.0f
 	};
+	UPROPERTY()
 	UProjectileMovementComponent* projMovComp;
 
 private:

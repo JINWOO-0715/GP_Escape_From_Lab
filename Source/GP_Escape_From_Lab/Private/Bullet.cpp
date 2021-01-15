@@ -5,12 +5,20 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/World.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Swat.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+UParticleSystem* wallHitParticle = nullptr;
+UParticleSystem* zombieHitParticle = nullptr;
+UStaticMesh* bulletMesh = nullptr;
 
 // Sets default values
 ABullet::ABullet()
@@ -38,11 +46,11 @@ ABullet::ABullet()
 		bulletMeshComp->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 	}
 
-	const ConstructorHelpers::FObjectFinder<UStaticMesh> bulletMesh(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_556x45.SM_Shell_556x45"));
-	if (bulletMesh.Succeeded())
-	{
-		bulletMeshComp->SetStaticMesh(bulletMesh.Object);
-	}
+	if (!bulletMesh)
+		bulletMesh = ConstructorHelpers::FObjectFinder<UStaticMesh> (TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_556x45.SM_Shell_556x45")).Object;
+	
+	bulletMeshComp->SetStaticMesh(bulletMesh);
+	
 
 	projMovComp = CreateDefaultSubobject<UProjectileMovementComponent>("projectileMovComp");
 	if (IsValid(projMovComp))
@@ -51,6 +59,11 @@ ABullet::ABullet()
 		projMovComp->MaxSpeed = bulletSpeed;
 		projMovComp->UpdatedComponent = boxCollision;
 	}
+
+	if(!wallHitParticle)
+		wallHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_AssaultRifle_IH.P_AssaultRifle_IH")).Object;
+	if(!zombieHitParticle)
+		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
 }
 
 // Called when the game starts or when spawned
@@ -75,7 +88,7 @@ void ABullet::Tick(float DeltaTime)
 	FVector startTrace = befPos;
 	FVector endTrace = curPos;
 	FCollisionQueryParams collisionParams;
-	collisionParams.bTraceComplex = true;
+	collisionParams.bTraceComplex = false;
 	collisionParams.AddIgnoredActor(this);
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Pawn,
 		collisionParams))
@@ -94,6 +107,7 @@ void ABullet::Tick(float DeltaTime)
 				FString::Printf(TEXT("could not get mesh. type is: %s"),
 					*hitResult.GetComponent()->StaticClass()->GetFName().ToString()));
 			*/
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 			DrawDebugSolidBox(GetWorld(), hitResult.ImpactPoint, FVector(10.0f), FColor::Blue, true);
 			Destroy();
 
