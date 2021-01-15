@@ -24,6 +24,7 @@ AZombie::AZombie()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
 	//this->OnTakeAnyDamage.AddDynamic(this, &AZombie::TakeDamage);
 	GetMesh()->SetCollisionProfileName("Ragdoll");
+	GetCapsuleComponent()->SetCollisionProfileName("ZombieCapsule");
 }
 
 // Called when the game starts or when spawned
@@ -49,7 +50,7 @@ void AZombie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AZombie::MyReceivePointDmage(float damage, FName boneName, AActor* damageCauser)
 {
-	if (boneName == TEXT("Head"))
+	if (boneName == TEXT("Head")|| boneName == TEXT("Spine2"))
 	{
 		damage *= 3;
 	}
