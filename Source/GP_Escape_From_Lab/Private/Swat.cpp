@@ -16,6 +16,7 @@
 #include "PickUps.h"
 #include "WeaponBase.h"
 #include "LineTrace.h"
+#include "MyGameMode.h"
 #include "Blueprint/UserWidget.h"	
 
 
@@ -169,15 +170,32 @@ void ASwat::BeginPlay()
 		curveTimeline.SetLooping(true);
 		curveTimeline.PlayFromStart();
 	}
+	
+
 
 }
 
 void ASwat::Inventory()
 {
+
+
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-	UUserWidget* MainMenu = CreateWidget<UUserWidget>(PlayerController, TempWidget);
-	PlayerController->bShowMouseCursor = true;
-	MainMenu->AddToViewport();
+	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
+
+	
+	if (!IsOpenMain)
+	{
+		PlayerController->bShowMouseCursor = true;
+		GameMode->MainMenu->AddToViewport();
+		IsOpenMain = true;
+	}
+	else
+	{
+		PlayerController->bShowMouseCursor = false;
+		GameMode->MainMenu->RemoveFromParent();
+		IsOpenMain = false;
+	}
+	
 }
 
 void ASwat::EndStabbing()

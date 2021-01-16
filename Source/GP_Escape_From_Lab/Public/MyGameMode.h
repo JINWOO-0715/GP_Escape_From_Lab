@@ -13,5 +13,18 @@ UCLASS()
 class GP_ESCAPE_FROM_LAB_API AMyGameMode : public AGameMode
 {
 	GENERATED_BODY()
+protected:
+
+	virtual void BeginPlay() override;
+
+public:
 	AMyGameMode();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> TempWidget;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* MainMenu;
+
 };
