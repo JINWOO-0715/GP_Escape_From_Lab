@@ -59,6 +59,17 @@ void AZombie::MyReceivePointDmage(float damage, FName boneName, AActor* damageCa
 	{
 		GetMesh()->SetSimulatePhysics(true);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Ragdoll enabled");
+	}
+}
+
+void AZombie::MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, AActor* damageCauser)
+{
+	hp -= damage;
+	if (hp <= 0)
+	{
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->AddImpulse(impulseDir * 100000.0f);
+		
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }

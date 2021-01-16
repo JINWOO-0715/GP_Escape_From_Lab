@@ -36,4 +36,7 @@ public:
 	UStaticMeshComponent* meshComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UParticleSystem* explosionParticle = nullptr;
+
+private:
+	const float reach = 700.0f * 700.0f;
 };
