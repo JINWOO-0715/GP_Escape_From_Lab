@@ -57,6 +57,7 @@ protected:
 	
 	void Interact();
 	void Inventory();
+	bool IsOpenMain = false;
 	
 	
 
