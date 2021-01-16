@@ -24,30 +24,15 @@ void APickups::BeginPlay()
 	Super::BeginPlay();
 	if (DefaultItemName != "")
 	{
-		SetupItem(DefaultItemName);
+		SetupItemFromDT(DefaultItemName);
 	}
 	
 }
 
-void APickups::UseMedkit(ASwat* Player)
-{
-
-	// MedkitHpUpAmount = pickups.h에있음
-	Player->hasAmmo += MedkitHpUpAmount;
 
 
 
-}
-void APickups::UseAmmo(ASwat* Player)
-{
-	// MedkitHpUpAmount = pickups.h에있음
-	Player->hasAmmo += AmmoUpamount;
-	//이런식으로 회복가능.
-
-}
-
-
-void APickups::SetupItem (FName ItemName)
+void APickups::SetupItemFromDT (FName ItemName)
 {
 	if (ItemDataTable)
 	{

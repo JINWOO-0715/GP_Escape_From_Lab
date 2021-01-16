@@ -31,19 +31,16 @@ class GP_ESCAPE_FROM_LAB_API APickups : public AActor
 	GENERATED_BODY()
 	
 private:
-	const int MedkitHpUpAmount = 50;
-	const int AmmoUpamount = 10;
+
 
 
 public:	
 	// Sets default values for this actor's properties
 	APickups();
 protected:
-	UPROPERTY(EditAnyWhere)
-		class UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(EditAnyWhere)
-		class UDataTable* ItemDataTable;
+
+
 
 	// 아이템 이름.
 	UPROPERTY(EditAnyWhere)
@@ -55,11 +52,18 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	void UseMedkit(ASwat* Player);
-	void UseAmmo(ASwat* Player);
+	UPROPERTY(EditAnyWhere)
+		class UDataTable* ItemDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UStaticMeshComponent* MeshComp;
 
 
-	void SetupItem(FName ItemName);
-	//가져올 데이터 테이블 행1
+	//가져올 데이터 테이블 행1 데이터테이블에서 이름으로 가져옴!!!
+	UFUNCTION(BlueprintCallable)
+	void SetupItemFromDT(FName ItemName);
+
+	
+	
 	FItemData* ItemData;
 };

@@ -31,6 +31,10 @@
 //직접 접근은 허용되지 않으며 Get 메소드를 통해 접근할 수 있다.
 
 // Sets default values
+
+//
+class UDataTable* SwatItemDataTable;
+
 ASwat::ASwat()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -153,10 +157,14 @@ ASwat::ASwat()
 	curveFloat = ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("/Game/Movable/Curves/ARRecoil.ARRecoil")).Object;
 	
 	//
-	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/Temp"));
-	TempWidget = add.Class;
+
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
 
+	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
+
+	SwatItemDataTable = ItemData.Object;
+
+	
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
@@ -170,7 +178,8 @@ void ASwat::BeginPlay()
 		curveTimeline.SetLooping(true);
 		curveTimeline.PlayFromStart();
 	}
-	
+	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
+	GameMode->InGameUI->AddToViewport();
 
 
 }
@@ -182,19 +191,53 @@ void ASwat::Inventory()
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
 
-	
+
+
 	if (!IsOpenMain)
 	{
 		PlayerController->bShowMouseCursor = true;
 		GameMode->MainMenu->AddToViewport();
-		IsOpenMain = true;
+		IsOpenMain = true; 
+		//FInputModeUIOnly
+		//FInputModeGameAndUI
+		//FInputModeGameOnly
+		FInputModeGameAndUI a;
+		PlayerController->SetInputMode(a);
+		
+
 	}
 	else
 	{
 		PlayerController->bShowMouseCursor = false;
+	
 		GameMode->MainMenu->RemoveFromParent();
 		IsOpenMain = false;
+		FInputModeGameOnly ui;
+		PlayerController->SetInputMode(ui);
 	}
+	
+}
+
+void ASwat::DropItem(FName ItemName)
+{
+
+	
+	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
+	// 머리부터 카메라 방향 2m까지 직선쏘기
+
+	FVector End = Start + cameraComp->GetForwardVector() * 200.0f;
+
+	APickups* Ammo = GetWorld()->SpawnActor<APickups>(End, FRotator(0, 0, 0));
+	Ammo->ItemDataTable = SwatItemDataTable;
+	Ammo->MeshComp->SetSimulatePhysics(true);
+
+
+	if (ItemName == FName("Ammo"))
+	{
+		Ammo->SetupItemFromDT(FName("Ammo"));
+	}
+
+
 	
 }
 
@@ -214,10 +257,14 @@ void ASwat::EndThrowing()
 
 void ASwat::EndReloading()
 {
-	isReloading = false;
-	isCanFire = true;
-	weaponMesh->UnHideBoneByName("b_gun_mag");
-	magMesh->SetVisibility(false);
+	if (!IsOpenMain)
+	{
+		isReloading = false;
+		isCanFire = true;
+		weaponMesh->UnHideBoneByName("b_gun_mag");
+		magMesh->SetVisibility(false);
+	}
+	
 }
 
 void ASwat::SpawnGrenade()
@@ -227,7 +274,7 @@ void ASwat::SpawnGrenade()
 
 void ASwat::MoveForward(float value)
 {
-	if (Controller && value != 0.0f)
+	if (Controller && value != 0.0f && !IsOpenMain )
 	{
 		AddMovementInput(GetActorForwardVector(), value);
 		forwardAxisVal = value;
@@ -236,7 +283,7 @@ void ASwat::MoveForward(float value)
 
 void ASwat::MoveRight(float value)
 {
-	if (Controller && value != 0.0f)
+	if (Controller && value != 0.0f && !IsOpenMain)
 	{
 		AddMovementInput(GetActorRightVector(), value);
 		strafeAxisVal = value;
@@ -289,12 +336,19 @@ void ASwat::DashOff()
 
 void ASwat::GunFireOn()
 {
-	isGunFire = true;
+	if (!IsOpenMain)
+	{
+		isGunFire = true;
+	}
+
 }
 
 void ASwat::GunFireOff()
 {
+	if (!IsOpenMain)
+	{
 	isGunFire = false;
+	}
 }
 
 void ASwat::ThrowGrenade()
@@ -302,14 +356,17 @@ void ASwat::ThrowGrenade()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isThrowing && isCanFire)
 	{
-		isAiming = false;
-		UnAimGun();
-		isCanFire = false;
-		isThrowing = true;
-		animInstance->Montage_Play(throwMontage);
-		weaponMesh->SetVisibility(false);
-		initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
-		initGrenadeSpawnRot.Normalize();
+		if (!IsOpenMain)
+		{
+			isAiming = false;
+			UnAimGun();
+			isCanFire = false;
+			isThrowing = true;
+			animInstance->Montage_Play(throwMontage);
+			weaponMesh->SetVisibility(false);
+			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
+			initGrenadeSpawnRot.Normalize();
+		}
 	}
 }
 
@@ -319,12 +376,15 @@ void ASwat::StabKnife()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isStabbing && isCanFire)
 	{
-		knifeMesh->SetVisibility(true);
-		isAiming = false;
-		UnAimGun();
-		isCanFire = false;
-		isStabbing = true;
-		animInstance->Montage_Play(knifeMontage);
+		if (!IsOpenMain)
+		{
+			knifeMesh->SetVisibility(true);
+			isAiming = false;
+			UnAimGun();
+			isCanFire = false;
+			isStabbing = true;
+			animInstance->Montage_Play(knifeMontage);
+		}
 	}
 }
 
@@ -333,15 +393,18 @@ void ASwat::ReloadGun()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isReloading)
 	{
-		isAiming = false;
-		UnAimGun();
-		isReloading = true;
-		isCanFire = false;
-		knifeMesh->SetVisibility(false);
-		isStabbing = false;
-		isThrowing = false;
-		animInstance->Montage_Play(reloadMontage);
-		weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+		if (!IsOpenMain)
+		{
+			isAiming = false;
+			UnAimGun();
+			isReloading = true;
+			isCanFire = false;
+			knifeMesh->SetVisibility(false);
+			isStabbing = false;
+			isThrowing = false;
+			animInstance->Montage_Play(reloadMontage);
+			weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+		}
 	}
 }
 
@@ -349,17 +412,25 @@ void ASwat::AimGun()
 {
 	if (isCanFire)
 	{
-		cameraComp->SetActiveFlag(false);
-		aimCamera->SetActiveFlag(true);
-		isAiming = true;
+		if (!IsOpenMain)
+		{
+			cameraComp->SetActiveFlag(false);
+			aimCamera->SetActiveFlag(true);
+
+			isAiming = true;
+		}
 	}
+
 }
 
 void ASwat::UnAimGun()
 {
-	cameraComp->SetActiveFlag(true);
-	aimCamera->SetActiveFlag(false);
-	isAiming = false;
+	if (!IsOpenMain)
+	{
+		cameraComp->SetActiveFlag(true);
+		aimCamera->SetActiveFlag(false);
+		isAiming = false;
+	}
 }
 
 void ASwat::Interact()
@@ -367,6 +438,7 @@ void ASwat::Interact()
 	
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
 	// 머리부터 카메라 방향 2m까지 직선쏘기
+
 	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;
 	
 	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
@@ -411,7 +483,7 @@ void ASwat::Interact()
 				hasAmmo += 1;
 			}
 
-
+			
 		
 			 UE_LOG(LogTemp, Warning, TEXT("HIT")); 
 			 UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
@@ -422,7 +494,7 @@ void ASwat::Interact()
 			// UE_LOG(LogTemp, Warning, TEXT("히트"));
 			// UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
 			
-			// 이런식으로 아이템 사용가능.Pickup->UseItem(this);
+			// 이런식으로 아이템 사용가능.
 
 			 //Destroy(Pickup);
 		}
@@ -538,6 +610,9 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
 	// 인벤토리 누르면	
 	PlayerInputComponent->BindAction("Inventory", IE_Released, this, &ASwat::Inventory);
+	// 힐팩키 누르면
+	PlayerInputComponent->BindAction("UseMedkit", IE_Released, this, &ASwat::UseMedkit);
+
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
 	PlayerInputComponent->BindAxis("MoveBackward", this, &ASwat::MoveForward);
@@ -551,3 +626,23 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void ASwat::UseAmmo()
+{
+
+	if (hasAmmo > 0)
+	{
+		hasAmmo -= 1;
+	}
+	else
+	{
+		//
+	}
+
+
+}
+void ASwat::UseMedkit()
+{
+	swatHp += 30;
+	//이런식으로 회복가능.
+
+}

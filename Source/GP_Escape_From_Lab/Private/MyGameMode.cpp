@@ -13,8 +13,11 @@ AMyGameMode::AMyGameMode()
 {
 	DefaultPawnClass = ASwat::StaticClass();
 	// 생성자에서만 가능하네
-	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/Temp"));
-	TempWidget = add.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/BP_InventoryWidget"));
+	InventoryWidget = add.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/BP_InGameWidget"));
+	InGameWidget = ingameadd.Class;
 
 }
 
@@ -22,5 +25,7 @@ void AMyGameMode::BeginPlay()
 {
 
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-	MainMenu = CreateWidget<UUserWidget>(PlayerController, TempWidget);
+	MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
+	InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
+
 }
