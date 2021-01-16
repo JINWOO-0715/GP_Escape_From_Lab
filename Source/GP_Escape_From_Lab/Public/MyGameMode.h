@@ -21,10 +21,16 @@ public:
 	AMyGameMode();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UUserWidget> TempWidget;
+	TSubclassOf<class UUserWidget> InventoryWidget;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> InGameWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* MainMenu;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UUserWidget* InGameUI;
 };

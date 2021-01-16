@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
+
+#include "Engine/DataTable.h"
+
 #include "Swat.generated.h"
 
 class UCameraComponent;
@@ -45,19 +48,25 @@ protected:
 	void AimGun();
 	void UnAimGun();
 
-
-
-	//박진우 제작
-	UPROPERTY(EditAnyWhere)
-		TSubclassOf<class AWeaponBase> WeaponClass;
-	
-	class AWeaponBase* Weapon;
-
-	class ULineTrace* LineTraceComp;
-	
 	void Interact();
 	void Inventory();
+	
+
+	void UseAmmo();
+	void UseMedkit();
+
+
+	//제작
+
+	UPROPERTY(EditAnyWhere)
+	class AWeaponBase* Weapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class ULineTrace* LineTraceComp;
+
 	bool IsOpenMain = false;
+
+	
 	
 	
 
@@ -87,9 +96,16 @@ public:
 	void SpawnGrenade();
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetWeaponMeshComponent(){return weaponMesh;}
+
+
+
+
 	UFUNCTION()
 	void TimelineProgress(float value);
 
+	//무기 버리기를 위한 linetrace위치 설정및 spawn까지
+	UFUNCTION(BlueprintCallable)
+	void DropItem(FName ItemName);
 
 public:
 
@@ -143,11 +159,12 @@ public:
 	int hasMedkit = 0;
 
 	// 가지고있는 탄창수
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int hasAmmo = 0;
 
-	TSubclassOf<class UUserWidget> TempWidget;
+	TSubclassOf<class UUserWidget> InventoryWidget;
+
+	
 
 
 	UPROPERTY()
