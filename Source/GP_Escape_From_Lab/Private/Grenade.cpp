@@ -12,8 +12,9 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "EngineUtils.h"
 #include "Swat.h"
-
+#include "Zombie.h"
 // Sets default values
 AGrenade::AGrenade()
 {
@@ -56,15 +57,26 @@ void AGrenade::BeginPlay()
 	//movementComp->Velocity;
 
 	auto player = Cast<ASwat>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, player->initGrenadeSpawnRot.ToString());
-
 	sphereComp->AddImpulse(player->initGrenadeSpawnRot * 500.0f);
 }
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+	for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
+	{
+		auto zombie = Cast<AZombie>(*iter);
+		if (zombie)
+		{
+			auto dist = zombie->GetActorLocation() - this->GetActorLocation();
+			if ((dist.X * dist.X) + (dist.Y * dist.Y) + (dist.Z * dist.Z)<=reach)
+			{
+				dist.Normalize();
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, dist.ToString());
+				zombie->MyReceiveRadialDamageAndImpact(5000.0f, dist, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			}
+		}
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
 		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));

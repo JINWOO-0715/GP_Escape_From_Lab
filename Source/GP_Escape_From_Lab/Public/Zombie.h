@@ -28,6 +28,9 @@ public:
 
 	UFUNCTION()
 	void MyReceivePointDmage(float damage, FName boneName, AActor* damageCauser);
+
+	UFUNCTION()
+	void MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, AActor* damageCauser);
 public:
 	float hp = 100;
 	float speed;
