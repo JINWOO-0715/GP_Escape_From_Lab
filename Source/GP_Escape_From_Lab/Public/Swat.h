@@ -57,6 +57,7 @@ protected:
 
 
 	//제작
+	TSubclassOf<class AWeaponBase> MyItemBlueprint;
 
 	UPROPERTY(EditAnyWhere)
 	class AWeaponBase* Weapon;
@@ -152,23 +153,30 @@ public:
 public:
 	// 플레이어 hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int swatHp= 100;
+	int swatHp= 99;
 
 	// 가지고있는 메디킷
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasMedkit = 0;
+	int hasMedkit = 10;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasAmmo = 0;
+	int hasFiveAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasSaveAmmo = 0;
+	int hasFiveSaveAmmo = 300;
 
-	TSubclassOf<class UUserWidget> InventoryWidget;
+	// 가지고있는 탄창수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int hasSevenAmmo = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int hasSevenSaveAmmo = 300;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString hasWeaponName = "AR4";
 
 	
-
 
 	UPROPERTY()
 	FVector initGrenadeSpawnRot {0.0f,0.0f,0.0f};
