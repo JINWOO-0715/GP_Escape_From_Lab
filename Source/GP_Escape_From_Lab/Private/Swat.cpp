@@ -336,9 +336,23 @@ void ASwat::DashOff()
 
 void ASwat::GunFireOn()
 {
+	// 메뉴가 없어야하고
 	if (!IsOpenMain)
 	{
-		isGunFire = true;
+
+	
+
+		// 총알이 있어야 발사가능
+		if (hasAmmo > 0)
+		{
+			isGunFire = true;
+		}
+		// 없다면 뭐 추가하기
+		else
+		{
+
+		}
+
 	}
 
 }
@@ -347,7 +361,7 @@ void ASwat::GunFireOff()
 {
 	if (!IsOpenMain)
 	{
-	isGunFire = false;
+		isGunFire = false;
 	}
 }
 
@@ -393,17 +407,45 @@ void ASwat::ReloadGun()
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isReloading)
 	{
+		// 인벤토리가 안열려야 총기 쏘기
 		if (!IsOpenMain)
 		{
-			isAiming = false;
-			UnAimGun();
-			isReloading = true;
-			isCanFire = false;
-			knifeMesh->SetVisibility(false);
-			isStabbing = false;
-			isThrowing = false;
-			animInstance->Montage_Play(reloadMontage);
-			weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+			// 총알이 30발 미만이고 저장탄창이 0보다 크면
+			if (hasAmmo < 30 && hasSaveAmmo > 0)
+			{
+
+				// 재장전
+				isAiming = false;
+				UnAimGun();
+				isReloading = true;
+				isCanFire = false;
+				knifeMesh->SetVisibility(false);
+				isStabbing = false;
+				isThrowing = false;
+				animInstance->Montage_Play(reloadMontage);
+				weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+				// 총알수 줄이기. 저장탄창 -없는 총알수만큼. 총알 + 있는만큼.
+				// 충전에 필요한 총알수
+				int temp = 30 - hasAmmo;
+				//필요한 총알수>= 가지고있는 탄창수
+				if (temp <= hasSaveAmmo)
+				{
+					hasAmmo += temp;
+					hasSaveAmmo -= temp;
+
+				}
+				// 필요한 총알수<가지고 있는 탄창수.
+				else
+				{
+					hasAmmo += hasSaveAmmo;
+					hasSaveAmmo = 0;
+				}
+
+
+			}
+
+
+
 		}
 	}
 }
@@ -480,7 +522,7 @@ void ASwat::Interact()
 			}
 			if (Pickup->ItemData->ItemName == "Ammo")
 			{
-				hasAmmo += 1;
+				hasSaveAmmo += 30;
 			}
 
 			
