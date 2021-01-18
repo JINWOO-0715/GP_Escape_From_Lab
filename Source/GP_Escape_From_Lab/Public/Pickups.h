@@ -22,6 +22,8 @@ struct FItemData: public FTableRowBase
 	UPROPERTY(EditAnyWhere)
 		class UStaticMesh* ItemMesh;
 
+	UPROPERTY(EditAnyWhere)
+		class USkeletalMesh* ItemSKMesh;
 
 };
 

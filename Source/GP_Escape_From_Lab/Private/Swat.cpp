@@ -34,6 +34,7 @@
 
 //
 class UDataTable* SwatItemDataTable;
+class UDataTable* SwatWeaponDataTable;
 
 ASwat::ASwat()
 {
@@ -159,9 +160,13 @@ ASwat::ASwat()
 	//
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
-
+	ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase.BP_WeaponBase"));
+	if (ItemBlueprint.Object) {
+		MyItemBlueprint = (UClass*)ItemBlueprint.Object->GeneratedClass;
+	}
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
-
+	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	SwatWeaponDataTable = WeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
 
 	
@@ -235,6 +240,11 @@ void ASwat::DropItem(FName ItemName)
 	if (ItemName == FName("Ammo"))
 	{
 		Ammo->SetupItemFromDT(FName("Ammo"));
+	}
+
+	if (ItemName == FName("Medkit"))
+	{
+		Ammo->SetupItemFromDT(FName("Medkit"));
 	}
 
 
@@ -343,7 +353,7 @@ void ASwat::GunFireOn()
 	
 
 		// 총알이 있어야 발사가능
-		if (hasAmmo > 0)
+		if (hasFiveAmmo > 0)
 		{
 			isGunFire = true;
 		}
@@ -411,7 +421,7 @@ void ASwat::ReloadGun()
 		if (!IsOpenMain)
 		{
 			// 총알이 30발 미만이고 저장탄창이 0보다 크면
-			if (hasAmmo < 30 && hasSaveAmmo > 0)
+			if (hasFiveAmmo < 30 && hasFiveSaveAmmo > 0)
 			{
 
 				// 재장전
@@ -426,19 +436,19 @@ void ASwat::ReloadGun()
 				weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
 				// 총알수 줄이기. 저장탄창 -없는 총알수만큼. 총알 + 있는만큼.
 				// 충전에 필요한 총알수
-				int temp = 30 - hasAmmo;
+				int temp = 30 - hasFiveAmmo;
 				//필요한 총알수>= 가지고있는 탄창수
-				if (temp <= hasSaveAmmo)
+				if (temp <= hasFiveSaveAmmo)
 				{
-					hasAmmo += temp;
-					hasSaveAmmo -= temp;
+					hasFiveAmmo += temp;
+					hasFiveSaveAmmo -= temp;
 
 				}
 				// 필요한 총알수<가지고 있는 탄창수.
 				else
 				{
-					hasAmmo += hasSaveAmmo;
-					hasSaveAmmo = 0;
+					hasFiveAmmo += hasFiveSaveAmmo;
+					hasFiveSaveAmmo = 0;
 				}
 
 
@@ -484,8 +494,10 @@ void ASwat::Interact()
 	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;
 	
 	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
+	
 	if (Actor)
 	{	
+	
 		//충돌이 무기라면
 		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
 		{
@@ -495,41 +507,54 @@ void ASwat::Interact()
 
 			//이런식으로 가져다가 사용하면 된다.
 			rifleMesh = Weapon->WeaponData->WeaponMesh;
-			
-			// 떠있는 무기를 바꾸고...? 
-			//HitWeapon->SetupWeapon();
+			FString tempWeaponName = hasWeaponName;
+			hasWeaponName = Weapon->WeaponData->WeaponName;
 
-			// 내가 쓰는 무기를 바꾼다.
+			// 장착 무기 바꾸고...
 			weaponMesh->SetSkeletalMesh(rifleMesh);
 			leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+			AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
+			//가지고 있던 무기를 버린다.
+			
+			DroppedItem->SetupWeapon(FName(tempWeaponName));
+			
+			
+			UE_LOG(LogTemp, Warning, TEXT("히트"));
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
+		
+			HitWeapon->Destroy();
+
+
+
+			// 내가 쓰는 무기를 바꾼다.
+		
 			// 아래 줌 위치 적용하는거. 
 			//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
 			//Weapon->SetupWeapon(FName("AR4"));
 
-			/*
-			UE_LOG(LogTemp, Warning, TEXT("히트"));
-			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
-			*/
+			
+
+			
 
 		}
 
 		// 충돌이 아이템이라면.
 		if (APickups* Pickup = Cast<APickups>(Actor))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("히트"));
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
 			if (Pickup->ItemData->ItemName == "Medkit")
 			{
 				hasMedkit += 1;
 			}
 			if (Pickup->ItemData->ItemName == "Ammo")
 			{
-				hasSaveAmmo += 30;
+				hasFiveSaveAmmo += 30;
 			}
 
-			
-		
-			 UE_LOG(LogTemp, Warning, TEXT("HIT")); 
-			 UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
-			 UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
+			 //UE_LOG(LogTemp, Warning, TEXT("HIT")); 
+			 //UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
+			 //UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
 			
 
 			// 인벤토리에 추가하는 기능을 넣는다.
@@ -538,7 +563,7 @@ void ASwat::Interact()
 			
 			// 이런식으로 아이템 사용가능.
 
-			 //Destroy(Pickup);
+			Pickup->Destroy();
 		}
 
 	}
@@ -671,9 +696,9 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ASwat::UseAmmo()
 {
 
-	if (hasAmmo > 0)
+	if (hasFiveAmmo > 0)
 	{
-		hasAmmo -= 1;
+		hasFiveAmmo -= 1;
 	}
 	else
 	{
@@ -684,7 +709,12 @@ void ASwat::UseAmmo()
 }
 void ASwat::UseMedkit()
 {
-	swatHp += 30;
+	if (hasMedkit > 0 && swatHp<100)
+	{
+		swatHp += 30;
+		hasMedkit -= 1;
+	}
+
 	//이런식으로 회복가능.
 
 }
