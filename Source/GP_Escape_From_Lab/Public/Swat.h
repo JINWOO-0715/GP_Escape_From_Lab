@@ -162,6 +162,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int hasAmmo = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int hasSaveAmmo = 0;
+
 	TSubclassOf<class UUserWidget> InventoryWidget;
 
 	
