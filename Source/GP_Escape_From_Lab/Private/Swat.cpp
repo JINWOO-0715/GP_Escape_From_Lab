@@ -354,12 +354,22 @@ void ASwat::GunFireOn()
 {
 	// 메뉴가 없어야하고
 	if (!IsOpenMain)
+	if (!IsOpenMain)
 	{
 
 	
 
 		// 총알이 있어야 발사가능
-		if (hasFiveAmmo > 0)
+		if (hasFiveAmmo > 0 && hasWeaponName=="KAVAL")
+		{
+			isGunFire = true;
+		}
+		if (hasFiveAmmo > 0 && hasWeaponName == "AR4")
+		{
+			isGunFire = true;
+		}
+		// 총알이 있어야 발사가능
+		else if (hasSevenAmmo > 0 && hasWeaponName == "AK74")
 		{
 			isGunFire = true;
 		}
@@ -427,7 +437,7 @@ void ASwat::ReloadGun()
 		if (!IsOpenMain)
 		{
 			// 총알이 30발 미만이고 저장탄창이 0보다 크면
-			if (hasFiveAmmo < 30 && hasFiveSaveAmmo > 0)
+			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName=="AR4"|| hasWeaponName == "KAVAL"))
 			{
 
 				// 재장전
@@ -459,7 +469,38 @@ void ASwat::ReloadGun()
 
 
 			}
+			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74"  ))
+			{
 
+				// 재장전
+				isAiming = false;
+				UnAimGun();
+				isReloading = true;
+				isCanFire = false;
+				knifeMesh->SetVisibility(false);
+				isStabbing = false;
+				isThrowing = false;
+				animInstance->Montage_Play(reloadMontage);
+				weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+				// 총알수 줄이기. 저장탄창 -없는 총알수만큼. 총알 + 있는만큼.
+				// 충전에 필요한 총알수
+				int temp = 30 - hasSevenAmmo;
+				//필요한 총알수>= 가지고있는 탄창수
+				if (temp <= hasSevenSaveAmmo)
+				{
+					hasSevenAmmo += temp;
+					hasSevenSaveAmmo -= temp;
+
+				}
+				// 필요한 총알수<가지고 있는 탄창수.
+				else
+				{
+					hasSevenAmmo += hasSevenSaveAmmo;
+					hasSevenSaveAmmo = 0;
+				}
+
+
+			}
 
 
 		}
@@ -521,8 +562,8 @@ void ASwat::Interact()
 			leftWeaponMesh->SetSkeletalMesh(rifleMesh);
 			FVector f(0.f, 0.f, 100.f);
 			End += f;
-			UE_LOG(LogTemp, Warning, TEXT("히트"));
-			UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
+			//UE_LOG(LogTemp, Warning, TEXT("히트"));
+			//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
 			AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
 			//가지고 있던 무기를 버린다.
 			DroppedItem->SetupWeapon(FName(tempWeaponName));
