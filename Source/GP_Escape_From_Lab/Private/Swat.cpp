@@ -12,6 +12,8 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "PickUps.h"
 #include "WeaponBase.h"
@@ -35,6 +37,7 @@
 //
 class UDataTable* SwatItemDataTable;
 class UDataTable* SwatWeaponDataTable;
+
 
 ASwat::ASwat()
 {
@@ -166,10 +169,13 @@ ASwat::ASwat()
 	}
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+
+	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/NonMovable/Sound/EmptyGun.EmptyGun"));
+	EmptyGunShotSound = Soundf.Object;
+
 	SwatWeaponDataTable = WeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
 
-	
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
@@ -360,7 +366,7 @@ void ASwat::GunFireOn()
 		// 없다면 뭐 추가하기
 		else
 		{
-
+			UGameplayStatics::PlaySound2D(this, EmptyGunShotSound);
 		}
 
 	}
@@ -513,14 +519,16 @@ void ASwat::Interact()
 			// 장착 무기 바꾸고...
 			weaponMesh->SetSkeletalMesh(rifleMesh);
 			leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+			FVector f(0.f, 0.f, 100.f);
+			End += f;
+			UE_LOG(LogTemp, Warning, TEXT("히트"));
+			UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
 			AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
 			//가지고 있던 무기를 버린다.
-			
 			DroppedItem->SetupWeapon(FName(tempWeaponName));
 			
 			
-			UE_LOG(LogTemp, Warning, TEXT("히트"));
-			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *HitWeapon->GetName());
+
 		
 			HitWeapon->Destroy();
 
@@ -541,8 +549,7 @@ void ASwat::Interact()
 		// 충돌이 아이템이라면.
 		if (APickups* Pickup = Cast<APickups>(Actor))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("히트"));
-			UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Actor->GetName());
+
 			if (Pickup->ItemData->ItemName == "Medkit")
 			{
 				hasMedkit += 1;
