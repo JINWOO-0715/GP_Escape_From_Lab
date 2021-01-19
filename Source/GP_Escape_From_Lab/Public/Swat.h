@@ -67,8 +67,7 @@ protected:
 
 	bool IsOpenMain = false;
 
-	
-	
+	class USoundWave* EmptyGunShotSound;
 	
 
 
