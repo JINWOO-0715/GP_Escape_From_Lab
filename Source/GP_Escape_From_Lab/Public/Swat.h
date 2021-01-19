@@ -172,10 +172,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int hasSevenSaveAmmo = 300;
 
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString hasWeaponName = "AR4";
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString hasSuvWeaponName = "";
 
 	UPROPERTY()
 	FVector initGrenadeSpawnRot {0.0f,0.0f,0.0f};
