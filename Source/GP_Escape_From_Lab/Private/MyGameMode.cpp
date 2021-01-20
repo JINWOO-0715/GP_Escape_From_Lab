@@ -13,10 +13,10 @@ AMyGameMode::AMyGameMode()
 {
 	DefaultPawnClass = ASwat::StaticClass();
 	// 생성자에서만 가능하네
-	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/BP_InventoryWidget"));
+	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/UI/BP_InventoryWidget"));
 	InventoryWidget = add.Class;
 
-	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/BP_InGameWidget"));
+	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/UI/BP_InGameWidget"));
 	InGameWidget = ingameadd.Class;
 
 }

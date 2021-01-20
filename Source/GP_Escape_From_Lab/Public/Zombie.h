@@ -4,7 +4,38 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Engine/DataTable.h"
+
 #include "Zombie.generated.h"
+
+
+// 좀비 구조체 
+USTRUCT(BlueprintType)
+struct FZombieData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+
+	// 좀비 이름
+	UPROPERTY(EditAnyWhere)
+		FString ZombieName;
+
+	// 좀비 SK메쉬
+	UPROPERTY(EditAnyWhere)
+		class USkeletalMesh* ZombieMesh;
+
+	//좀비 HP
+	UPROPERTY(EditAnyWhere)
+		int ZombieHP;
+
+	//좀비 speed
+	UPROPERTY(EditAnyWhere)
+		float ZombieSpeed;
+
+	//좀비 공격력
+	UPROPERTY(EditAnyWhere)
+		float ZombieAttackPower;
+};
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API AZombie : public ACharacter
@@ -20,6 +51,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -32,6 +64,23 @@ public:
 	UFUNCTION()
 	void MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, AActor* damageCauser);
 public:
+	UFUNCTION(BlueprintCallable)
+		void SetupZombie(FName ZombieName);
+
+	UPROPERTY(EditAnyWhere)
+		class USkeletalMeshComponent* ZombieMeshComp;
+
+	UPROPERTY(EditAnyWhere)
+		FName DefaultZombieName;
+
+	UPROPERTY(EditAnyWhere)
+		class UDataTable* ZombieDataTable;
+
+
+
+	//쓰는 데이터 테이블 행
+	FZombieData* ZombieData;
+
 	float hp = 100;
 	float speed;
 	float attackPower;

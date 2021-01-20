@@ -25,12 +25,27 @@ AZombie::AZombie()
 	//this->OnTakeAnyDamage.AddDynamic(this, &AZombie::TakeDamage);
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 	GetCapsuleComponent()->SetCollisionProfileName("ZombieCapsule");
+
+
+	// DT기반 제작.
+	//ZombieMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
+	//RootComponent = ZombieMeshComp;
+	//DefaultZombieName = FName("");
+
 }
 
 // Called when the game starts or when spawned
 void AZombie::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	// DT기반 제작. 좀비 초기화.
+	//if (DefaultZombieName != "")
+	//{
+		//SetupZombie(DefaultZombieName);
+	//}
+
 	
 }
 
@@ -71,5 +86,24 @@ void AZombie::MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, A
 		GetMesh()->AddImpulse(impulseDir * 100000.0f);
 		
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AZombie::SetupZombie(FName ZombieName)
+{
+	// 밖에서 데이터 테이블을 불러왔는가?
+	if (ZombieDataTable)
+	{
+		static const FString PString = FString("1");
+		// 불러온 테이블에서 행을 찾는다. ex) ZombieName == Police면 police줄을 가져온다.
+		ZombieData = ZombieDataTable->FindRow<FZombieData>(ZombieName, PString, true);
+		// 뭐 SetUp을 하면된다. 
+		if (ZombieData)
+		{
+		
+			// ZombieData->ZombieMesh ==> 좀비 메쉬
+			// ZombieData->ZombieHP ==> 좀비HP
+
+		}
 	}
 }
