@@ -6,8 +6,13 @@
 #include "GameFramework/DamageType.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/Controller.h"
-#include "GameFramework/Actor.h"
+#include "ZombieAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "Perception/PawnSensingComponent.h"
+
+//#include "GameFramework/Controller.h"
+//#include "GameFramework/Actor.h"
+
 
 USkeletalMesh* zombieMesh = nullptr;
 
@@ -32,6 +37,10 @@ AZombie::AZombie()
 	//RootComponent = ZombieMeshComp;
 	//DefaultZombieName = FName("");
 
+	//씬 초기화
+	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
+	PawnSensingComp->SetPeripheralVisionAngle(90.f);
+
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +49,10 @@ void AZombie::BeginPlay()
 	Super::BeginPlay();
 
 
+	if (PawnSensingComp)
+	{
+		PawnSensingComp->OnSeePawn.AddDynamic(this, &AZombie::OnPlayerCaught);
+	}
 	// DT기반 제작. 좀비 초기화.
 	//if (DefaultZombieName != "")
 	//{
@@ -105,5 +118,17 @@ void AZombie::SetupZombie(FName ZombieName)
 			// ZombieData->ZombieHP ==> 좀비HP
 
 		}
+	}
+}
+
+void AZombie::OnPlayerCaught(APawn* pawn)
+{
+
+	AZombieAIController* tempController = Cast<AZombieAIController>(GetController());
+
+	if (tempController)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("you have been"));
+		tempController->SetPlayerCaught(pawn);
 	}
 }

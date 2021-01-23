@@ -63,6 +63,9 @@ public:
 
 	UFUNCTION()
 	void MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, AActor* damageCauser);
+
+	UFUNCTION(BlueprintCallable)
+		void OnPlayerCaught(APawn* apawn);
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetupZombie(FName ZombieName);
@@ -76,12 +79,19 @@ public:
 	UPROPERTY(EditAnyWhere)
 		class UDataTable* ZombieDataTable;
 
+	UPROPERTY(EditAnyWhere, Category = AI)
+	class UBehaviorTree* BehaviorTree;
 
-
+	UPROPERTY(EditAnyWhere, Category = AI)
+		class UPawnSensingComponent* PawnSensingComp;
 	//쓰는 데이터 테이블 행
+
 	FZombieData* ZombieData;
 
 	float hp = 100;
 	float speed;
 	float attackPower;
+
+private:
+	
 };
