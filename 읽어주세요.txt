@@ -4,3 +4,7 @@ void AZombie::SetupZombie(FName ZombieName)보면 이해가 쉬움.
 &&
 Zombie.cpp에 있는 DT기반 제작은 지워도 됌.
 현재 작동 기준 = 하재오 작성기반. 
+
+좀비 안에 pawnSensingComp 
+
+SightRadius= 폰감지 범위
