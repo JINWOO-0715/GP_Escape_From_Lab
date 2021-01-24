@@ -35,6 +35,12 @@ struct FZombieData : public FTableRowBase
 	//좀비 공격력
 	UPROPERTY(EditAnyWhere)
 		float ZombieAttackPower;
+
+	//좀비 애니메이션???
+	UPROPERTY(EditAnyWhere)
+	 class UAnimBlueprint* ZombieAnimBP;
+
+
 };
 
 UCLASS()
@@ -69,9 +75,6 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 		void SetupZombie(FName ZombieName);
-
-	UPROPERTY(EditAnyWhere)
-		class USkeletalMeshComponent* ZombieMeshComp;
 
 	UPROPERTY(EditAnyWhere)
 		FName DefaultZombieName;
