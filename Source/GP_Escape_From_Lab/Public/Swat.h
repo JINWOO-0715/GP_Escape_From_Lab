@@ -133,6 +133,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float recoilValue = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float initgrenadeImpact = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isDashing = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isCanFire = true;

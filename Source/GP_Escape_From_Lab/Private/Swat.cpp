@@ -19,13 +19,13 @@
 #include "WeaponBase.h"
 #include "LineTrace.h"
 #include "MyGameMode.h"
+#include "Zombie.h"
 #include "Blueprint/UserWidget.h"	
 
 
 #include "Animation/AnimMontage.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
-
 
 
 
@@ -407,6 +407,27 @@ void ASwat::ThrowGrenade()
 			weaponMesh->SetVisibility(false);
 			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
 			initGrenadeSpawnRot.Normalize();
+			
+			auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
+			auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
+			muzzleRotVec.Normalize();
+			FHitResult hitResult;
+			FCollisionQueryParams collisionParams;
+			collisionParams.bTraceComplex = false;
+			collisionParams.AddIgnoredActor(this);
+			if (GetWorld()->LineTraceSingleByChannel(hitResult, lineBegPos, lineBegPos + muzzleRotVec * 150.0f, ECollisionChannel::ECC_Camera, collisionParams))
+			{
+				auto isSwat = Cast<ASwat>(hitResult.GetActor());
+				auto isZombie = Cast<AZombie>(hitResult.GetActor());
+				if (!isZombie && !isSwat)
+					initgrenadeImpact = 250.0f;
+				else
+					initgrenadeImpact = 500.0f;
+			}
+			else 
+			{
+				initgrenadeImpact = 500.0f;
+			}
 		}
 	}
 }

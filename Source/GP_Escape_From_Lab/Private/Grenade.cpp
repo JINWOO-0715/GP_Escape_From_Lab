@@ -54,10 +54,6 @@ void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();
 	SetLifeSpan(2.0f);
-	//movementComp->Velocity;
-
-	auto player = Cast<ASwat>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	sphereComp->AddImpulse(player->initGrenadeSpawnRot * 500.0f);
 }
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -86,6 +82,12 @@ void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AGrenade::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (initGrenadeImpact != 0.0f)
+	{
+		auto player = Cast<ASwat>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		sphereComp->AddImpulse(player->initGrenadeSpawnRot * initGrenadeImpact);
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(initGrenadeImpact)); 
+		initGrenadeImpact = 0.0f;
+	}
 }
 
