@@ -91,7 +91,8 @@ void ABullet::Tick(float DeltaTime)
 	FCollisionQueryParams collisionParams;
 	collisionParams.bTraceComplex = false;
 	collisionParams.AddIgnoredActor(this);
-	collisionParams.AddIgnoredActor(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	collisionParams.AddIgnoredActor(playerPawn);
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
 		collisionParams))
 	{
@@ -99,8 +100,7 @@ void ABullet::Tick(float DeltaTime)
 		if (hitZombie)
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
-			//UGameplayStatics::ApplyDamage(hitZombie, 10.0f, UGameplayStatics::GetPlayerController(GetWorld(), 0), UGameplayStatics::GetPlayerCharacter(GetWorld(), 0), nullptr);
-			hitZombie->MyReceivePointDmage(50.0f, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
 			Destroy();
 		}

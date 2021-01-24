@@ -174,6 +174,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int hasSevenSaveAmmo = 300;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float attackPower = 30.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float recoilPower = 2.0f;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -194,17 +199,17 @@ private:
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
-	const float maxFireRate = 0.1f;
+	float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
 
 	
 	const FVector initCameraPos{ -68, 0, 16.5 };
 
 
-	// 조준경 위치 
-	FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
-	FVector AK74AimPos{ -60, 0.0, 7.0 };
-	FVector VSSAimPos{ -72, 0.0, 5.0 };
+	//// 조준경 위치 
+	//FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
+	//FVector AK74AimPos{ -60, 0.0, 7.0 };
+	//FVector VSSAimPos{ -72, 0.0, 5.0 };
 
 	UPROPERTY()
 	USkeletalMesh* rifleMesh = nullptr;

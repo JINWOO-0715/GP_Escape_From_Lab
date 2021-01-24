@@ -26,8 +26,8 @@ struct FWeaponData : public FTableRowBase
 		class USkeletalMesh* WeaponMesh;
 
 	//무기 에임 포스
-	UPROPERTY(EditAnyWhere)
-		FVector WeaponAimPos;
+	//UPROPERTY(EditAnyWhere)
+		//FVector WeaponAimPos;
 	
 	// 맥스 저장가능 탄약수  30/100 100발
 	UPROPERTY(EditAnyWhere)
@@ -37,7 +37,14 @@ struct FWeaponData : public FTableRowBase
 	UPROPERTY(EditAnyWhere)
 		int32 WeaponMagazine;
 
+	UPROPERTY(EditAnywhere)
+		float FireRate;
 
+	UPROPERTY(EditAnywhere)
+		float RecoilPower;
+
+	UPROPERTY(EditAnywhere)
+		float AttackPower;
 	// 혹시 발사 애니메이션이 있으면...
 	//UPROPERTY(EditAnyWhere)
 	//	class UAimationAsset* FireAnimation;

@@ -373,6 +373,10 @@ void ASwat::GunFireOn()
 		{
 			isGunFire = true;
 		}
+		else if (hasSevenAmmo > 0 && hasWeaponName == "AK47")
+		{
+			isGunFire = true;
+		}
 		// 없다면 뭐 추가하기
 		else
 		{
@@ -459,7 +463,7 @@ void ASwat::ReloadGun()
 		if (!IsOpenMain)
 		{
 			// 총알이 30발 미만이고 저장탄창이 0보다 크면
-			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName=="AR4"|| hasWeaponName == "KAVAL"))
+			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName=="AR4"|| hasWeaponName == "KAVAL"||hasWeaponName=="AK47"))
 			{
 
 				// 재장전
@@ -590,8 +594,9 @@ void ASwat::Interact()
 			//가지고 있던 무기를 버린다.
 			DroppedItem->SetupWeapon(FName(tempWeaponName));
 			
-			
-
+			maxFireRate = Weapon->WeaponData->FireRate;
+			attackPower = Weapon->WeaponData->AttackPower;
+			recoilPower = Weapon->WeaponData->RecoilPower;
 		
 			HitWeapon->Destroy();
 
@@ -692,17 +697,6 @@ void ASwat::Tick(float DeltaTime)
 	}
 	curFireRate -= DeltaTime;
 
-	if (isAiming)
-	{
-		// 조준경 위치 잡아놈.
-		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), AR_AK47AimPos, 0.6f);
-		aimCamera->SetRelativeLocation(result);
-	}
-	else
-	{
-		auto result = FMath::Lerp(aimCamera->GetRelativeLocation(), initCameraPos, 0.6f);
-		aimCamera->SetRelativeLocation(result);
-	}
 
 	if (isReloading || isStabbing || isThrowing || isAiming)
 	{
