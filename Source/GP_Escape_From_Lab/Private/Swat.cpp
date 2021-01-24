@@ -354,17 +354,14 @@ void ASwat::GunFireOn()
 {
 	// 메뉴가 없어야하고
 	if (!IsOpenMain)
-	if (!IsOpenMain)
 	{
-
-	
 
 		// 총알이 있어야 발사가능
 		if (hasFiveAmmo > 0 && hasWeaponName=="KAVAL")
 		{
 			isGunFire = true;
 		}
-		if (hasFiveAmmo > 0 && hasWeaponName == "AR4")
+		else if (hasFiveAmmo > 0 && hasWeaponName == "AR4")
 		{
 			isGunFire = true;
 		}
@@ -463,7 +460,7 @@ void ASwat::ReloadGun()
 		if (!IsOpenMain)
 		{
 			// 총알이 30발 미만이고 저장탄창이 0보다 크면
-			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName=="AR4"|| hasWeaponName == "KAVAL"||hasWeaponName=="AK47"))
+			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName=="AR4"|| hasWeaponName == "KAVAL"))
 			{
 
 				// 재장전
@@ -495,7 +492,7 @@ void ASwat::ReloadGun()
 
 
 			}
-			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74"  ))
+			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74" ||hasWeaponName == "AK47"))
 			{
 
 				// 재장전
