@@ -155,7 +155,7 @@ ASwat::ASwat()
 
 	fireMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Firing_Rifle_Montage.Firing_Rifle_Montage")).Object;
 	knifeMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/stabbing_Montage.stabbing_Montage")).Object;
-	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Throw_Montage.Throw_Montage")).Object;
+	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/shortThrow_Montage.shortThrow_Montage")).Object;
 	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
 
 	curveFloat = ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("/Game/Movable/Curves/ARRecoil.ARRecoil")).Object;
@@ -399,6 +399,7 @@ void ASwat::ThrowGrenade()
 		if (!IsOpenMain)
 		{
 			isAiming = false;
+			isStabbing = false;
 			UnAimGun();
 			isCanFire = false;
 			isThrowing = true;
@@ -412,10 +413,10 @@ void ASwat::ThrowGrenade()
 
 void ASwat::StabKnife()
 {
-	knifeMesh->SetVisibility(true);
 	auto animInstance = GetMesh()->GetAnimInstance();
 	if (animInstance && !isStabbing && isCanFire)
 	{
+		knifeMesh->SetVisibility(true);
 		if (!IsOpenMain)
 		{
 			knifeMesh->SetVisibility(true);
