@@ -14,12 +14,20 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Sound/SoundBase.h"
 #include "Swat.h"
 #include "Zombie.h"
+
 
 UParticleSystem* wallHitParticle = nullptr;
 UParticleSystem* zombieHitParticle = nullptr;
 UStaticMesh* bulletMesh = nullptr;
+
+USoundBase* bodyImpactSound = nullptr;
+USoundBase* concreteImpactSound = nullptr;
+USoundBase* woodImpactSound = nullptr;
+USoundBase* ceramicImpactSound = nullptr;
 
 // Sets default values
 ABullet::ABullet()
@@ -65,6 +73,15 @@ ABullet::ABullet()
 		wallHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_AssaultRifle_IH.P_AssaultRifle_IH")).Object;
 	if(!zombieHitParticle)
 		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
+	if (!bodyImpactSound)
+		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Body.Bullet_Impact_Body")).Object;
+	if (!concreteImpactSound)
+		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Concrete_impact_bullet.Concrete_impact_bullet")).Object;
+	if (!woodImpactSound)
+		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Wood.Bullet_Impact_Wood")).Object;
+	if (!ceramicImpactSound)
+		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_impact_ceramic.Bullet_impact_ceramic")).Object;
+
 }
 
 // Called when the game starts or when spawned
@@ -90,6 +107,7 @@ void ABullet::Tick(float DeltaTime)
 	FVector endTrace = curPos;
 	FCollisionQueryParams collisionParams;
 	collisionParams.bTraceComplex = false;
+	collisionParams.bReturnPhysicalMaterial = true;
 	collisionParams.AddIgnoredActor(this);
 	auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	collisionParams.AddIgnoredActor(playerPawn);
@@ -102,11 +120,47 @@ void ABullet::Tick(float DeltaTime)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), bodyImpactSound, hitResult.ImpactPoint, FRotator(0.0f, 0.0f, 0.0f));
 			Destroy();
 		}
 		else
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
+			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
+			/*bool bHit;
+			bool bOverlap;
+			float time;
+			float dist;
+			FVector loc;
+			FVector impactPoint;
+			FVector normal;
+			FVector impactNormal;
+			UPhysicalMaterial* pm;
+			AActor* hitActor;
+			UPrimitiveComponent* upc;
+			FName boneName;
+			int32 a;
+			int32 b;
+			FVector tempBeg;
+			FVector tempEnd;
+			UGameplayStatics::BreakHitResult(hitResult, bHit, bOverlap, time, dist, loc, impactPoint, normal, impactNormal, pm, hitActor, upc,
+				boneName, a, b, tempBeg, tempEnd);*/
+			
+			
+			switch (surfaceType)
+			{
+			case SurfaceType1: //concrete
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), concreteImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				break;
+			case SurfaceType2: //wood
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), woodImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				break;
+			case SurfaceType3: //ceramic
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				break;
+			default:
+				break;
+			}
 			Destroy();
 
 		}
