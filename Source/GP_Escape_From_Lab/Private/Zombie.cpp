@@ -49,7 +49,9 @@ void AZombie::BeginPlay()
 
 	if (PawnSensingComp)
 	{
+		// 발견하면 좀비 함수실행해라.
 		PawnSensingComp->OnSeePawn.AddDynamic(this, &AZombie::OnPlayerCaught);
+		
 	}
 	// DT기반 제작. 좀비 초기화.
 	if (DefaultZombieName != "")
@@ -139,5 +141,6 @@ void AZombie::OnPlayerCaught(APawn* pawn)
 	{
 		//
 		tempController->SetPlayerCaught(pawn);
+		
 	}
 }

@@ -33,6 +33,7 @@ void AZombieAIController::SetPlayerCaught(APawn* apawn)
 {
 	if (BlackboardComp)
 	{
+		// 플레이어 키로 변경 설정함 
 		BlackboardComp->SetValueAsObject(PlayerKey, apawn);
 	}
 }
@@ -47,8 +48,9 @@ void AZombieAIController::OnPossess(APawn* apawn)
 
 	if (AIZomibe)
 	{
+		// 좀비의 블랙보드를 가져온다.
 		if (AIZomibe->BehaviorTree->BlackboardAsset)
-		{
+		{// 블랙보드를 초기화한다.
 			BlackboardComp->InitializeBlackboard(*(AIZomibe->BehaviorTree->BlackboardAsset));
 		}
 
