@@ -95,6 +95,9 @@ public:
 	float speed;
 	float attackPower;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	bool isAttack = false;
+
 private:
 	
 };

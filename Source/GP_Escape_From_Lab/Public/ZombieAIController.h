@@ -25,13 +25,16 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 
 	// 블랙보드
 	UBlackboardComponent* BlackboardComp;
-	
+
+	// 로케이션 키
 	UPROPERTY(EditDefaultsOnly, Category = AI)
 	FName LocationToGoKey;
 	
+	// 플레이어 키
 	UPROPERTY(EditDefaultsOnly, Category =AI)
 	FName PlayerKey;
 
+	//이동 포인트
 	TArray<AActor*> PatrolPoints;
 
 	virtual void OnPossess(APawn* apawn) override;
