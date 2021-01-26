@@ -13,7 +13,6 @@
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Sound/SoundBase.h"
 #include "Swat.h"
