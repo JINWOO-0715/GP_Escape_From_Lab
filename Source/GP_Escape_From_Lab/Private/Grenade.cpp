@@ -89,7 +89,7 @@ void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
 		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation(), explosionSound);
+	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
 }
 
 // Called every frame

@@ -151,15 +151,15 @@ void ABullet::Tick(float DeltaTime)
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, concreteImpactSound);
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+hitResult.ImpactNormal*30.0f, concreteImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), concreteImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType2: //wood
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, woodImpactSound);
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, woodImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), woodImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType3: //ceramic
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, ceramicImpactSound);
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			default:
