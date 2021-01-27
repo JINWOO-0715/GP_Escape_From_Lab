@@ -15,8 +15,10 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Containers/Array.h"
 #include "Sound/SoundBase.h"
 #include "Swat.h"
+#include "Zombie.h"
 
 /*
 ¼ö·ùÅº 180 dB - 1.3
@@ -34,10 +36,6 @@ const float WALKING_dB = 40.0f;
 const float IMPACT_dB = 70.0f;
 
 
-const float GRENEADE_VOLUME_MULTIPLIER = 1.3f;
-const float GUNFIRE_VOLUME_MULTIPLIER = 1.0f;
-const float WALKING_VOLUME_MULTIPLIER = 0.29f;
-const float IMPACT_VOLUME_MULTIPLIER = 0.5f;
 const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
 const FName CONCRETE_IMPACT_SOUND = TEXT("Concrete_impact_bullet_Cue");
@@ -47,6 +45,8 @@ const FName RIGHT_FOOT_SOUND = TEXT("Concrete_Right_Foot_Cue");
 const FName EXPLOSION_IMPACT_SOUND = TEXT("Explosion_Cue");
 const FName M4_GUNFIRE_SOUND = TEXT("m4GunFire_Cue");
 
+const float TRANSMISSION_LOSS = 30.0f;
+
 UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 {
 
@@ -54,46 +54,37 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 
 void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
 {
-	float volumeMultiplierValue = 1.0f;
 	float originaldB = 0.0f;
 	if (sound->GetFName() == BODY_IMPACT_SOUND)
 	{
-		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
 		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == CERAMIC_IMPACT_SOUND)
 	{
-		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
 		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == CONCRETE_IMPACT_SOUND)
 	{
-		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
 		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == WOOD_IMPACT_SOUND)
 	{
-		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
 		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == LEFT_FOOT_SOUND)
 	{
-		volumeMultiplierValue = WALKING_VOLUME_MULTIPLIER;
 		originaldB = WALKING_dB;
 	}
 	else if (sound->GetFName() == RIGHT_FOOT_SOUND)
 	{
-		volumeMultiplierValue = WALKING_VOLUME_MULTIPLIER;
 		originaldB = WALKING_dB;
 	}
 	else if (sound->GetFName() == EXPLOSION_IMPACT_SOUND)
 	{
-		volumeMultiplierValue = GRENEADE_VOLUME_MULTIPLIER;
 		originaldB = GRENADE_dB;
 	}
 	else if (sound->GetFName() == M4_GUNFIRE_SOUND)
 	{
-		volumeMultiplierValue = GUNFIRE_VOLUME_MULTIPLIER;
 		originaldB = GUNFIRE_dB;
 	}
 	
@@ -111,7 +102,21 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	
 	float ratioInRange = (distanceBetCharacterAndSoundSource - range) / firstRange;
 	
-	volumeMultiplierValue *= (originaldB - (i * 7 + ratioInRange * 7)) / originaldB;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::SanitizeFloat(volumeMultiplierValue));
-	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation, volumeMultiplierValue);
+	float finaldB = 0.0f;
+	finaldB = (originaldB - (i * 7 + ratioInRange * 7));
+
+	FCollisionQueryParams collisionParams;
+	collisionParams.bTraceComplex = false;
+	collisionParams.bReturnPhysicalMaterial = true;
+	collisionParams.AddIgnoredActor(playerCharacter);
+	FVector startTrace = soundSourceLocation;
+	FVector endTrace = playerCharacterLocation;
+
+	TArray<FHitResult> hitResults;
+
+	playerCharacter->GetWorld()->LineTraceMultiByChannel(hitResults, startTrace, endTrace, ECollisionChannel::ECC_GameTraceChannel1,
+		collisionParams);
+	finaldB -= hitResults.Num() * TRANSMISSION_LOSS;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB");
+	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation, finaldB / GUNFIRE_dB);
 }
