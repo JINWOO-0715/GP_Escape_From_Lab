@@ -28,6 +28,7 @@ USoundBase* bodyImpactSound = nullptr;
 USoundBase* concreteImpactSound = nullptr;
 USoundBase* woodImpactSound = nullptr;
 USoundBase* ceramicImpactSound = nullptr;
+USoundBase* steelImpactSound = nullptr;
 
 // Sets default values
 ABullet::ABullet()
@@ -81,6 +82,8 @@ ABullet::ABullet()
 		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Wood_Cue.Bullet_Impact_Wood_Cue")).Object;
 	if (!ceramicImpactSound)
 		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
+	if (!steelImpactSound)
+		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Steel_Cue.Bullet_Impact_Steel_Cue")).Object;
 
 }
 
@@ -161,6 +164,9 @@ void ABullet::Tick(float DeltaTime)
 			case SurfaceType3: //ceramic
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				break;
+			case SurfaceType4:
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
 				break;
 			default:
 				break;

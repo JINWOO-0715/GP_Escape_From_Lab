@@ -40,6 +40,7 @@ const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
 const FName CONCRETE_IMPACT_SOUND = TEXT("Concrete_impact_bullet_Cue");
 const FName WOOD_IMPACT_SOUND = TEXT("Bullet_Impact_Wood_Cue");
+const FName STEEL_IMPACT_SOUND = TEXT("Bullet_Impact_Steel_Cue");
 const FName LEFT_FOOT_SOUND = TEXT("Concrete_Left_Foot_Cue");
 const FName RIGHT_FOOT_SOUND = TEXT("Concrete_Right_Foot_Cue");
 const FName EXPLOSION_IMPACT_SOUND = TEXT("Explosion_Cue");
@@ -68,6 +69,10 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == WOOD_IMPACT_SOUND)
+	{
+		originaldB = IMPACT_dB;
+	}
+	else if (sound->GetFName() == STEEL_IMPACT_SOUND)
 	{
 		originaldB = IMPACT_dB;
 	}
