@@ -15,6 +15,11 @@
 #include "EngineUtils.h"
 #include "Swat.h"
 #include "Zombie.h"
+#include "GlobalFunctionsAndVariables.h"
+#include "Sound/SoundBase.h"
+
+USoundBase* explosionSound = nullptr;
+UParticleSystem* explosionParticle = nullptr;
 // Sets default values
 AGrenade::AGrenade()
 {
@@ -45,8 +50,15 @@ AGrenade::AGrenade()
 	//movementComp->InitialSpeed = 2000.0f;
 	
 
-	const ConstructorHelpers::FObjectFinder<UParticleSystem> explosion(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"));
-	explosionParticle = explosion.Object;
+	if (!explosionParticle)
+	{
+		const ConstructorHelpers::FObjectFinder<UParticleSystem> explosion(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"));
+		explosionParticle = explosion.Object;
+	}
+	if (!explosionSound)
+	{
+		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Explosion_Cue.Explosion_Cue")).Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -76,6 +88,8 @@ void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
 		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
 }
 
 // Called every frame

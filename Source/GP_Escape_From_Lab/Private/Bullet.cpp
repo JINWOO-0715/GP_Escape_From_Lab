@@ -13,11 +13,11 @@
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Sound/SoundBase.h"
 #include "Swat.h"
 #include "Zombie.h"
+#include "GlobalFunctionsAndVariables.h"
 
 
 UParticleSystem* wallHitParticle = nullptr;
@@ -74,13 +74,13 @@ ABullet::ABullet()
 	if(!zombieHitParticle)
 		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
 	if (!bodyImpactSound)
-		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Body.Bullet_Impact_Body")).Object;
+		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Body_Cue.Bullet_Impact_Body_Cue")).Object;
 	if (!concreteImpactSound)
-		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Concrete_impact_bullet.Concrete_impact_bullet")).Object;
+		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Concrete_impact_bullet_Cue.Concrete_impact_bullet_Cue")).Object;
 	if (!woodImpactSound)
-		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Wood.Bullet_Impact_Wood")).Object;
+		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Wood_Cue.Bullet_Impact_Wood_Cue")).Object;
 	if (!ceramicImpactSound)
-		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_impact_ceramic.Bullet_impact_ceramic")).Object;
+		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
 
 }
 
@@ -120,7 +120,8 @@ void ABullet::Tick(float DeltaTime)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), bodyImpactSound, hitResult.ImpactPoint, FRotator(0.0f, 0.0f, 0.0f));
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
+			//UGameplayStatics::PlaySoundAtLocation(GetWorld(), bodyImpactSound, hitResult.ImpactPoint, FRotator(0.0f, 0.0f, 0.0f));
 			Destroy();
 		}
 		else
@@ -150,13 +151,16 @@ void ABullet::Tick(float DeltaTime)
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), concreteImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+hitResult.ImpactNormal*30.0f, concreteImpactSound);
+				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), concreteImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType2: //wood
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), woodImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, woodImpactSound);
+				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), woodImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType3: //ceramic
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
+				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			default:
 				break;
