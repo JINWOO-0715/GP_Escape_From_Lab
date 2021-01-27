@@ -19,5 +19,5 @@ class GP_ESCAPE_FROM_LAB_API UGlobalFunctionsAndVariables : public UBlueprintFun
 public:
 	UGlobalFunctionsAndVariables();
 	UFUNCTION(BlueprintCallable)
-	static void PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector Location, USoundBase* sound);
+	static void PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
 };

@@ -9,6 +9,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/Vector.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 #include "Particles/ParticleSystem.h"
@@ -27,10 +28,16 @@
 ¶Ù´Â ¼Ò¸®´Â °È´Â ¼Ò¸®¿¡ ÈûÀ» Á» ´õ ÁÖ¸é µÊ 
 */
 
+const float GRENADE_dB = 180.0f;
+const float GUNFIRE_dB = 140.0f;
+const float WALKING_dB = 40.0f;
+const float IMPACT_dB = 70.0f;
+
+
 const float GRENEADE_VOLUME_MULTIPLIER = 1.3f;
 const float GUNFIRE_VOLUME_MULTIPLIER = 1.0f;
 const float WALKING_VOLUME_MULTIPLIER = 0.29f;
-const float IMPACT_VOLUME_MULTIPLIER = 0.58f;
+const float IMPACT_VOLUME_MULTIPLIER = 0.5f;
 const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
 const FName CONCRETE_IMPACT_SOUND = TEXT("Concrete_impact_bullet_Cue");
@@ -45,44 +52,66 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 
 }
 
-void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector Location, USoundBase* sound)
+void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
 {
+	float volumeMultiplierValue = 1.0f;
+	float originaldB = 0.0f;
 	if (sound->GetFName() == BODY_IMPACT_SOUND)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Body Impact");
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, IMPACT_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
+		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == CERAMIC_IMPACT_SOUND)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Ceramic Impact");
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, IMPACT_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
+		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == CONCRETE_IMPACT_SOUND)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Concrete Impact");
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, IMPACT_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
+		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == WOOD_IMPACT_SOUND)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Wood Impact");
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, IMPACT_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = IMPACT_VOLUME_MULTIPLIER;
+		originaldB = IMPACT_dB;
 	}
 	else if (sound->GetFName() == LEFT_FOOT_SOUND)
 	{
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, WALKING_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = WALKING_VOLUME_MULTIPLIER;
+		originaldB = WALKING_dB;
 	}
 	else if (sound->GetFName() == RIGHT_FOOT_SOUND)
 	{
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, WALKING_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = WALKING_VOLUME_MULTIPLIER;
+		originaldB = WALKING_dB;
 	}
 	else if (sound->GetFName() == EXPLOSION_IMPACT_SOUND)
 	{
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, GRENEADE_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = GRENEADE_VOLUME_MULTIPLIER;
+		originaldB = GRENADE_dB;
 	}
 	else if (sound->GetFName() == M4_GUNFIRE_SOUND)
 	{
-		UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, Location, GUNFIRE_VOLUME_MULTIPLIER);
+		volumeMultiplierValue = GUNFIRE_VOLUME_MULTIPLIER;
+		originaldB = GUNFIRE_dB;
 	}
-
 	
+	auto playerCharacterLocation = playerCharacter->GetActorLocation();
+	auto distanceBetCharacterAndSoundSource = (playerCharacterLocation - soundSourceLocation).Size();
+	distanceBetCharacterAndSoundSource /= 100.0f;
+	int i = 0;
+	for (i; i < 10; ++i)
+	{
+		if (distanceBetCharacterAndSoundSource < FMath::Pow(2, i))
+			break;
+	}
+	float firstRange = FMath::Pow(2, i);
+	float range = firstRange - FMath::Pow(2, i - 1);
+	
+	float ratioInRange = (distanceBetCharacterAndSoundSource - range) / firstRange;
+	
+	volumeMultiplierValue *= (originaldB - (i * 7 + ratioInRange * 7)) / originaldB;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::SanitizeFloat(volumeMultiplierValue));
+	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation, volumeMultiplierValue);
 }

@@ -120,7 +120,8 @@ void ABullet::Tick(float DeltaTime)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), bodyImpactSound, hitResult.ImpactPoint, FRotator(0.0f, 0.0f, 0.0f));
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
+			//UGameplayStatics::PlaySoundAtLocation(GetWorld(), bodyImpactSound, hitResult.ImpactPoint, FRotator(0.0f, 0.0f, 0.0f));
 			Destroy();
 		}
 		else
@@ -150,15 +151,15 @@ void ABullet::Tick(float DeltaTime)
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, playerPawn->GetActorLocation(), concreteImpactSound);
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, concreteImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), concreteImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType2: //wood
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, playerPawn->GetActorLocation(), woodImpactSound);
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, woodImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), woodImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType3: //ceramic
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, playerPawn->GetActorLocation(), ceramicImpactSound);
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, ceramicImpactSound);
 				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			default:
