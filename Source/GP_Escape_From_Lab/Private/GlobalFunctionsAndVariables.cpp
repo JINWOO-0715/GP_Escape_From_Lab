@@ -116,12 +116,20 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	collisionParams.AddIgnoredActor(playerCharacter);
 	FVector startTrace = soundSourceLocation;
 	FVector endTrace = playerCharacterLocation;
-
 	TArray<FHitResult> hitResults;
 
 	playerCharacter->GetWorld()->LineTraceMultiByChannel(hitResults, startTrace, endTrace, ECollisionChannel::ECC_GameTraceChannel1,
 		collisionParams);
+	
 	finaldB -= hitResults.Num() * TRANSMISSION_LOSS;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB");
-	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation, finaldB / GUNFIRE_dB);
+
+	auto soundDir = (soundSourceLocation - playerCharacterLocation);
+	soundDir.Normalize();
+	
+
+	DrawDebugLine(playerCharacter->GetWorld(), playerCharacterLocation, playerCharacterLocation + soundDir * 100.0f, FColor::Red,true);
+
+
+	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation + soundDir*100.0f/*playerCharacterLocation*/, finaldB / GUNFIRE_dB);
 }
