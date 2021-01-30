@@ -132,4 +132,12 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 
 
 	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation + soundDir*100.0f/*playerCharacterLocation*/, finaldB / GUNFIRE_dB);
+
+	/*for (auto& 좀비 : 좀비배열)
+	{
+		1. 좀비의 위치를 받아온다
+		2. 발생한 소리의 원래 데시벨을 가져온다
+		3. 위에서 사용한 소리감쇠를 그대로 적용한다
+		4. 만약 데시벨이 특정값(예를 들어 10dB이상이면) 좀비가 소리가 발생한 지점을 patrol한다.
+	}*/
 }
