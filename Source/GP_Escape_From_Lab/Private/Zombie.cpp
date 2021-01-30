@@ -111,8 +111,6 @@ void AZombie::SetupZombie(FName ZombieName)
 		static const FString PString = FString("1");
 		// 불러온 테이블에서 행을 찾는다. ex) ZombieName == Police면 police줄을 가져온다.
 		ZombieData = ZombieDataTable->FindRow<FZombieData>(ZombieName, PString, true);
-		// 뭐 SetUp을 하면된다. 
-		
 		if (ZombieData)
 		{
 			// 좀비 애님 클래스
