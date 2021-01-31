@@ -33,8 +33,8 @@
 const float GRENADE_dB = 180.0f;
 const float GUNFIRE_dB = 140.0f;
 const float SILENCER_dB = 100.0f;
-const float WALKING_dB = 50.0f;
-const float IMPACT_dB = 70.0f;
+const float WALKING_dB = 40.0f;
+const float IMPACT_dB = 60.0f;
 
 
 const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
