@@ -75,15 +75,15 @@ ABullet::ABullet()
 	if(!zombieHitParticle)
 		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
 	if (!bodyImpactSound)
-		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Body_Cue.Bullet_Impact_Body_Cue")).Object;
+		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Body_Cue.Bullet_Impact_Body_Cue")).Object;
 	if (!concreteImpactSound)
-		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Concrete_impact_bullet_Cue.Concrete_impact_bullet_Cue")).Object;
+		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Concrete_impact_bullet_Cue.Concrete_impact_bullet_Cue")).Object;
 	if (!woodImpactSound)
-		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Wood_Cue.Bullet_Impact_Wood_Cue")).Object;
+		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Wood_Cue.Bullet_Impact_Wood_Cue")).Object;
 	if (!ceramicImpactSound)
-		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
+		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
 	if (!steelImpactSound)
-		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Bullet_Impact_Steel_Cue.Bullet_Impact_Steel_Cue")).Object;
+		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Steel_Cue.Bullet_Impact_Steel_Cue")).Object;
 
 }
 

@@ -21,9 +21,10 @@
 #include "MyGameMode.h"
 #include "Zombie.h"
 #include "Blueprint/UserWidget.h"	
-
+#include "GlobalFunctionsAndVariables.h"
 
 #include "Animation/AnimMontage.h"
+#include "Sound/SoundBase.h"
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 
@@ -37,6 +38,10 @@
 //
 class UDataTable* SwatItemDataTable;
 class UDataTable* SwatWeaponDataTable;
+
+USoundBase* ar4Sound = nullptr;
+USoundBase* akSound = nullptr;
+USoundBase* silencerSound = nullptr;
 
 
 ASwat::ASwat()
@@ -170,11 +175,24 @@ ASwat::ASwat()
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/NonMovable/Sound/EmptyGun.EmptyGun"));
+	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/Movable/Sound/EmptyGun.EmptyGun"));
 	EmptyGunShotSound = Soundf.Object;
 
 	SwatWeaponDataTable = WeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
+
+	if (!ar4Sound)
+	{
+		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue.m4GunFire_Cue")).Object;
+	}
+	if (!akSound)
+	{
+		akSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/AK-47_Cue.AK-47_Cue")).Object;
+	}
+	if (!silencerSound)
+	{
+		silencerSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/silencer_gun_sound_Cue.silencer_gun_sound_Cue")).Object;
+	}
 
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
@@ -640,6 +658,22 @@ void ASwat::Interact()
 
 	}
 
+}
+
+void ASwat::PlayGunFireSound()
+{
+	if (hasWeaponName == "AR4")
+	{
+		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), ar4Sound);
+	}
+	else if (hasWeaponName == "AK74" || hasWeaponName == "AK47")
+	{
+		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), akSound);
+	}
+	else if (hasWeaponName == "KAVAL")
+	{
+		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), silencerSound);
+	}
 }
 
 void ASwat::TimelineProgress(float value)

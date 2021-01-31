@@ -32,6 +32,7 @@
 
 const float GRENADE_dB = 180.0f;
 const float GUNFIRE_dB = 140.0f;
+const float SILENCER_dB = 100.0f;
 const float WALKING_dB = 50.0f;
 const float IMPACT_dB = 70.0f;
 
@@ -45,6 +46,9 @@ const FName LEFT_FOOT_SOUND = TEXT("Concrete_Left_Foot_Cue");
 const FName RIGHT_FOOT_SOUND = TEXT("Concrete_Right_Foot_Cue");
 const FName EXPLOSION_IMPACT_SOUND = TEXT("Explosion_Cue");
 const FName M4_GUNFIRE_SOUND = TEXT("m4GunFire_Cue");
+const FName AK47_GUNFIRE_SOUND = TEXT("AK-47_Cue");
+const FName AK74_GUNFIRE_SOUND = TEXT("AK-47_Cue");
+const FName SILENCER_GUNFIRE_SOUND = TEXT("silencer_gun_sound_Cue");
 
 const float TRANSMISSION_LOSS = 30.0f;
 
@@ -88,9 +92,13 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	{
 		originaldB = GRENADE_dB;
 	}
-	else if (sound->GetFName() == M4_GUNFIRE_SOUND)
+	else if (sound->GetFName() == M4_GUNFIRE_SOUND || sound->GetFName() == AK74_GUNFIRE_SOUND || sound->GetFName() == AK47_GUNFIRE_SOUND)
 	{
 		originaldB = GUNFIRE_dB;
+	}
+	else if (sound->GetFName() == SILENCER_GUNFIRE_SOUND)
+	{
+		originaldB = SILENCER_dB;
 	}
 	
 	auto playerCharacterLocation = playerCharacter->GetActorLocation();

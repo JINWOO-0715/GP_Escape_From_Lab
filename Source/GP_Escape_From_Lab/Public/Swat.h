@@ -98,7 +98,8 @@ public:
 	USkeletalMeshComponent* GetWeaponMeshComponent(){return weaponMesh;}
 
 
-
+	UFUNCTION(BlueprintCallable)
+	void PlayGunFireSound();
 
 	UFUNCTION()
 	void TimelineProgress(float value);

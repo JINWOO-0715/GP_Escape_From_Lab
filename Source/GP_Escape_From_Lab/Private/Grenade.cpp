@@ -57,7 +57,7 @@ AGrenade::AGrenade()
 	}
 	if (!explosionSound)
 	{
-		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/NonMovable/Sound/Explosion_Cue.Explosion_Cue")).Object;
+		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Explosion_Cue.Explosion_Cue")).Object;
 	}
 }
 
