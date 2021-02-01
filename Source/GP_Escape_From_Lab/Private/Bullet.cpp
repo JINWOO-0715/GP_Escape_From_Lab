@@ -30,6 +30,9 @@ USoundBase* concreteImpactSound = nullptr;
 USoundBase* woodImpactSound = nullptr;
 USoundBase* ceramicImpactSound = nullptr;
 USoundBase* steelImpactSound = nullptr;
+USoundBase* plasticImpactSound = nullptr;
+USoundBase* softImpactSound = nullptr;
+USoundBase* glassImpactSound = nullptr;
 
 
 // Sets default values
@@ -86,7 +89,12 @@ ABullet::ABullet()
 		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
 	if (!steelImpactSound)
 		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Steel_Cue.Bullet_Impact_Steel_Cue")).Object;
-	
+	if (!plasticImpactSound)
+		plasticImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Plastic_Cue.Bullet_Impact_Plastic_Cue")).Object;
+	if (!softImpactSound)
+		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue.Bullet_Impact_Soft_Cue")).Object;
+	if (!glassImpactSound)
+		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
 	if (bulletHoleDecal.Object)
 	{
@@ -143,44 +151,32 @@ void ABullet::Tick(float DeltaTime)
 			
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
 			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
-			/*bool bHit;
-			bool bOverlap;
-			float time;
-			float dist;
-			FVector loc;
-			FVector impactPoint;
-			FVector normal;
-			FVector impactNormal;
-			UPhysicalMaterial* pm;
-			AActor* hitActor;
-			UPrimitiveComponent* upc;
-			FName boneName;
-			int32 a;
-			int32 b;
-			FVector tempBeg;
-			FVector tempEnd;
-			UGameplayStatics::BreakHitResult(hitResult, bHit, bOverlap, time, dist, loc, impactPoint, normal, impactNormal, pm, hitActor, upc,
-				boneName, a, b, tempBeg, tempEnd);*/
-			
 			
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+hitResult.ImpactNormal*30.0f, concreteImpactSound);
-				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), concreteImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType2: //wood
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, woodImpactSound);
-				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), woodImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
 			case SurfaceType3: //ceramic
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
-				//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ceramicImpactSound, playerPawn->GetActorLocation(), playerPawn->GetActorRotation());
 				break;
-			case SurfaceType4:
+			case SurfaceType4: //steel
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
 				break;
-			default:
+			case SurfaceType5: //plastic
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
+				break;
+			case SurfaceType6: //soft
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+				break;
+			case SurfaceType7: //glass
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
+				break;
+			default: //else
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
 				break;
 			}
 			Destroy();
