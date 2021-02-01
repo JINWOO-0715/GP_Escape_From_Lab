@@ -50,6 +50,7 @@ protected:
 
 	void Interact();
 	void Inventory();
+	void Minimap();
 	
 
 	void UseAmmo();

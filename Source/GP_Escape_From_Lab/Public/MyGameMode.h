@@ -33,4 +33,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UUserWidget* InGameUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> MinimapWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* Minimap;
 };

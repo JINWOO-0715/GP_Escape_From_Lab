@@ -18,6 +18,8 @@ AMyGameMode::AMyGameMode()
 
 	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/UI/BP_InGameWidget"));
 	InGameWidget = ingameadd.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> Minimapadd(TEXT("/Game/Movable/UI/BP_MinimapWidget"));
+	MinimapWidget = Minimapadd.Class;
 
 }
 
@@ -27,5 +29,6 @@ void AMyGameMode::BeginPlay()
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
 	InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
+	Minimap = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 
 }

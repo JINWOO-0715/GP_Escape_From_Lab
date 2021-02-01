@@ -212,6 +212,27 @@ void ASwat::BeginPlay()
 
 
 }
+void ASwat::Minimap()
+{
+	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
+
+	if (!IsOpenMain)
+	{
+		GameMode->Minimap->AddToViewport();
+		IsOpenMain = true;
+		FInputModeGameOnly m1;
+		PlayerController->SetInputMode(m1);
+	}
+	else
+	{
+		GameMode->Minimap->RemoveFromParent();
+		IsOpenMain = false;
+		FInputModeGameOnly m2;
+		PlayerController->SetInputMode(m2);
+	}
+
+}
 
 void ASwat::Inventory()
 {
@@ -774,6 +795,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Inventory", IE_Released, this, &ASwat::Inventory);
 	// ÈúÆÑÅ° ´©¸£¸é
 	PlayerInputComponent->BindAction("UseMedkit", IE_Released, this, &ASwat::UseMedkit);
+	// ¹Ì´Ï¸ÊÅ° ´©¸£¸é
+	PlayerInputComponent->BindAction("Minimap", IE_Released, this, &ASwat::Minimap);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);
