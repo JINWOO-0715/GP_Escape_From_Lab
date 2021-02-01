@@ -4,6 +4,7 @@
 // 
 #include "ZombieAIController.h"
 #include "AIPatrolPoint.h"
+#include "AIPatrolPointPath2.h"
 #include "Zombie.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
@@ -53,10 +54,21 @@ void AZombieAIController::OnPossess(APawn* apawn)
 		{// 블랙보드를 초기화한다.
 			BlackboardComp->InitializeBlackboard(*(AIZomibe->BehaviorTree->BlackboardAsset));
 		}
+		// 랜덤하게.
+		AIZomibe->WayNum = FMath::RandRange(0, 3);
 
+
+		if (AIZomibe->WayNum == 0)
+		{
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPoint::StaticClass(), PatrolPoints);
+
+		}
 		// 패트롤 포인트 채우기
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPoint::StaticClass(), PatrolPoints);
-
+		else
+		{
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPointPath2::StaticClass(), PatrolPoints);
+		}
+	
 
 		// BehaviorTree 시작
 		BehaviorComp->StartTree(*AIZomibe->BehaviorTree);
