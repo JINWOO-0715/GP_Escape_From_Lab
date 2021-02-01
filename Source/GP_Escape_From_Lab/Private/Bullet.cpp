@@ -15,6 +15,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Sound/SoundBase.h"
+#include "Engine/Blueprint.h"
 #include "Swat.h"
 #include "Zombie.h"
 #include "GlobalFunctionsAndVariables.h"
@@ -29,6 +30,7 @@ USoundBase* concreteImpactSound = nullptr;
 USoundBase* woodImpactSound = nullptr;
 USoundBase* ceramicImpactSound = nullptr;
 USoundBase* steelImpactSound = nullptr;
+
 
 // Sets default values
 ABullet::ABullet()
@@ -84,7 +86,12 @@ ABullet::ABullet()
 		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
 	if (!steelImpactSound)
 		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Steel_Cue.Bullet_Impact_Steel_Cue")).Object;
-
+	
+	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
+	if (bulletHoleDecal.Object)
+	{
+		bulletHoleBP = (UClass*)bulletHoleDecal.Object->GeneratedClass;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -129,6 +136,11 @@ void ABullet::Tick(float DeltaTime)
 		}
 		else
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
+			FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
+			FVector  SpawnLocation = hitResult.Location;
+			GetWorld()->SpawnActor<AActor>(bulletHoleBP, SpawnLocation, rotator);		
+			
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
 			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
 			/*bool bHit;

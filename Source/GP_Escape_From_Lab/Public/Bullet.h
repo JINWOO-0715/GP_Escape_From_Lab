@@ -40,6 +40,10 @@ public:
 	UPROPERTY()
 	UProjectileMovementComponent* projMovComp;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AActor> bulletHoleBP = nullptr;
+
+
 private:
 	FVector befPos{ 0.0f,0.0f,0.0f };
 	FVector curPos{ 0.0f,0.0f,0.0f };
