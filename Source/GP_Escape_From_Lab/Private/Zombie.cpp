@@ -24,8 +24,10 @@ AZombie::AZombie()
 		//zombieMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("/Game/NonMovable/Zombie/SKMesh/Male/Ch10_nonPBR.Ch10_nonPBR")).Object;
 
 	//GetMesh()->SetSkeletalMesh(zombieMesh);
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+
 	//this->OnTakeAnyDamage.AddDynamic(this, &AZombie::TakeDamage);
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -90.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 	GetCapsuleComponent()->SetCollisionProfileName("ZombieCapsule");
 
@@ -49,7 +51,7 @@ void AZombie::BeginPlay()
 
 	if (PawnSensingComp)
 	{
-		// 발견하면 좀비 함수실행해라.
+		//발견하는 함수를 좀비 함수실행해라.
 		PawnSensingComp->OnSeePawn.AddDynamic(this, &AZombie::OnPlayerCaught);
 		
 	}

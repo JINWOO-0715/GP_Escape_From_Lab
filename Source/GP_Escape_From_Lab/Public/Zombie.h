@@ -91,6 +91,7 @@ public:
 
 	FZombieData* ZombieData;
 
+	int32 WayNum = 0;
 	float hp = 100;
 	float speed;
 	float attackPower;
