@@ -36,6 +36,7 @@ USoundBase* softImpactSound = nullptr;
 USoundBase* glassImpactSound = nullptr;
 
 UMaterialInterface* bloodDecal = nullptr;
+UMaterialInterface* floorBloodDecal = nullptr;
 
 // Sets default values
 ABullet::ABullet()
@@ -107,6 +108,10 @@ ABullet::ABullet()
 	{
 		bloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface> (TEXT("/Game/Movable/Decal/blood_Mat.blood_Mat")).Object;
 	}
+	if (!floorBloodDecal)
+	{
+		floorBloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/bloodFloor_Mat.bloodFloor_Mat")).Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -152,6 +157,15 @@ void ABullet::Tick(float DeltaTime)
 			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
 			UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+
+			auto bulletHitLoc = hitResult.ImpactPoint;
+			collisionParams.AddIgnoredActor(hitZombie);
+			GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f,0.0f,-1000.0f), ECollisionChannel::ECC_Camera,
+				collisionParams);
+			RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+			UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), hitResult.Component.Get(), NAME_None, hitResult.ImpactPoint,RandomDecalRotation , EAttachLocation::KeepWorldPosition, 0.0f);
+
 			Destroy();
 		}
 		else
