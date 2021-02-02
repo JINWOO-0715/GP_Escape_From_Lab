@@ -34,8 +34,14 @@ const float GRENADE_dB = 180.0f;
 const float GUNFIRE_dB = 140.0f;
 const float SILENCER_dB = 100.0f;
 const float WALKING_dB = 40.0f;
-const float IMPACT_dB = 60.0f;
-
+const float IMPACT_STEEL_dB = 70.0f;
+const float IMPACT_PLASTIC_dB = 60.0f;
+const float IMPACT_CONCRETE_dB = 55.0f;
+const float IMPACT_WOOD_dB = 50.0f;
+const float IMPACT_CERAMIC_dB = 50.0f;
+const float IMPACT_GLASS_dB = 50.0f;
+const float IMPACT_SOFT_dB = 40.0f;
+const float IMPACT_BODY_dB = 45.0f;
 
 const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
@@ -63,37 +69,38 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
 {
 	float originaldB = 0.0f;
+	bool isImpactSound = false;
 	if (sound->GetFName() == BODY_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_BODY_dB;
 	}
 	else if (sound->GetFName() == CERAMIC_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_CERAMIC_dB;
 	}
 	else if (sound->GetFName() == CONCRETE_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_CONCRETE_dB;
 	}
 	else if (sound->GetFName() == WOOD_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_WOOD_dB;
 	}
 	else if (sound->GetFName() == STEEL_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_STEEL_dB;
 	}
 	else if (sound->GetFName() == PLASTIC_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_PLASTIC_dB;
 	}
 	else if (sound->GetFName() == SOFT_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_SOFT_dB;
 	}
 	else if (sound->GetFName() == GLASS_IMPACT_SOUND)
 	{
-		originaldB = IMPACT_dB;
+		originaldB = IMPACT_GLASS_dB;
 	}
 	else if (sound->GetFName() == LEFT_FOOT_SOUND)
 	{
@@ -150,9 +157,6 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	auto soundDir = (soundSourceLocation - playerCharacterLocation);
 	soundDir.Normalize();
 	
-
-	DrawDebugLine(playerCharacter->GetWorld(), playerCharacterLocation, playerCharacterLocation + soundDir * 100.0f, FColor::Red,true);
-
 
 	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation + soundDir*100.0f/*playerCharacterLocation*/, finaldB / GUNFIRE_dB);
 

@@ -15,6 +15,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Sound/SoundBase.h"
+#include "Materials/MaterialInterface.h"
 #include "Engine/Blueprint.h"
 #include "Swat.h"
 #include "Zombie.h"
@@ -34,6 +35,7 @@ USoundBase* plasticImpactSound = nullptr;
 USoundBase* softImpactSound = nullptr;
 USoundBase* glassImpactSound = nullptr;
 
+UMaterialInterface* bloodDecal = nullptr;
 
 // Sets default values
 ABullet::ABullet()
@@ -95,10 +97,15 @@ ABullet::ABullet()
 		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue.Bullet_Impact_Soft_Cue")).Object;
 	if (!glassImpactSound)
 		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;
+	
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
 	if (bulletHoleDecal.Object)
 	{
 		bulletHoleBP = (UClass*)bulletHoleDecal.Object->GeneratedClass;
+	}
+	if (!bloodDecal)
+	{
+		bloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface> (TEXT("/Game/Movable/Decal/blood_Mat.blood_Mat")).Object;
 	}
 }
 
@@ -135,19 +142,24 @@ void ABullet::Tick(float DeltaTime)
 		AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
 		if (hitZombie)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
 			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
-			//UGameplayStatics::PlaySoundAtLocation(GetWorld(), bodyImpactSound, hitResult.ImpactPoint, FRotator(0.0f, 0.0f, 0.0f));
+			
+			FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
+			UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
 			Destroy();
 		}
 		else
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
 			FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
-			FVector  SpawnLocation = hitResult.Location;
-			GetWorld()->SpawnActor<AActor>(bulletHoleBP, SpawnLocation, rotator);		
+			FVector  spawnLocation = hitResult.Location;
+			GetWorld()->SpawnActor<AActor>(bulletHoleBP, spawnLocation, rotator);		
 			
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
 			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
