@@ -26,13 +26,21 @@ AZombieAIController::AZombieAIController()
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardcComp"));
 
 	//키 초기화
-	PlayerKey = "Target";
+	
 	LocationToGoKey = "LocationToGo";
-
-
+	PlayerKey = "Target";
+	SoundKey= "SoundTarget";
 	CurrentPatrolPoint = 0;
 }
-
+void AZombieAIController::SetSoundCaught(FVector soundlocation)
+{
+	if (BlackboardComp)
+	{
+		FVector locationV;
+		// 플레이어 키로 변경 설정함 
+		BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
+	}
+}
 void AZombieAIController::SetPlayerCaught(APawn* apawn)
 {
 	if (BlackboardComp)

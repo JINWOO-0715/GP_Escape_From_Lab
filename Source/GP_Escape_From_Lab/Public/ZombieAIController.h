@@ -32,7 +32,11 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 	
 	// 플레이어 키
 	UPROPERTY(EditDefaultsOnly, Category =AI)
-	FName PlayerKey;
+		FName PlayerKey;
+
+	// 플레이어 키
+	UPROPERTY(EditDefaultsOnly, Category = AI)
+		FName SoundKey;
 
 	//이동 포인트
 	TArray<AActor*> PatrolPoints;
@@ -45,6 +49,8 @@ public:
 
 	// 플레이어 공격하기 (잡기)
 	void SetPlayerCaught(APawn* apawn);
+	void SetSoundCaught(FVector soundlocation);
+
 
 	int32 CurrentPatrolPoint = 0;
 
