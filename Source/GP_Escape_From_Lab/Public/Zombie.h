@@ -64,10 +64,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void MyReceivePointDmage(float damage, FName boneName, AActor* damageCauser);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, AActor* damageCauser);
 
 	UFUNCTION(BlueprintCallable)
