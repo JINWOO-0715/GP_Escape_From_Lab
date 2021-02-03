@@ -98,6 +98,7 @@ public:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	bool isAttack = false;
+	bool isHearingSound = false;
 
 private:
 	

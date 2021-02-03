@@ -19,6 +19,8 @@
 #include "Sound/SoundBase.h"
 #include "Swat.h"
 #include "Zombie.h"
+#include "ZombieManageActor.h"
+#include "ZombieAIController.h"
 
 
 UParticleSystem* wallHitParticle = nullptr;
@@ -46,6 +48,8 @@ UMaterialInterface* floorBloodDecal = nullptr;
 걷는 소리 40dB - 0.29
 뛰는 소리는 걷는 소리에 힘을 좀 더 주면 됨 
 */
+
+
 
 const float GRENADE_dB = 180.0f;
 const float GUNFIRE_dB = 140.0f;
@@ -198,19 +202,79 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 		collisionParams);
 	
 	finaldB -= hitResults.Num() * TRANSMISSION_LOSS;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB");
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB human");
 
 	auto soundDir = (soundSourceLocation - playerCharacterLocation);
 	soundDir.Normalize();
 	
 
 	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation + soundDir*100.0f/*playerCharacterLocation*/, finaldB / GUNFIRE_dB);
-
+	
+	TArray<AActor*> GZombie;
+	TSubclassOf<AZombie> ClassWeNeed;
+	UGameplayStatics::GetAllActorsOfClass(playerCharacter->GetWorld(),AZombie::StaticClass(), GZombie);
 	/*for (auto& 좀비 : 좀비배열)
 	{
-		1. 좀비의 위치를 받아온다
-		2. 발생한 소리의 원래 데시벨을 가져온다
-		3. 위에서 사용한 소리감쇠를 그대로 적용한다
-		4. 만약 데시벨이 특정값(예를 들어 10dB이상이면) 좀비가 소리가 발생한 지점을 patrol한다.
+	1. 좀비의 위치를 받아온다
+	2. 발생한 소리의 원래 데시벨을 가져온다
+	3. 위에서 사용한 소리감쇠를 그대로 적용한다
+	4. 만약 데시벨이 특정값(예를 들어 10dB이상이면) 좀비가 소리가 발생한 지점을 patrol한다.
+	-> 인자값으로 알려주기?
 	}*/
+	// 좀비가 있다면.
+	if (GZombie.Num()-1)
+	{
+		for (auto& mZombie : GZombie)
+		{
+			auto ZombieLocation = mZombie->GetActorLocation();
+			auto distanceBetZombieAndSoundSource = (ZombieLocation - soundSourceLocation).Size();
+			distanceBetZombieAndSoundSource /= 100.0f;
+			i = 0;
+			for (i; i < 10; ++i)
+			{
+				if (distanceBetZombieAndSoundSource < FMath::Pow(2, i))
+					break;
+			}
+			firstRange = FMath::Pow(2, i);
+			range = firstRange - FMath::Pow(2, i - 1);
+
+			ratioInRange = (distanceBetZombieAndSoundSource - range) / firstRange;
+
+			finaldB = 0.0f;
+			finaldB = (originaldB - (i * 7 + ratioInRange * 7));
+
+			FCollisionQueryParams m_collisionParams;
+			m_collisionParams.bTraceComplex = false;
+			m_collisionParams.bReturnPhysicalMaterial = true;
+			m_collisionParams.AddIgnoredActor(playerCharacter);
+			startTrace = soundSourceLocation;
+			endTrace = ZombieLocation;
+			TArray<FHitResult> m_hitResults;
+
+			mZombie->GetWorld()->LineTraceMultiByChannel(m_hitResults, startTrace, endTrace, ECollisionChannel::ECC_GameTraceChannel1,
+				m_collisionParams);
+
+			finaldB -= m_hitResults.Num() * TRANSMISSION_LOSS;
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB : zombie");
+
+			soundDir = (soundSourceLocation - ZombieLocation);
+			soundDir.Normalize();
+			// 일단 60으로 잡아봄
+			if (finaldB > 60.f)
+			{
+				auto d = Cast<AZombie>(mZombie);
+				if (d)
+				{
+					d->isHearingSound = true;
+					AZombieAIController* AICon = Cast<AZombieAIController>(d->GetController());
+					AICon->SetSoundCaught(startTrace);
+				
+				}
+			
+			}
+			
+		}
+
+	}
+
 }
