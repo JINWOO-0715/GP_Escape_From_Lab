@@ -22,21 +22,21 @@
 #include "GlobalFunctionsAndVariables.h"
 
 
-UParticleSystem* wallHitParticle = nullptr;
-UParticleSystem* zombieHitParticle = nullptr;
+//UParticleSystem* wallHitParticle = nullptr;
+//UParticleSystem* zombieHitParticle = nullptr;
 UStaticMesh* bulletMesh = nullptr;
-
-USoundBase* bodyImpactSound = nullptr;
-USoundBase* concreteImpactSound = nullptr;
-USoundBase* woodImpactSound = nullptr;
-USoundBase* ceramicImpactSound = nullptr;
-USoundBase* steelImpactSound = nullptr;
-USoundBase* plasticImpactSound = nullptr;
-USoundBase* softImpactSound = nullptr;
-USoundBase* glassImpactSound = nullptr;
-
-UMaterialInterface* bloodDecal = nullptr;
-UMaterialInterface* floorBloodDecal = nullptr;
+//
+//USoundBase* bodyImpactSound = nullptr;
+//USoundBase* concreteImpactSound = nullptr;
+//USoundBase* woodImpactSound = nullptr;
+//USoundBase* ceramicImpactSound = nullptr;
+//USoundBase* steelImpactSound = nullptr;
+//USoundBase* plasticImpactSound = nullptr;
+//USoundBase* softImpactSound = nullptr;
+//USoundBase* glassImpactSound = nullptr;
+//
+//UMaterialInterface* bloodDecal = nullptr;
+//UMaterialInterface* floorBloodDecal = nullptr;
 
 // Sets default values
 ABullet::ABullet()
@@ -78,7 +78,7 @@ ABullet::ABullet()
 		projMovComp->UpdatedComponent = boxCollision;
 	}
 
-	if(!wallHitParticle)
+	/*if(!wallHitParticle)
 		wallHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_AssaultRifle_IH.P_AssaultRifle_IH")).Object;
 	if(!zombieHitParticle)
 		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
@@ -97,21 +97,21 @@ ABullet::ABullet()
 	if (!softImpactSound)
 		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue.Bullet_Impact_Soft_Cue")).Object;
 	if (!glassImpactSound)
-		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;
+		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;*/
 	
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
 	if (bulletHoleDecal.Object)
 	{
 		bulletHoleBP = (UClass*)bulletHoleDecal.Object->GeneratedClass;
 	}
-	if (!bloodDecal)
+	/*if (!bloodDecal)
 	{
 		bloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface> (TEXT("/Game/Movable/Decal/blood_Mat.blood_Mat")).Object;
 	}
 	if (!floorBloodDecal)
 	{
 		floorBloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/bloodFloor_Mat.bloodFloor_Mat")).Object;
-	}
+	}*/
 }
 
 // Called when the game starts or when spawned
@@ -170,24 +170,26 @@ void ABullet::Tick(float DeltaTime)
 			UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation , EAttachLocation::KeepWorldPosition, 0.0f);
 			
 			//그리고 총알 반대 방향으로 피를 더 뿌린다.
-			FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
-
-			GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
-				collisionParams);
-
-			if (hitResult.GetActor())
+			if (hitZombie->hp > 0.0f)
 			{
-				RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-				UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), hitResult.Component.Get(), NAME_None,
-					hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-			}
-			else
-			{
-				UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
-					floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-			}
+				FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
 
+				GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
+					collisionParams);
+
+				if (hitResult.GetActor())
+				{
+					RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+					RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+					UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), hitResult.Component.Get(), NAME_None,
+						hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+				}
+				else
+				{
+					UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
+						floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+				}
+			}
 			Destroy();
 		}
 		else

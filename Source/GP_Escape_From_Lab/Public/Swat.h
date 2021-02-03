@@ -109,6 +109,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DropItem(FName ItemName);
 
+	UFUNCTION(BlueprintCallable)
+	void KnifeAttack();
+
 public:
 
 

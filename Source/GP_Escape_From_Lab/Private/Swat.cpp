@@ -13,6 +13,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Sound/SoundCue.h"
+#include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "PickUps.h"
@@ -23,6 +24,7 @@
 #include "Blueprint/UserWidget.h"	
 #include "GlobalFunctionsAndVariables.h"
 
+#include "Kismet/KismetMathLibrary.h"
 #include "Animation/AnimMontage.h"
 #include "Sound/SoundBase.h"
 #include <EngineGlobals.h>
@@ -294,6 +296,42 @@ void ASwat::DropItem(FName ItemName)
 
 
 	
+}
+
+void ASwat::KnifeAttack()
+{
+	auto leftHandPos = GetMesh()->GetSocketLocation("KnifeHand");
+	auto leftHandRot = GetMesh()->GetSocketRotation("LeftShoulder");
+	auto leftHandForwardVec = UKismetMathLibrary::GetForwardVector(leftHandRot);
+	leftHandForwardVec = FRotator{ 0.0f,30.0f,0.0f }.RotateVector(leftHandForwardVec);
+	leftHandForwardVec *= 100.0f;
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.bReturnPhysicalMaterial = true;
+	params.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(hitResult, leftHandPos, leftHandPos + leftHandForwardVec,
+		ECollisionChannel::ECC_Camera, params);
+	auto zombieActor = Cast<AZombie>(hitResult.GetActor());
+	if (zombieActor)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
+		UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10.0f, 10.0f, 10.0f), hitResult.Component.Get(),
+			NAME_None, hitResult.ImpactPoint, FRotator{ 0.0f,0.0f,0.0f }, EAttachLocation::KeepWorldPosition);
+		params.AddIgnoredActor(zombieActor);
+		GetWorld()->LineTraceSingleByChannel(hitResult, hitResult.ImpactPoint, hitResult.ImpactPoint + FVector{0.0f,0.0f,-1000.0f},
+			ECC_Camera, params);
+		FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+		RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+		
+		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
+			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
+		zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
+		//playPhysicsSound!
+	}
+	else
+	{
+		//playPhysicsSound!
+	}
 }
 
 void ASwat::EndStabbing()

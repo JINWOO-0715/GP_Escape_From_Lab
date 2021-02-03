@@ -20,6 +20,23 @@
 #include "Swat.h"
 #include "Zombie.h"
 
+
+UParticleSystem* wallHitParticle = nullptr;
+UParticleSystem* zombieHitParticle = nullptr;
+
+USoundBase* bodyImpactSound = nullptr;
+USoundBase* concreteImpactSound = nullptr;
+USoundBase* woodImpactSound = nullptr;
+USoundBase* ceramicImpactSound = nullptr;
+USoundBase* steelImpactSound = nullptr;
+USoundBase* plasticImpactSound = nullptr;
+USoundBase* softImpactSound = nullptr;
+USoundBase* glassImpactSound = nullptr;
+
+UMaterialInterface* bloodDecal = nullptr;
+UMaterialInterface* floorBloodDecal = nullptr;
+
+
 /*
 수류탄 180 dB - 1.3
 라이플 140 dB - 1
@@ -63,7 +80,36 @@ const float TRANSMISSION_LOSS = 30.0f;
 
 UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 {
+	if (!wallHitParticle)
+		wallHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_AssaultRifle_IH.P_AssaultRifle_IH")).Object;
+	if (!zombieHitParticle)
+		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
+	if (!bodyImpactSound)
+		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Body_Cue.Bullet_Impact_Body_Cue")).Object;
+	if (!concreteImpactSound)
+		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Concrete_impact_bullet_Cue.Concrete_impact_bullet_Cue")).Object;
+	if (!woodImpactSound)
+		woodImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Wood_Cue.Bullet_Impact_Wood_Cue")).Object;
+	if (!ceramicImpactSound)
+		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_impact_ceramic_Cue.Bullet_impact_ceramic_Cue")).Object;
+	if (!steelImpactSound)
+		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Steel_Cue.Bullet_Impact_Steel_Cue")).Object;
+	if (!plasticImpactSound)
+		plasticImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Plastic_Cue.Bullet_Impact_Plastic_Cue")).Object;
+	if (!softImpactSound)
+		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue.Bullet_Impact_Soft_Cue")).Object;
+	if (!glassImpactSound)
+		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;
 
+	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
+	if (!bloodDecal)
+	{
+		bloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/blood_Mat.blood_Mat")).Object;
+	}
+	if (!floorBloodDecal)
+	{
+		floorBloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/bloodFloor_Mat.bloodFloor_Mat")).Object;
+	}
 }
 
 void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
