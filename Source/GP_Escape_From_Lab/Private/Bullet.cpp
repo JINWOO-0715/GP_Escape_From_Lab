@@ -162,9 +162,31 @@ void ABullet::Tick(float DeltaTime)
 			collisionParams.AddIgnoredActor(hitZombie);
 			GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f,0.0f,-1000.0f), ECollisionChannel::ECC_Camera,
 				collisionParams);
+			auto floorBloodPos = hitResult.ImpactPoint;
+			auto floorBloodComp = hitResult.Component.Get();
 			RandomDecalRotation = hitResult.ImpactNormal.Rotation();
 			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-			UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), hitResult.Component.Get(), NAME_None, hitResult.ImpactPoint,RandomDecalRotation , EAttachLocation::KeepWorldPosition, 0.0f);
+			//좀비의 현재 위치 바닥에 피를 뿌린다.
+			UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation , EAttachLocation::KeepWorldPosition, 0.0f);
+			
+			//그리고 총알 반대 방향으로 피를 더 뿌린다.
+			FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
+
+			GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
+				collisionParams);
+
+			if (hitResult.GetActor())
+			{
+				RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+				UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), hitResult.Component.Get(), NAME_None,
+					hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+			}
+			else
+			{
+				UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
+					floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+			}
 
 			Destroy();
 		}
