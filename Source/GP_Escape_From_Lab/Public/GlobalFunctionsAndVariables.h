@@ -11,6 +11,7 @@
  */
 class USoundBase;
 class ASwat;
+
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API UGlobalFunctionsAndVariables : public UBlueprintFunctionLibrary
 {
@@ -20,7 +21,10 @@ public:
 	UGlobalFunctionsAndVariables();
 	UFUNCTION(BlueprintCallable)
 	static void PlayPhysicsSoundAtLocation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
+
+	
 };
+
 
 extern UParticleSystem* wallHitParticle;
 extern UParticleSystem* zombieHitParticle;
@@ -36,3 +40,4 @@ extern USoundBase* glassImpactSound;
 
 extern UMaterialInterface* bloodDecal;
 extern UMaterialInterface* floorBloodDecal;
+

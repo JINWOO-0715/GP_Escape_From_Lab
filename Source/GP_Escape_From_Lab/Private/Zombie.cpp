@@ -141,6 +141,8 @@ void AZombie::OnPlayerCaught(APawn* pawn)
 	{
 		//
 		tempController->SetPlayerCaught(pawn);
+
+
 		
 	}
 }
