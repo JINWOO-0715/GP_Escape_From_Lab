@@ -140,6 +140,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float initgrenadeImpact = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float gunHatchRoatation = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float gunShellEjection = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float maxFireRate = 0.1f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isDashing = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isCanFire = true;
@@ -204,7 +210,6 @@ private:
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
-	float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
 
 	

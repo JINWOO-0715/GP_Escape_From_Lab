@@ -46,11 +46,32 @@ USoundBase* ar4Sound = nullptr;
 USoundBase* akSound = nullptr;
 USoundBase* silencerSound = nullptr;
 
+UAnimBlueprint* ar4AnimBP = nullptr;
+UAnimBlueprint* ak47AnimBP = nullptr;
+UAnimBlueprint* ak74AnimBP = nullptr;
+UAnimBlueprint* KAVALAnimBP = nullptr;
+
 
 ASwat::ASwat()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	if (!ar4AnimBP)
+	{
+		ar4AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AR4.AnimBP_AR4")).Object;
+	}
+	if (!ak47AnimBP)
+	{
+		ak47AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AK47.AnimBP_AK47")).Object;
+	}
+	if (!ak74AnimBP)
+	{
+		ak74AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AK74.AnimBP_AK74")).Object;
+	}
+	if (!KAVALAnimBP)
+	{
+		KAVALAnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_KAVAL.AnimBP_KAVAL")).Object;
+	}
 	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat.swat"));
 	if (SKMesh.Succeeded())
 	{
@@ -99,6 +120,7 @@ ASwat::ASwat()
 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
 		weaponMesh->SetVisibility(false);
+		weaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
 	}
 
 	leftWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
@@ -109,6 +131,7 @@ ASwat::ASwat()
 		leftWeaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGunHand"));
 		leftWeaponMesh->SetVisibility(true);
+		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
 	}
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
@@ -701,7 +724,27 @@ void ASwat::Interact()
 			maxFireRate = Weapon->WeaponData->FireRate;
 			attackPower = Weapon->WeaponData->AttackPower;
 			recoilPower = Weapon->WeaponData->RecoilPower;
-		
+			
+			if (Weapon->WeaponData->WeaponName == "AR4")
+			{
+				weaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
+				leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
+			}
+			else if (Weapon->WeaponData->WeaponName == "AK74")
+			{
+				weaponMesh->SetAnimInstanceClass(ak74AnimBP->GeneratedClass);
+				leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP->GeneratedClass);
+			}
+			else if (Weapon->WeaponData->WeaponName == "AK47")
+			{
+				weaponMesh->SetAnimInstanceClass(ak47AnimBP->GeneratedClass);
+				leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP->GeneratedClass);
+			}
+			else if (Weapon->WeaponData->WeaponName == "KAVAL")
+			{
+				weaponMesh->SetAnimInstanceClass(KAVALAnimBP->GeneratedClass);
+				leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP->GeneratedClass);
+			}
 			HitWeapon->Destroy();
 
 
@@ -810,6 +853,8 @@ void ASwat::Tick(float DeltaTime)
 		auto animInstance = GetMesh()->GetAnimInstance();
 		if (animInstance)
 		{
+			gunHatchRoatation = 120.0f;
+			gunShellEjection = -7.0f;
 			animInstance->Montage_Play(fireMontage);
 		}
 
