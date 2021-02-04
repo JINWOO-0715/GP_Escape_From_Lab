@@ -15,6 +15,7 @@
 #include "Sound/SoundCue.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 #include "PickUps.h"
 #include "WeaponBase.h"
@@ -312,8 +313,10 @@ void ASwat::KnifeAttack()
 	GetWorld()->LineTraceSingleByChannel(hitResult, leftHandPos, leftHandPos + leftHandForwardVec,
 		ECollisionChannel::ECC_Camera, params);
 	auto zombieActor = Cast<AZombie>(hitResult.GetActor());
+	EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
 	if (zombieActor)
 	{
+		auto soundPlayLoc = hitResult.ImpactPoint;
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 		UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10.0f, 10.0f, 10.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, FRotator{ 0.0f,0.0f,0.0f }, EAttachLocation::KeepWorldPosition);
@@ -326,11 +329,38 @@ void ASwat::KnifeAttack()
 		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
 		zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
-		//playPhysicsSound!
+
+		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, soundPlayLoc, knifeBodyImpactSound);
 	}
-	else
+	else if (hitResult.IsValidBlockingHit())
 	{
-		//playPhysicsSound!
+		switch (surfaceType)
+		{
+		case SurfaceType1: //concrete
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+			break;
+		case SurfaceType2: //wood
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+			break;
+		case SurfaceType3: //ceramic
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
+			break;
+		case SurfaceType4: //steel
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
+			break;
+		case SurfaceType5: //plastic
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
+			break;
+		case SurfaceType6: //soft
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+			break;
+		case SurfaceType7: //glass
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
+			break;
+		default: //else
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+			break;
+		}
 	}
 }
 

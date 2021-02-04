@@ -27,6 +27,7 @@ UParticleSystem* wallHitParticle = nullptr;
 UParticleSystem* zombieHitParticle = nullptr;
 
 USoundBase* bodyImpactSound = nullptr;
+USoundBase* knifeBodyImpactSound = nullptr;
 USoundBase* concreteImpactSound = nullptr;
 USoundBase* woodImpactSound = nullptr;
 USoundBase* ceramicImpactSound = nullptr;
@@ -65,6 +66,7 @@ const float IMPACT_SOFT_dB = 40.0f;
 const float IMPACT_BODY_dB = 45.0f;
 
 const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
+const FName KNIFE_STAB_SOUND = TEXT("Knife_Stab_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
 const FName CONCRETE_IMPACT_SOUND = TEXT("Concrete_impact_bullet_Cue");
 const FName WOOD_IMPACT_SOUND = TEXT("Bullet_Impact_Wood_Cue");
@@ -90,6 +92,8 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 		zombieHitParticle = ConstructorHelpers::FObjectFinder<UParticleSystem>(TEXT("/Game/NonMovable/WeaponEffects/P_body_bullet_impact.P_body_bullet_impact")).Object;
 	if (!bodyImpactSound)
 		bodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Body_Cue.Bullet_Impact_Body_Cue")).Object;
+	if (!knifeBodyImpactSound)
+		knifeBodyImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Knife_Stab_Cue.Knife_Stab_Cue")).Object;
 	if (!concreteImpactSound)
 		concreteImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Concrete_impact_bullet_Cue.Concrete_impact_bullet_Cue")).Object;
 	if (!woodImpactSound)
@@ -120,7 +124,7 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 {
 	float originaldB = 0.0f;
 	bool isImpactSound = false;
-	if (sound->GetFName() == BODY_IMPACT_SOUND)
+	if (sound->GetFName() == BODY_IMPACT_SOUND||sound->GetFName() == KNIFE_STAB_SOUND)
 	{
 		originaldB = IMPACT_BODY_dB;
 	}

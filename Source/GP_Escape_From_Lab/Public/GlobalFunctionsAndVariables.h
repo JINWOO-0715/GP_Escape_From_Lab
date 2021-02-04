@@ -30,6 +30,7 @@ extern UParticleSystem* wallHitParticle;
 extern UParticleSystem* zombieHitParticle;
 
 extern USoundBase* bodyImpactSound;
+extern USoundBase* knifeBodyImpactSound;
 extern USoundBase* concreteImpactSound;
 extern USoundBase* woodImpactSound;
 extern USoundBase* ceramicImpactSound;
