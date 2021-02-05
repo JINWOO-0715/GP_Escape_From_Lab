@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "UObject/ObjectMacros.h"
+#include "UObject/UObjectGlobals.h"
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -32,11 +34,11 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 	
 	// 플레이어 키
 	UPROPERTY(EditDefaultsOnly, Category =AI)
-		FName PlayerKey;
+	FName PlayerKey;
 
 	// 플레이어 키
 	UPROPERTY(EditDefaultsOnly, Category = AI)
-		FName SoundKey;
+	FName SoundKey;
 
 	//이동 포인트
 	TArray<AActor*> PatrolPoints;
@@ -45,12 +47,15 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 
 	
 public:
-	AZombieAIController();
+	AZombieAIController(const FObjectInitializer& ObjectInitializer =FObjectInitializer::Get());
 
 	// 플레이어 공격하기 (잡기)
 	void SetPlayerCaught(APawn* apawn);
 	void SetSoundCaught(FVector soundlocation);
 
+	void ClearSoundKey();
+	UFUNCTION(BlueprintCallable, Category = DetourCrowd)
+		static void SetSeparationWeight(UCrowdFollowingComponent* inCrowdFolowingComponent, int32 inWeight);
 
 	int32 CurrentPatrolPoint = 0;
 

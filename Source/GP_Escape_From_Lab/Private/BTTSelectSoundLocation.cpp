@@ -29,7 +29,8 @@ EBTNodeResult::Type UBTTSelectSoundLocation::ExecuteTask(UBehaviorTreeComponent&
 		
 		if (1)//tempZombie->isHearingSound)//소리가 들리면)
 		{
-			
+
+			AICon->ClearSoundKey();
 			//AICon->SetSoundCaught();
 			return EBTNodeResult::Succeeded;
 		}
