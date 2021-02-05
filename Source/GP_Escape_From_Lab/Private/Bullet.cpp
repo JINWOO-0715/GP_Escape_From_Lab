@@ -181,13 +181,23 @@ void ABullet::Tick(float DeltaTime)
 				{
 					RandomDecalRotation = hitResult.ImpactNormal.Rotation();
 					RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-					UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), hitResult.Component.Get(), NAME_None,
+					UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
 						hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
 				}
 				else
 				{
-					UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
-						floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+					GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc + addPos, bulletHitLoc + addPos + FVector{0.0f,0.0f,-1000.0f}, ECollisionChannel::ECC_Camera,
+						collisionParams);
+					if (hitResult.GetActor())
+					{
+						RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+						RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+						UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
+							hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+					}
+					else
+						UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
+							floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
 				}
 			}
 			Destroy();

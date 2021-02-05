@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Swat.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -190,7 +187,7 @@ ASwat::ASwat()
 	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
 
 	curveFloat = ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("/Game/Movable/Curves/ARRecoil.ARRecoil")).Object;
-	
+
 	//
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
@@ -243,20 +240,17 @@ void ASwat::Minimap()
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
 
-	if (!IsOpenMain)
+	if (!isMapOpen)
 	{
 		GameMode->Minimap->AddToViewport();
-		IsOpenMain = true;
-		FInputModeGameOnly m1;
-		PlayerController->SetInputMode(m1);
+		isMapOpen = true;
 	}
 	else
 	{
 		GameMode->Minimap->RemoveFromParent();
-		IsOpenMain = false;
-		FInputModeGameOnly m2;
-		PlayerController->SetInputMode(m2);
+		isMapOpen = false;
 	}
+
 
 }
 
@@ -273,31 +267,31 @@ void ASwat::Inventory()
 	{
 		PlayerController->bShowMouseCursor = true;
 		GameMode->MainMenu->AddToViewport();
-		IsOpenMain = true; 
+		IsOpenMain = true;
 		//FInputModeUIOnly
 		//FInputModeGameAndUI
 		//FInputModeGameOnly
 		FInputModeGameAndUI a;
 		PlayerController->SetInputMode(a);
-		
+
 
 	}
 	else
 	{
 		PlayerController->bShowMouseCursor = false;
-	
+
 		GameMode->MainMenu->RemoveFromParent();
 		IsOpenMain = false;
 		FInputModeGameOnly ui;
 		PlayerController->SetInputMode(ui);
 	}
-	
+
 }
 
 void ASwat::DropItem(FName ItemName)
 {
 
-	
+
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
 	// 머리부터 카메라 방향 2m까지 직선쏘기
 
@@ -319,7 +313,7 @@ void ASwat::DropItem(FName ItemName)
 	}
 
 
-	
+
 }
 
 void ASwat::KnifeAttack()
@@ -344,11 +338,11 @@ void ASwat::KnifeAttack()
 		UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10.0f, 10.0f, 10.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, FRotator{ 0.0f,0.0f,0.0f }, EAttachLocation::KeepWorldPosition);
 		params.AddIgnoredActor(zombieActor);
-		GetWorld()->LineTraceSingleByChannel(hitResult, hitResult.ImpactPoint, hitResult.ImpactPoint + FVector{0.0f,0.0f,-1000.0f},
+		GetWorld()->LineTraceSingleByChannel(hitResult, hitResult.ImpactPoint, hitResult.ImpactPoint + FVector{ 0.0f,0.0f,-1000.0f },
 			ECC_Camera, params);
 		FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
 		RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-		
+
 		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
 		zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
@@ -410,7 +404,7 @@ void ASwat::EndReloading()
 		weaponMesh->UnHideBoneByName("b_gun_mag");
 		magMesh->SetVisibility(false);
 	}
-	
+
 }
 
 void ASwat::SpawnGrenade()
@@ -420,7 +414,7 @@ void ASwat::SpawnGrenade()
 
 void ASwat::MoveForward(float value)
 {
-	if (Controller && value != 0.0f && !IsOpenMain )
+	if (Controller && value != 0.0f && !IsOpenMain)
 	{
 		AddMovementInput(GetActorForwardVector(), value);
 		forwardAxisVal = value;
@@ -487,7 +481,7 @@ void ASwat::GunFireOn()
 	{
 
 		// 총알이 있어야 발사가능
-		if (hasFiveAmmo > 0 && hasWeaponName=="KAVAL")
+		if (hasFiveAmmo > 0 && hasWeaponName == "KAVAL")
 		{
 			isGunFire = true;
 		}
@@ -538,7 +532,7 @@ void ASwat::ThrowGrenade()
 			weaponMesh->SetVisibility(false);
 			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
 			initGrenadeSpawnRot.Normalize();
-			
+
 			auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
 			auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
 			muzzleRotVec.Normalize();
@@ -555,7 +549,7 @@ void ASwat::ThrowGrenade()
 				else
 					initgrenadeImpact = 500.0f;
 			}
-			else 
+			else
 			{
 				initgrenadeImpact = 500.0f;
 			}
@@ -590,7 +584,7 @@ void ASwat::ReloadGun()
 		if (!IsOpenMain)
 		{
 			// 총알이 30발 미만이고 저장탄창이 0보다 크면
-			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName=="AR4"|| hasWeaponName == "KAVAL"))
+			if ((hasFiveAmmo < 30 && hasFiveSaveAmmo > 0) && (hasWeaponName == "AR4" || hasWeaponName == "KAVAL"))
 			{
 
 				// 재장전
@@ -622,7 +616,7 @@ void ASwat::ReloadGun()
 
 
 			}
-			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74" ||hasWeaponName == "AK47"))
+			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74" || hasWeaponName == "AK47"))
 			{
 
 				// 재장전
@@ -687,21 +681,21 @@ void ASwat::UnAimGun()
 
 void ASwat::Interact()
 {
-	
+
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
 	// 머리부터 카메라 방향 2m까지 직선쏘기
 
-	FVector End = Start+ cameraComp->GetForwardVector() * 200.0f;
-	
+	FVector End = Start + cameraComp->GetForwardVector() * 200.0f;
+
 	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
-	
+
 	if (Actor)
-	{	
-	
+	{
+
 		//충돌이 무기라면
 		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
 		{
-			
+
 			Weapon = HitWeapon;
 			Weapon->SetActorEnableCollision(false);
 
@@ -720,11 +714,11 @@ void ASwat::Interact()
 			AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
 			//가지고 있던 무기를 버린다.
 			DroppedItem->SetupWeapon(FName(tempWeaponName));
-			
+
 			maxFireRate = Weapon->WeaponData->FireRate;
 			attackPower = Weapon->WeaponData->AttackPower;
 			recoilPower = Weapon->WeaponData->RecoilPower;
-			
+
 			if (Weapon->WeaponData->WeaponName == "AR4")
 			{
 				weaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
@@ -750,14 +744,14 @@ void ASwat::Interact()
 
 
 			// 내가 쓰는 무기를 바꾼다.
-		
+
 			// 아래 줌 위치 적용하는거. 
 			//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
 			//Weapon->SetupWeapon(FName("AR4"));
 
-			
 
-			
+
+
 
 		}
 
@@ -774,16 +768,16 @@ void ASwat::Interact()
 				hasFiveSaveAmmo += 30;
 			}
 
-			 //UE_LOG(LogTemp, Warning, TEXT("HIT")); 
-			 //UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
-			 //UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
-			
+			//UE_LOG(LogTemp, Warning, TEXT("HIT")); 
+			//UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
+			//UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
 
-			// 인벤토리에 추가하는 기능을 넣는다.
-			// UE_LOG(LogTemp, Warning, TEXT("히트"));
-			// UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
-			
-			// 이런식으로 아이템 사용가능.
+
+		   // 인벤토리에 추가하는 기능을 넣는다.
+		   // UE_LOG(LogTemp, Warning, TEXT("히트"));
+		   // UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
+
+		   // 이런식으로 아이템 사용가능.
 
 			Pickup->Destroy();
 		}
@@ -853,7 +847,6 @@ void ASwat::Tick(float DeltaTime)
 		auto animInstance = GetMesh()->GetAnimInstance();
 		if (animInstance)
 		{
-			gunHatchRoatation = 120.0f;
 			gunShellEjection = -7.0f;
 			animInstance->Montage_Play(fireMontage);
 		}
@@ -876,7 +869,7 @@ void ASwat::Tick(float DeltaTime)
 
 	auto targetTrans = weaponMesh->GetSocketTransform("IronSight");
 	aimCamera->SetWorldTransform(FTransform(targetTrans.GetRotation(), targetTrans.GetLocation(), FVector(0.001f, 0.001f, 0.001f)));
-	
+
 	auto muzzleTrans = weaponMesh->GetSocketTransform("Muzzle");
 	spotComp->SetWorldTransform(muzzleTrans);
 }
@@ -940,7 +933,7 @@ void ASwat::UseAmmo()
 }
 void ASwat::UseMedkit()
 {
-	if (hasMedkit > 0 && swatHp<100)
+	if (hasMedkit > 0 && swatHp < 100)
 	{
 		swatHp += 30;
 		hasMedkit -= 1;

@@ -51,7 +51,7 @@ protected:
 	void Interact();
 	void Inventory();
 	void Minimap();
-	
+
 
 	void UseAmmo();
 	void UseMedkit();
@@ -61,15 +61,15 @@ protected:
 	TSubclassOf<class AWeaponBase> MyItemBlueprint;
 
 	UPROPERTY(EditAnyWhere)
-	class AWeaponBase* Weapon;
+		class AWeaponBase* Weapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class ULineTrace* LineTraceComp;
+		class ULineTrace* LineTraceComp;
 
 	bool IsOpenMain = false;
 
 	class USoundWave* EmptyGunShotSound;
-	
+
 
 
 protected:
@@ -88,118 +88,118 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void EndStabbing();
+		void EndStabbing();
 	UFUNCTION(BlueprintCallable)
-	void EndThrowing();
+		void EndThrowing();
 	UFUNCTION(BlueprintCallable)
-	void EndReloading();
+		void EndReloading();
 	UFUNCTION(BlueprintCallable)
-	void SpawnGrenade();
+		void SpawnGrenade();
 	UFUNCTION(BlueprintCallable)
-	USkeletalMeshComponent* GetWeaponMeshComponent(){return weaponMesh;}
+		USkeletalMeshComponent* GetWeaponMeshComponent() { return weaponMesh; }
 
 
 	UFUNCTION(BlueprintCallable)
-	void PlayGunFireSound();
+		void PlayGunFireSound();
 
 	UFUNCTION()
-	void TimelineProgress(float value);
+		void TimelineProgress(float value);
 
 	//무기 버리기를 위한 linetrace위치 설정및 spawn까지
 	UFUNCTION(BlueprintCallable)
-	void DropItem(FName ItemName);
+		void DropItem(FName ItemName);
 
 	UFUNCTION(BlueprintCallable)
-	void KnifeAttack();
+		void KnifeAttack();
 
 public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCameraComponent* cameraComp = nullptr; 
+		UCameraComponent* cameraComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCameraComponent* aimCamera = nullptr;
+		UCameraComponent* aimCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USpotLightComponent* spotComp = nullptr;
+		USpotLightComponent* spotComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USkeletalMeshComponent* weaponMesh = nullptr;
+		USkeletalMeshComponent* weaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USkeletalMeshComponent* leftWeaponMesh = nullptr;
+		USkeletalMeshComponent* leftWeaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* knifeMesh = nullptr; 
+		UStaticMeshComponent* knifeMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* magMesh = nullptr;
+		UStaticMeshComponent* magMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float forwardAxisVal = 0.0f;
+		float forwardAxisVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float strafeAxisVal = 0.0f;
+		float strafeAxisVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int stamina = 100;
+		int stamina = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float recoilValue = 0.0f;
+		float recoilValue = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float initgrenadeImpact = 0.0f;
+		float gunShellEjection = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float gunHatchRoatation = 0.0f;
+		float gunHatchRotation = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float gunShellEjection = 0.0f;
+		float initgrenadeImpact = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float maxFireRate = 0.1f;
+		bool isDashing = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isDashing = false;
+		bool isCanFire = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isCanFire = true;
+		bool isAiming = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isAiming = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isGunFire = false;
+		bool isGunFire = false;
 	UPROPERTY(BlueprintReadOnly)
-	UAnimMontage* fireMontage;
+		UAnimMontage* fireMontage;
 	UPROPERTY(BlueprintReadOnly)
-	UAnimMontage* knifeMontage;
+		UAnimMontage* knifeMontage;
 	UPROPERTY(BlueprintReadOnly)
-	UAnimMontage* throwMontage;
+		UAnimMontage* throwMontage;
 	UPROPERTY(BlueprintReadOnly)
-	UAnimMontage* reloadMontage;
+		UAnimMontage* reloadMontage;
 
 public:
 	// 플레이어 hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int swatHp= 99;
+		int swatHp = 99;
 
 	// 가지고있는 메디킷
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasMedkit = 10;
+		int hasMedkit = 10;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasFiveAmmo = 0;
+		int hasFiveAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasFiveSaveAmmo = 300;
+		int hasFiveSaveAmmo = 300;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasSevenAmmo = 0;
+		int hasSevenAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int hasSevenSaveAmmo = 300;
+		int hasSevenSaveAmmo = 300;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float attackPower = 30.0f;
-	
+		float attackPower = 30.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float recoilPower = 2.0f;
+		float recoilPower = 2.0f;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString hasWeaponName = "AR4";
+		FString hasWeaponName = "AR4";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString hasSuvWeaponName = "";
+		FString hasSuvWeaponName = "";
 
 	UPROPERTY()
-	FVector initGrenadeSpawnRot {0.0f,0.0f,0.0f};
+		FVector initGrenadeSpawnRot {
+		0.0f, 0.0f, 0.0f
+	};
 
 
 private:
@@ -207,12 +207,14 @@ private:
 	bool isStabbing = false;
 	bool isThrowing = false;
 	bool isReloading = false;
+	bool isMapOpen = false;
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
+	float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
 
-	
+
 	const FVector initCameraPos{ -68, 0, 16.5 };
 
 
@@ -222,7 +224,7 @@ private:
 	//FVector VSSAimPos{ -72, 0.0, 5.0 };
 
 	UPROPERTY()
-	USkeletalMesh* rifleMesh = nullptr;
+		USkeletalMesh* rifleMesh = nullptr;
 };
 
 //조준기능 트랜스폼 벨류
