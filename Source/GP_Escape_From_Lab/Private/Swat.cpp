@@ -13,6 +13,8 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 
 #include "PickUps.h"
 #include "WeaponBase.h"
@@ -47,7 +49,6 @@ UAnimBlueprint* ar4AnimBP = nullptr;
 UAnimBlueprint* ak47AnimBP = nullptr;
 UAnimBlueprint* ak74AnimBP = nullptr;
 UAnimBlueprint* KAVALAnimBP = nullptr;
-
 
 ASwat::ASwat()
 {
@@ -217,6 +218,29 @@ ASwat::ASwat()
 		silencerSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/silencer_gun_sound_Cue.silencer_gun_sound_Cue")).Object;
 	}
 
+	scopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("scopeMesh"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> scope(TEXT("StaticMesh'/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/SM_Scope_25x56_Y.SM_Scope_25x56_Y'"));
+	scopeMesh->SetStaticMesh(scope.Object);
+	scopeMesh->AttachToComponent(weaponMesh,
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+	scopeMesh->SetVisibility(false);
+
+	leftScopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leftScopeMesh"));
+	leftScopeMesh->SetStaticMesh(scope.Object);
+	leftScopeMesh->AttachToComponent(leftWeaponMesh,
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+	leftScopeMesh->SetVisibility(false);
+	
+	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
+	sceneCaptureCamera->SetupAttachment(leftScopeMesh);
+	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
+	sceneCaptureCamera->FOVAngle = 4.0f;
+
+	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope.RT_Scope"));
+	sceneCaptureCamera->TextureTarget = renderTarget.Object;
+
 }// Called when the game starts or when spawned
 void ASwat::BeginPlay()
 {
@@ -232,8 +256,6 @@ void ASwat::BeginPlay()
 	}
 	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
 	GameMode->InGameUI->AddToViewport();
-
-
 }
 void ASwat::Minimap()
 {
@@ -723,21 +745,32 @@ void ASwat::Interact()
 			{
 				weaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
 				leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
+				leftScopeMesh->SetVisibility(false);
+				scopeMesh->SetVisibility(false);
 			}
 			else if (Weapon->WeaponData->WeaponName == "AK74")
 			{
 				weaponMesh->SetAnimInstanceClass(ak74AnimBP->GeneratedClass);
 				leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP->GeneratedClass);
+				leftScopeMesh->SetVisibility(false);
+				scopeMesh->SetVisibility(false);
 			}
 			else if (Weapon->WeaponData->WeaponName == "AK47")
 			{
 				weaponMesh->SetAnimInstanceClass(ak47AnimBP->GeneratedClass);
 				leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP->GeneratedClass);
+				leftScopeMesh->SetVisibility(false);
+				scopeMesh->SetVisibility(false);
 			}
 			else if (Weapon->WeaponData->WeaponName == "KAVAL")
 			{
 				weaponMesh->SetAnimInstanceClass(KAVALAnimBP->GeneratedClass);
 				leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP->GeneratedClass);
+				leftScopeMesh->SetVisibility(true);
+				scopeMesh->SetVisibility(true);
+
+				//scopeActor->AttachToComponent(weaponMesh,
+					//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
 			}
 			HitWeapon->Destroy();
 
@@ -860,11 +893,21 @@ void ASwat::Tick(float DeltaTime)
 	{
 		leftWeaponMesh->SetVisibility(false);
 		weaponMesh->SetVisibility(true);
+		if (hasWeaponName == "KAVAL")
+		{
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(true);
+		}
 	}
 	else
 	{
 		leftWeaponMesh->SetVisibility(true);
 		weaponMesh->SetVisibility(false);
+		if (hasWeaponName == "KAVAL")
+		{
+			leftScopeMesh->SetVisibility(true);
+			scopeMesh->SetVisibility(false);
+		}
 	}
 
 	auto targetTrans = weaponMesh->GetSocketTransform("IronSight");

@@ -160,6 +160,14 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		UAnimMontage* reloadMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* scopeMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* leftScopeMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneCaptureComponent2D* sceneCaptureCamera;
+
 public:
 	// 플레이어 hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

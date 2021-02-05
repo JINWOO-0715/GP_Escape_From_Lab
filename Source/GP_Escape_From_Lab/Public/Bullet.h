@@ -48,5 +48,5 @@ private:
 	FVector befPos{ 0.0f,0.0f,0.0f };
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
-	const float bulletSpeed = 15000.0f;
+	const float bulletSpeed = 20000.0f;
 };
