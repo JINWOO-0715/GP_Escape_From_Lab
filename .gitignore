@@ -1,7 +1,7 @@
 ############
 
 # Asset Files#
-.sln
+
 ###########
 # 파일 무시할건 이런식으로 쓰기.
 Content/NonMovable
@@ -15,6 +15,7 @@ Content/StarterBundle
 ###########
 # Visual Studio 2015 user specific files
 .vs/
+
 
 # Compiled Object files
 *.slo
