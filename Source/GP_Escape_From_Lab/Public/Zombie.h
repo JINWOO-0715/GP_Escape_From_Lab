@@ -93,6 +93,7 @@ public:
 
 	int32 WayNum = 0;
 	float hp = 100;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float speed;
 	float attackPower;
 

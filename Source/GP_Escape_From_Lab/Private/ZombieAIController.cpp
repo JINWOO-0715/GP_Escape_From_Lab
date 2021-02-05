@@ -15,22 +15,36 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Controller.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 
 
-AZombieAIController::AZombieAIController()
+AZombieAIController::AZombieAIController(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
+	
+	
 	// blackboard behavior tree init
 	BehaviorComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorComp"));
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardcComp"));
+	UCrowdFollowingComponent* pathfol = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());
 
+	SetSeparationWeight(pathfol, 10);
 	//키 초기화
 	
 	LocationToGoKey = "LocationToGo";
 	PlayerKey = "Target";
 	SoundKey= "SoundTarget";
 	CurrentPatrolPoint = 0;
+}
+void AZombieAIController::SetSeparationWeight(UCrowdFollowingComponent* inCrowdFolowingComponent, int32 inWeight)
+{
+	if (inCrowdFolowingComponent)
+	{
+		inCrowdFolowingComponent->SetCrowdSeparationWeight(inWeight, true);
+		inCrowdFolowingComponent->SetCrowdSeparation(true, true); //Just in case it is not enabled.
+	}
 }
 void AZombieAIController::SetSoundCaught(FVector soundlocation)
 {
@@ -41,6 +55,11 @@ void AZombieAIController::SetSoundCaught(FVector soundlocation)
 		BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
 	}
 }
+void AZombieAIController::ClearSoundKey()
+{
+	BlackboardComp->ClearValue(SoundKey);
+	
+}
 void AZombieAIController::SetPlayerCaught(APawn* apawn)
 {
 	if (BlackboardComp)
@@ -48,6 +67,7 @@ void AZombieAIController::SetPlayerCaught(APawn* apawn)
 		// 플레이어 키로 변경 설정함 
 		BlackboardComp->SetValueAsObject(PlayerKey, apawn);
 	}
+	
 }
 
 void AZombieAIController::OnPossess(APawn* apawn)

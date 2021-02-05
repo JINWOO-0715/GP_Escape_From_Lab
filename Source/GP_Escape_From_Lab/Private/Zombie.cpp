@@ -124,6 +124,8 @@ void AZombie::SetupZombie(FName ZombieName)
 			hp = ZombieData->ZombieHP;
 			//speed
 			speed = ZombieData->ZombieSpeed;
+	
+		
 			//공격파워
 			attackPower = ZombieData->ZombieAttackPower;
 
