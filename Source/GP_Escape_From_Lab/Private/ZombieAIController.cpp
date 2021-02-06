@@ -17,6 +17,8 @@
 #include "GameFramework/Controller.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
+#include "Components/SplineComponent.h"
+
 #include "Kismet/GameplayStatics.h"
 
 
@@ -91,8 +93,9 @@ void AZombieAIController::OnPossess(APawn* apawn)
 
 		if (AIZomibe->WayNum == 0)
 		{
+			
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPoint::StaticClass(), PatrolPoints);
-
+			
 		}
 		// 패트롤 포인트 채우기
 		if (AIZomibe->WayNum == 1)
