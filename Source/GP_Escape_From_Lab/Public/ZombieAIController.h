@@ -11,7 +11,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 
-
+#include "SplineActor.h"
 #include "ZombieAIController.generated.h"
 
 /**
@@ -58,6 +58,7 @@ public:
 		static void SetSeparationWeight(UCrowdFollowingComponent* inCrowdFolowingComponent, int32 inWeight);
 
 	int32 CurrentPatrolPoint = 0;
+
 
 	// 인라인 함수 getter
 	FORCEINLINE UBlackboardComponent* GetBlackboardComp() const { return BlackboardComp; }
