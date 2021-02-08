@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Engine/DataTable.h"
-
 #include "Zombie.generated.h"
 
 
@@ -72,7 +71,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void OnPlayerCaught(APawn* apawn);
-public:
+
+	public:
 	UFUNCTION(BlueprintCallable)
 		void SetupZombie(FName ZombieName);
 
@@ -93,12 +93,14 @@ public:
 
 	int32 WayNum = 0;
 	float hp = 100;
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	float speed;
-	float attackPower;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	bool isAttack = false;
+	float speed;
+
+	float attackPower;
+
+
+
 	bool isHearingSound = false;
 
 private:
