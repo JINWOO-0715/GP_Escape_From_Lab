@@ -11,7 +11,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 
-#include "SplineActor.h"
+
 #include "ZombieAIController.generated.h"
 
 /**

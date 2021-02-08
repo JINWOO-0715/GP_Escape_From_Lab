@@ -8,8 +8,9 @@
 #include "Components/CapsuleComponent.h"
 #include "ZombieAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Swat.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
-
 
 
 //USkeletalMesh* zombieMesh = nullptr;
@@ -41,6 +42,7 @@ AZombie::AZombie()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	PawnSensingComp->SetPeripheralVisionAngle(90.f);
 
+
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +57,7 @@ void AZombie::BeginPlay()
 		PawnSensingComp->OnSeePawn.AddDynamic(this, &AZombie::OnPlayerCaught);
 		
 	}
+
 	// DT기반 제작. 좀비 초기화.
 	if (DefaultZombieName != "")
 	{
@@ -70,6 +73,7 @@ void AZombie::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 }
+
 
 // Called to bind functionality to input
 void AZombie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -119,15 +123,17 @@ void AZombie::SetupZombie(FName ZombieName)
 			GetMesh()->SetAnimInstanceClass(ZombieData->ZombieAnimBP->GeneratedClass);
 			// 좀비 sk메쉬
 			GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
-
+		
 			//hp
 			hp = ZombieData->ZombieHP;
 			//speed
+			UCharacterMovementComponent* MovementPtr = Cast<UCharacterMovementComponent>(this->GetCharacterMovement());
 			speed = ZombieData->ZombieSpeed;
-	
+			MovementPtr->MaxWalkSpeed = speed;
 		
 			//공격파워
 			attackPower = ZombieData->ZombieAttackPower;
+			
 
 
 		}
