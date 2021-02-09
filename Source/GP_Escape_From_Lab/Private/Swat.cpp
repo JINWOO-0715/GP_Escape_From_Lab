@@ -385,7 +385,7 @@ void ASwat::KnifeAttack()
 			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
 			break;
 		case SurfaceType4: //steel
-			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, knifeMetalImpactSound);
 			break;
 		case SurfaceType5: //plastic
 			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);

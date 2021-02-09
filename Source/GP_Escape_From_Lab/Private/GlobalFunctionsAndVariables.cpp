@@ -28,6 +28,7 @@ UParticleSystem* zombieHitParticle = nullptr;
 
 USoundBase* bodyImpactSound = nullptr;
 USoundBase* knifeBodyImpactSound = nullptr;
+USoundBase* knifeMetalImpactSound = nullptr;
 USoundBase* concreteImpactSound = nullptr;
 USoundBase* woodImpactSound = nullptr;
 USoundBase* ceramicImpactSound = nullptr;
@@ -60,13 +61,15 @@ const float IMPACT_STEEL_dB = 70.0f;
 const float IMPACT_PLASTIC_dB = 60.0f;
 const float IMPACT_CONCRETE_dB = 55.0f;
 const float IMPACT_WOOD_dB = 50.0f;
-const float IMPACT_CERAMIC_dB = 50.0f;
-const float IMPACT_GLASS_dB = 50.0f;
+const float IMPACT_CERAMIC_dB = 60.0f;
+const float IMPACT_GLASS_dB = 70.0f;
 const float IMPACT_SOFT_dB = 40.0f;
 const float IMPACT_BODY_dB = 45.0f;
+const float IMPACT_KNIFE_METAL_dB = 50.0f;
 
 const FName BODY_IMPACT_SOUND = TEXT("Bullet_Impact_Body_Cue");
 const FName KNIFE_STAB_SOUND = TEXT("Knife_Stab_Cue");
+const FName KNIFE_METAL_STAB_SOUND = TEXT("knife_Imact_Metal_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
 const FName CONCRETE_IMPACT_SOUND = TEXT("Concrete_impact_bullet_Cue");
 const FName WOOD_IMPACT_SOUND = TEXT("Bullet_Impact_Wood_Cue");
@@ -108,6 +111,8 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue.Bullet_Impact_Soft_Cue")).Object;
 	if (!glassImpactSound)
 		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;
+	if (!knifeMetalImpactSound)
+		knifeMetalImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/knife_Imact_Metal_Cue.knife_Imact_Metal_Cue")).Object;
 
 	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
 	if (!bloodDecal)
@@ -176,7 +181,10 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	{
 		originaldB = SILENCER_dB;
 	}
-	
+	else if (sound->GetFName() == KNIFE_METAL_STAB_SOUND)
+	{
+		originaldB = IMPACT_KNIFE_METAL_dB;
+	}
 	auto playerCharacterLocation = playerCharacter->GetActorLocation();
 	auto distanceBetCharacterAndSoundSource = (playerCharacterLocation - soundSourceLocation).Size();
 	distanceBetCharacterAndSoundSource /= 100.0f;
