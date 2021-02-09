@@ -17,6 +17,7 @@ class USkeletalMeshComponent;
 class UAnimMontage;
 class UStaticMesh;
 class USkeletalMesh;
+class USceneCaptureComponent2D;
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ASwat : public ACharacter
