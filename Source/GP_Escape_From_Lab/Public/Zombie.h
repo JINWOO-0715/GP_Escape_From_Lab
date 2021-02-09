@@ -97,6 +97,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float speed;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float attackPower;
 
 
