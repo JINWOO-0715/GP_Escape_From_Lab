@@ -717,7 +717,10 @@ void ASwat::Interact()
 		//충돌이 무기라면
 		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
 		{
+			if (!isReloading)
+			{
 
+			
 			Weapon = HitWeapon;
 			Weapon->SetActorEnableCollision(false);
 
@@ -783,7 +786,7 @@ void ASwat::Interact()
 			//Weapon->SetupWeapon(FName("AR4"));
 
 
-
+			}
 
 
 		}
