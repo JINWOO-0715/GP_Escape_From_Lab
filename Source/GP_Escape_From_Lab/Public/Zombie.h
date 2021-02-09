@@ -92,6 +92,7 @@ public:
 	FZombieData* ZombieData;
 
 	int32 WayNum = 0;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float hp = 100;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
