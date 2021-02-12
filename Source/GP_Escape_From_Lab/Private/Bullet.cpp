@@ -112,6 +112,7 @@ ABullet::ABullet()
 	{
 		floorBloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/bloodFloor_Mat.bloodFloor_Mat")).Object;
 	}*/
+
 }
 
 // Called when the game starts or when spawned
@@ -204,6 +205,11 @@ void ABullet::Tick(float DeltaTime)
 		}
 		else
 		{
+			//좀비 이외의 액터에 플레이어에 설정한 대미지를 적용
+			auto HittedActor = hitResult.GetActor();
+			UGameplayStatics::ApplyDamage(HittedActor, playerPawn->attackPower, nullptr, this, nullptr);
+			//UE_LOG(LogTemp, Log, TEXT("Damaged!"));
+
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
 			FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
 			FVector  spawnLocation = hitResult.Location;
@@ -211,6 +217,10 @@ void ABullet::Tick(float DeltaTime)
 			
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
 			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
+			
+			
+			
+
 			
 			switch (surfaceType)
 			{

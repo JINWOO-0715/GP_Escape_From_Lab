@@ -70,6 +70,7 @@ void AGrenade::BeginPlay()
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+
 	Super::EndPlay(EndPlayReason);
 	for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
 	{
@@ -90,6 +91,9 @@ void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
+	TArray<AActor*>ignoredActor;
+	UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
+
 }
 
 // Called every frame

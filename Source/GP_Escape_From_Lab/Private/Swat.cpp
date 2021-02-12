@@ -373,6 +373,8 @@ void ASwat::KnifeAttack()
 	}
 	else if (hitResult.IsValidBlockingHit())
 	{
+		auto HittedActor = hitResult.GetActor();
+		UGameplayStatics::ApplyDamage(HittedActor, 100, nullptr, this, nullptr);
 		switch (surfaceType)
 		{
 		case SurfaceType1: //concrete
