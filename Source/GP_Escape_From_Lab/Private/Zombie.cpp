@@ -10,6 +10,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Swat.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+#include "Components/SplineComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
 
@@ -31,7 +33,7 @@ AZombie::AZombie()
 
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 	GetCapsuleComponent()->SetCollisionProfileName("ZombieCapsule");
-
+	ZombieSplinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 
 	// DT기반 제작.
 	//ZombieMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
@@ -62,6 +64,10 @@ void AZombie::BeginPlay()
 	if (DefaultZombieName != "")
 	{
 		SetupZombie(DefaultZombieName);
+
+		// 효과과 있는건가?
+
+		//this->GetCharacterMovement()->SetAvoidanceEnabled(false);
 	}
 
 	

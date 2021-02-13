@@ -18,7 +18,7 @@
 #include "Navigation/CrowdFollowingComponent.h"
 
 #include "Components/SplineComponent.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -32,6 +32,7 @@ AZombieAIController::AZombieAIController(const FObjectInitializer& ObjectInitial
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardcComp"));
 	UCrowdFollowingComponent* pathfol = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());
 
+	SplinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 	SetSeparationWeight(pathfol, 10);
 	//키 초기화
 	
@@ -56,6 +57,7 @@ void AZombieAIController::SetSoundCaught(FVector soundlocation)
 		// 플레이어 키로 변경 설정함 
 		BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
 	}
+	
 }
 void AZombieAIController::ClearSoundKey()
 {
@@ -79,7 +81,8 @@ void AZombieAIController::OnPossess(APawn* apawn)
 	//좀비 참조 가져오기
 	AZombie* AIZomibe = Cast<AZombie>(apawn);
 
-
+	
+	
 	if (AIZomibe)
 	{
 		// 좀비의 블랙보드를 가져온다.

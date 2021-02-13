@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Engine/DataTable.h"
+
+
+#include "Components/SplineComponent.h"
 #include "Zombie.generated.h"
 
 
@@ -101,7 +104,8 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float attackPower;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USplineComponent* ZombieSplinePath;
 
 	bool isHearingSound = false;
 

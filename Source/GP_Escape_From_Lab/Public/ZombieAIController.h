@@ -10,6 +10,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "Components/SplineComponent.h"
 
 
 #include "ZombieAIController.generated.h"
@@ -45,6 +46,8 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 
 	virtual void OnPossess(APawn* apawn) override;
 
+
+
 	
 public:
 	AZombieAIController(const FObjectInitializer& ObjectInitializer =FObjectInitializer::Get());
@@ -60,6 +63,9 @@ public:
 	int32 CurrentPatrolPoint = 0;
 
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class  USplineComponent* SplinePath;
 	// 인라인 함수 getter
 	FORCEINLINE UBlackboardComponent* GetBlackboardComp() const { return BlackboardComp; }
 	FORCEINLINE TArray<AActor*>GetPatrolPoints() const {		return PatrolPoints;	}
