@@ -5,6 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SplineComponent.h"
+
 #include "ZombieManageActor.generated.h"
 class AZombie;
 UCLASS()
@@ -29,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AZombie *> GZombie;
 
+	// ±æ
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USplineComponent* spline;
 
 	FORCEINLINE TArray<AZombie*>GetWorldZombie() const { return GZombie; }
 

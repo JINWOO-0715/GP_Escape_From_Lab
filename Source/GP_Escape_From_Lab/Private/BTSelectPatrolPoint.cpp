@@ -39,7 +39,12 @@ EBTNodeResult::Type UBTSelectPatrolPoint::ExecuteTask(UBehaviorTreeComponent& Ow
 
 			if (AICon->CurrentPatrolPoint != AvailablePatrolPoins.Num() - 1)
 			{// 이동위치로 캐스트
+				for (auto& mZombie : AvailablePatrolPoins)
+				{
+
 				
+				}
+
 				NextPatrilPoint = Cast<AAIPatrolPoint>(AvailablePatrolPoins[++AICon->CurrentPatrolPoint]);
 			}
 			else// 더이상 갈곳이 없다
