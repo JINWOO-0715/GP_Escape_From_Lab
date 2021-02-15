@@ -63,9 +63,6 @@ public:
 	int32 CurrentPatrolPoint = 0;
 
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class  USplineComponent* SplinePath;
 	// 인라인 함수 getter
 	FORCEINLINE UBlackboardComponent* GetBlackboardComp() const { return BlackboardComp; }
 	FORCEINLINE TArray<AActor*>GetPatrolPoints() const {		return PatrolPoints;	}

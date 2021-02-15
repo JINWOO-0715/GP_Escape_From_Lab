@@ -32,7 +32,7 @@ AZombieAIController::AZombieAIController(const FObjectInitializer& ObjectInitial
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardcComp"));
 	UCrowdFollowingComponent* pathfol = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent());
 
-	SplinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
+	
 	SetSeparationWeight(pathfol, 10);
 	//키 초기화
 	

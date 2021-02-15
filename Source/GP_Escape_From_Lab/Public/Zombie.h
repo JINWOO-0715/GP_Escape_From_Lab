@@ -104,9 +104,6 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float attackPower;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USplineComponent* ZombieSplinePath;
-
 	bool isHearingSound = false;
 
 private:
