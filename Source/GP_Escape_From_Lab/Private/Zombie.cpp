@@ -33,7 +33,6 @@ AZombie::AZombie()
 
 	GetMesh()->SetCollisionProfileName("Ragdoll");
 	GetCapsuleComponent()->SetCollisionProfileName("ZombieCapsule");
-	ZombieSplinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 
 	// DT기반 제작.
 	//ZombieMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");

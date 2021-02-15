@@ -21,6 +21,10 @@ AMyGameMode::AMyGameMode()
 	ConstructorHelpers::FClassFinder<UUserWidget> Minimapadd(TEXT("/Game/Movable/UI/BP_MinimapWidget"));
 	MinimapWidget = Minimapadd.Class;
 
+
+
+	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
+	HeatedUIWidget = HeatedUiAdd.Class;
 }
 
 void AMyGameMode::BeginPlay()
@@ -30,5 +34,6 @@ void AMyGameMode::BeginPlay()
 	MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
 	InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
 	Minimap = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
+	HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 
 }
