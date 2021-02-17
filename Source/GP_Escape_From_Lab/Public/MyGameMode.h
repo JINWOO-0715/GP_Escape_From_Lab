@@ -21,32 +21,5 @@ public:
 	AMyGameMode();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UUserWidget> InventoryWidget;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> InGameWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UUserWidget* MainMenu;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UUserWidget* InGameUI;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> HeatedUIWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UUserWidget* HeatedUI;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UUserWidget> MinimapWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UUserWidget* Minimap;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool is_heated;
 };

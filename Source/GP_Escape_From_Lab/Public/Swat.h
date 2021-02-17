@@ -130,9 +130,9 @@ public:
 		UStaticMeshComponent* knifeMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* magMesh = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		float forwardAxisVal = 0.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		float strafeAxisVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int stamina = 100;
@@ -169,6 +169,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneCaptureComponent2D* sceneCaptureCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> InventoryWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> InGameWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> HeatedUIWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> MinimapWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* MainMenu;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* InGameUI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* HeatedUI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* MinimapUI;
 public:
 	// 플레이어 hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -234,6 +250,14 @@ private:
 
 	UPROPERTY()
 		USkeletalMesh* rifleMesh = nullptr;
+
+
+public:
+	UFUNCTION(Server, Unreliable)
+		void Moveforward_Req(float forward);
+	UFUNCTION(Server, Unreliable)
+		void MoveStrafe_Req(float strafe);
+
 };
 
 //조준기능 트랜스폼 벨류

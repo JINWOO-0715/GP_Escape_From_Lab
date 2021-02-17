@@ -23,6 +23,7 @@
 #include "Zombie.h"
 #include "Blueprint/UserWidget.h"	
 #include "GlobalFunctionsAndVariables.h"
+#include "Blueprint/UserWidget.h"	
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Animation/AnimMontage.h"
@@ -30,7 +31,7 @@
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 
-
+#include "Net/UnrealNetwork.h"
 
 //캐릭터 클래스는 상속시 캡슐, 캐릭터 무브먼트, 스켈레탈 메쉬를 상속받는다.
 //직접 접근은 허용되지 않으며 Get 메소드를 통해 접근할 수 있다.
@@ -38,6 +39,9 @@
 // Sets default values
 
 //
+
+
+
 class UDataTable* SwatItemDataTable;
 class UDataTable* SwatWeaponDataTable;
 
@@ -50,10 +54,13 @@ UAnimBlueprint* ak47AnimBP = nullptr;
 UAnimBlueprint* ak74AnimBP = nullptr;
 UAnimBlueprint* KAVALAnimBP = nullptr;
 
+
+
 ASwat::ASwat()
 {
+	
 	PrimaryActorTick.bCanEverTick = true;
-
+	SetReplicates(true);
 	if (!ar4AnimBP)
 	{
 		ar4AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AR4.AnimBP_AR4")).Object;
@@ -241,10 +248,35 @@ ASwat::ASwat()
 	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope.RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
 
+	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/UI/BP_InventoryWidget"));
+	InventoryWidget = add.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/UI/BP_InGameWidget"));
+	InGameWidget = ingameadd.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> Minimapadd(TEXT("/Game/Movable/UI/BP_MinimapWidget"));
+	MinimapWidget = Minimapadd.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
+	HeatedUIWidget = HeatedUiAdd.Class;
+	
 }// Called when the game starts or when spawned
+
+void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASwat, forwardAxisVal);
+	DOREPLIFETIME(ASwat, strafeAxisVal);
+
+}
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
+	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+
+	MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
+	InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
+	MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
+	HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
+
 
 	if (curveFloat)
 	{
@@ -254,22 +286,19 @@ void ASwat::BeginPlay()
 		curveTimeline.SetLooping(true);
 		curveTimeline.PlayFromStart();
 	}
-	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
-	GameMode->InGameUI->AddToViewport();
+	InGameUI->AddToViewport();
 }
 void ASwat::Minimap()
 {
-	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
-
+	
 	if (!isMapOpen)
 	{
-		GameMode->Minimap->AddToViewport();
+		MinimapUI->AddToViewport();
 		isMapOpen = true;
 	}
 	else
 	{
-		GameMode->Minimap->RemoveFromParent();
+		MinimapUI->RemoveFromParent();
 		isMapOpen = false;
 	}
 
@@ -281,14 +310,12 @@ void ASwat::Inventory()
 
 
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
-
 
 
 	if (!IsOpenMain)
 	{
 		PlayerController->bShowMouseCursor = true;
-		GameMode->MainMenu->AddToViewport();
+		MainMenu->AddToViewport();
 		IsOpenMain = true;
 		//FInputModeUIOnly
 		//FInputModeGameAndUI
@@ -302,7 +329,7 @@ void ASwat::Inventory()
 	{
 		PlayerController->bShowMouseCursor = false;
 
-		GameMode->MainMenu->RemoveFromParent();
+		MainMenu->RemoveFromParent();
 		IsOpenMain = false;
 		FInputModeGameOnly ui;
 		PlayerController->SetInputMode(ui);
@@ -371,6 +398,7 @@ void ASwat::KnifeAttack()
 
 		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, soundPlayLoc, knifeBodyImpactSound);
 	}
+
 	else if (hitResult.IsValidBlockingHit())
 	{
 		auto HittedActor = hitResult.GetActor();
@@ -443,6 +471,8 @@ void ASwat::MoveForward(float value)
 		AddMovementInput(GetActorForwardVector(), value);
 		forwardAxisVal = value;
 	}
+	Moveforward_Req(forwardAxisVal);
+
 }
 
 void ASwat::MoveRight(float value)
@@ -452,6 +482,8 @@ void ASwat::MoveRight(float value)
 		AddMovementInput(GetActorRightVector(), value);
 		strafeAxisVal = value;
 	}
+	MoveStrafe_Req(strafeAxisVal);
+
 }
 
 void ASwat::TurnRate(float value)
@@ -989,4 +1021,14 @@ void ASwat::UseMedkit()
 
 	//이런식으로 회복가능.
 
+}
+
+void ASwat::Moveforward_Req_Implementation(float movefoward)
+{
+	forwardAxisVal = movefoward;
+}
+
+void ASwat::MoveStrafe_Req_Implementation(float movestrafe)
+{
+	strafeAxisVal = movestrafe;
 }
