@@ -144,7 +144,7 @@ public:
 		float gunHatchRotation = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float initgrenadeImpact = 0.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool isDashing = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isCanFire = true;
@@ -257,6 +257,8 @@ public:
 		void Moveforward_Req(float forward);
 	UFUNCTION(Server, Unreliable)
 		void MoveStrafe_Req(float strafe);
+	UFUNCTION(Server, Unreliable)
+		void IsDash_Req(bool isdash);
 
 };
 

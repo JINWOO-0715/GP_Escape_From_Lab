@@ -265,6 +265,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 	DOREPLIFETIME(ASwat, forwardAxisVal);
 	DOREPLIFETIME(ASwat, strafeAxisVal);
+	DOREPLIFETIME(ASwat, isDashing);
 
 }
 void ASwat::BeginPlay()
@@ -523,11 +524,13 @@ void ASwat::CheckReleasedWS()
 void ASwat::DashOn()
 {
 	isDashing = true;
+	IsDash_Req(isDashing);
 }
 
 void ASwat::DashOff()
 {
 	isDashing = false;
+	IsDash_Req(isDashing);
 }
 
 void ASwat::GunFireOn()
@@ -1031,4 +1034,9 @@ void ASwat::Moveforward_Req_Implementation(float movefoward)
 void ASwat::MoveStrafe_Req_Implementation(float movestrafe)
 {
 	strafeAxisVal = movestrafe;
+}
+
+void ASwat::IsDash_Req_Implementation(bool isdash)
+{
+	isDashing = isdash;
 }
