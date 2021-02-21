@@ -39,7 +39,7 @@ AGrenade::AGrenade()
 	{
 		meshComp->SetupAttachment(RootComponent);
 	}
-	const ConstructorHelpers::FObjectFinder<UStaticMesh> grenade(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/G67_Grenade/SM_G67_Thrown.SM_G67_Thrown"));
+	const ConstructorHelpers::FObjectFinder<UStaticMesh> grenade(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/G67_Grenade/SM_G67_Thrown"));
 	if (grenade.Succeeded())
 	{
 		meshComp->SetStaticMesh(grenade.Object);
@@ -52,12 +52,12 @@ AGrenade::AGrenade()
 
 	if (!explosionParticle)
 	{
-		const ConstructorHelpers::FObjectFinder<UParticleSystem> explosion(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"));
+		const ConstructorHelpers::FObjectFinder<UParticleSystem> explosion(TEXT("/Game/StarterContent/Particles/P_Explosion"));
 		explosionParticle = explosion.Object;
 	}
 	if (!explosionSound)
 	{
-		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Explosion_Cue.Explosion_Cue")).Object;
+		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Explosion_Cue")).Object;
 	}
 }
 

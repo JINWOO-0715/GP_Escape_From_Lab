@@ -20,7 +20,7 @@ AEmptyShell::AEmptyShell()
 		emptyShellComp->SetCollisionProfileName(TEXT("EmptyShell"));
 		emptyShellComp->AddAngularImpulseInDegrees(FVector(10000.0f, 0.0f, 10000.0f));
 	}
-	const ConstructorHelpers::FObjectFinder<UStaticMesh> shellMesh(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_545x39_Empty.SM_Shell_545x39_Empty"));
+	const ConstructorHelpers::FObjectFinder<UStaticMesh> shellMesh(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_545x39_Empty"));
 	if (shellMesh.Succeeded())
 	{
 		emptyShellComp->SetStaticMesh(shellMesh.Object);

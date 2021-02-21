@@ -65,7 +65,7 @@ ABullet::ABullet()
 	}
 
 	if (!bulletMesh)
-		bulletMesh = ConstructorHelpers::FObjectFinder<UStaticMesh> (TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_556x45.SM_Shell_556x45")).Object;
+		bulletMesh = ConstructorHelpers::FObjectFinder<UStaticMesh> (TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_556x45")).Object;
 	
 	bulletMeshComp->SetStaticMesh(bulletMesh);
 	
@@ -99,10 +99,11 @@ ABullet::ABullet()
 	if (!glassImpactSound)
 		glassImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/impact_glass_Cue.impact_glass_Cue")).Object;*/
 	
-	static ConstructorHelpers::FObjectFinder<UBlueprint> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole"));
+	static ConstructorHelpers::FObjectFinder<UClass> bulletHoleDecal(TEXT("/Game/Movable/Decal/BP_BulletHole.BP_BulletHole_C"));
 	if (bulletHoleDecal.Object)
 	{
-		bulletHoleBP = (UClass*)bulletHoleDecal.Object->GeneratedClass;
+		//bulletHoleBP = (UClass*)bulletHoleDecal.Object->GeneratedClass;
+		bulletHoleBP = bulletHoleDecal.Object;
 	}
 	/*if (!bloodDecal)
 	{

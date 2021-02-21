@@ -11,7 +11,9 @@
 
 AMyGameMode::AMyGameMode()
 {
-	DefaultPawnClass = ASwat::StaticClass();
+	static ConstructorHelpers::FObjectFinder<UClass> SwatBP(TEXT("/Game/Movable/MySwat.MySwat_C"));
+	//DefaultPawnClass = ASwat::StaticClass();
+	DefaultPawnClass = SwatBP.Object;
 	// 생성자에서만 가능하네
 	
 }

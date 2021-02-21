@@ -79,10 +79,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetupZombie(FName ZombieName);
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		FName DefaultZombieName;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class UDataTable* ZombieDataTable;
 
 	UPROPERTY(EditAnyWhere, Category = AI)

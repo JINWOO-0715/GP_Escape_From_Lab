@@ -250,16 +250,6 @@ private:
 
 	UPROPERTY()
 		USkeletalMesh* rifleMesh = nullptr;
-
-
-public:
-	UFUNCTION(Server, Unreliable)
-		void Moveforward_Req(float forward);
-	UFUNCTION(Server, Unreliable)
-		void MoveStrafe_Req(float strafe);
-	UFUNCTION(Server, Unreliable)
-		void IsDash_Req(bool isdash);
-
 };
 
 //조준기능 트랜스폼 벨류

@@ -57,19 +57,7 @@ void AZombie::BeginPlay()
 		//발견하는 함수를 좀비 함수실행해라.
 		PawnSensingComp->OnSeePawn.AddDynamic(this, &AZombie::OnPlayerCaught);
 		
-	}
-
-	// DT기반 제작. 좀비 초기화.
-	if (DefaultZombieName != "")
-	{
-		SetupZombie(DefaultZombieName);
-
-		// 효과과 있는건가?
-
-		//this->GetCharacterMovement()->SetAvoidanceEnabled(false);
-	}
-
-	
+	}	
 }
 
 // Called every frame
@@ -115,34 +103,26 @@ void AZombie::MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, A
 
 void AZombie::SetupZombie(FName ZombieName)
 {
-	// 밖에서 데이터 테이블을 불러왔는가?
-	if (ZombieDataTable)
-	{
-		
-		static const FString PString = FString("1");
-		// 불러온 테이블에서 행을 찾는다. ex) ZombieName == Police면 police줄을 가져온다.
-		ZombieData = ZombieDataTable->FindRow<FZombieData>(ZombieName, PString, true);
-		if (ZombieData)
-		{
-			// 좀비 애님 클래스
-			GetMesh()->SetAnimInstanceClass(ZombieData->ZombieAnimBP->GeneratedClass);
-			// 좀비 sk메쉬
-			GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
-		
-			//hp
-			hp = ZombieData->ZombieHP;
-			//speed
-			UCharacterMovementComponent* MovementPtr = Cast<UCharacterMovementComponent>(this->GetCharacterMovement());
-			speed = ZombieData->ZombieSpeed;
-			MovementPtr->MaxWalkSpeed = speed;
-		
-			//공격파워
-			attackPower = ZombieData->ZombieAttackPower;
-			
+	//static const FString PString = FString("1");
+	//// 불러온 테이블에서 행을 찾는다. ex) ZombieName == Police면 police줄을 가져온다.
+	//ZombieData = ZombieDataTable->FindRow<FZombieData>(DefaultZombieName, PString, true);
+	//if (ZombieData)
+	//{
+	//	// 좀비 애님 클래스
+	//	GetMesh()->SetAnimInstanceClass(ZombieData->ZombieAnimBP->GeneratedClass);
+	//	// 좀비 sk메쉬
+	//	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
 
+	//	//hp
+	//	hp = ZombieData->ZombieHP;
+	//	//speed
+	//	UCharacterMovementComponent* MovementPtr = Cast<UCharacterMovementComponent>(this->GetCharacterMovement());
+	//	speed = ZombieData->ZombieSpeed;
+	//	MovementPtr->MaxWalkSpeed = speed;
 
-		}
-	}
+	//	//공격파워
+	//	attackPower = ZombieData->ZombieAttackPower;
+	//}
 }
 
 void AZombie::OnPlayerCaught(APawn* pawn)
