@@ -19,6 +19,14 @@ class UStaticMesh;
 class USkeletalMesh;
 class USceneCaptureComponent2D;
 
+UENUM()
+enum class MONTAGE_TYPE
+{
+	RELOAD,
+	KNIFE,
+	GRENADE
+};
+
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ASwat : public ACharacter
 {
@@ -57,6 +65,7 @@ protected:
 	void UseAmmo();
 	void UseMedkit();
 
+	virtual void AddControllerPitchInput(float Val);
 
 	//제작
 	TSubclassOf<class AWeaponBase> MyItemBlueprint;
@@ -120,25 +129,27 @@ public:
 		UCameraComponent* cameraComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCameraComponent* aimCamera = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		USpotLightComponent* spotComp = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		USkeletalMeshComponent* weaponMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMeshComponent* leftWeaponMesh = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		UStaticMeshComponent* knifeMesh = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		UStaticMeshComponent* magMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		float forwardAxisVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		float strafeAxisVal = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		float playerPitchVal = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int stamina = 100;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		float recoilValue = 0.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		float gunShellEjection = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float gunHatchRotation = 0.0f;
@@ -148,10 +159,19 @@ public:
 		bool isDashing = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isCanFire = true;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool isAiming = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		bool isStabbing = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		bool isThrowing = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		bool isReloading = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		bool isLightOn = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isGunFire = false;
+	
 	UPROPERTY(BlueprintReadOnly)
 		UAnimMontage* fireMontage;
 	UPROPERTY(BlueprintReadOnly)
@@ -228,10 +248,6 @@ public:
 
 
 private:
-	bool isLightOn = false;
-	bool isStabbing = false;
-	bool isThrowing = false;
-	bool isReloading = false;
 	bool isMapOpen = false;
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
@@ -250,6 +266,48 @@ private:
 
 	UPROPERTY()
 		USkeletalMesh* rifleMesh = nullptr;
+
+public:
+	UFUNCTION(Server,Unreliable ,BlueprintCallable)
+	void MoveForwardReq(float moveForwardAxisVal);
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void MoveStrafeReq(float moveStrafeAxisVal);
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SetIsDashingReq(bool isPlayerDash);
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void SetPlayerPitchReq(float playerPitch);
+
+	UFUNCTION(Server,Unreliable)
+	void FireMontagePlayReq();
+	UFUNCTION(NetMulticast, Unreliable)
+	void FireMontagePlayMulticastReq();
+
+	UFUNCTION(Server, Reliable)
+	void MontagePlayReq(MONTAGE_TYPE montageType);
+	UFUNCTION(NetMulticast, Reliable)
+	void MontagePlayMulticastReq(MONTAGE_TYPE montageType);
+
+	UFUNCTION(Server, Reliable)
+	void KnifeAttackReq(bool isKnifeVisible);
+
+	UFUNCTION(Server, Unreliable)
+	void GunHandReq(bool _isAiming, bool _isThrowing, bool _isStabbing, bool _isReloading);
+
+	UFUNCTION(Server,Reliable)
+	void FlashlightReq(bool _isLightOn);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void FlashlightMulticastReq(bool _isLightOn);
+
+	UFUNCTION(Server, Unreliable)
+	void RecoilReq(float recoil);
+
+	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	void GunShellEjectionReq(float _gunShellEjection);
+
+
+private:
+	bool isMyComputer();
 };
 
 //조준기능 트랜스폼 벨류
