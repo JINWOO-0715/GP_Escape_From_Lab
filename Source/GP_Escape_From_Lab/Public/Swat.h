@@ -241,7 +241,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString hasSuvWeaponName = "";
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere,BlueprintReadWrite ,Replicated)
 		FVector initGrenadeSpawnRot {
 		0.0f, 0.0f, 0.0f
 	};
@@ -305,6 +305,14 @@ public:
 	UFUNCTION(Server, Unreliable, BlueprintCallable)
 	void GunShellEjectionReq(float _gunShellEjection);
 
+	UFUNCTION(Server, Reliable,BlueprintCallable)
+	void SpawnBullet(const FVector& startPos, const FVector& location, const FRotator& rotation);
+	
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SpawnGrenadeReq(const FVector& location, const FRotator& rotation);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SetInitGrenadeSpawnRotReq(const FVector& rot);
 
 private:
 	bool isMyComputer();

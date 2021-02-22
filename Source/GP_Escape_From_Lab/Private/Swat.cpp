@@ -15,7 +15,10 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "Components/SphereComponent.h"
 
+#include "Bullet.h"
+#include "Grenade.h"
 #include "PickUps.h"
 #include "WeaponBase.h"
 #include "LineTrace.h"
@@ -266,6 +269,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, weaponMesh);
 	DOREPLIFETIME(ASwat, recoilValue);
 	DOREPLIFETIME(ASwat, gunShellEjection);
+	DOREPLIFETIME(ASwat, initGrenadeSpawnRot);
 }
 
 void ASwat::BeginPlay()
@@ -612,32 +616,13 @@ void ASwat::ThrowGrenade()
 			isThrowing = true;
 			animInstance->Montage_Play(throwMontage);
 
-			MontagePlayReq(MONTAGE_TYPE::GRENADE);
-
 			weaponMesh->SetVisibility(false);
 			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
 			initGrenadeSpawnRot.Normalize();
+			
+			SetInitGrenadeSpawnRotReq(initGrenadeSpawnRot);
 
-			auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
-			auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
-			muzzleRotVec.Normalize();
-			FHitResult hitResult;
-			FCollisionQueryParams collisionParams;
-			collisionParams.bTraceComplex = false;
-			collisionParams.AddIgnoredActor(this);
-			if (GetWorld()->LineTraceSingleByChannel(hitResult, lineBegPos, lineBegPos + muzzleRotVec * 150.0f, ECollisionChannel::ECC_Camera, collisionParams))
-			{
-				auto isSwat = Cast<ASwat>(hitResult.GetActor());
-				auto isZombie = Cast<AZombie>(hitResult.GetActor());
-				if (!isZombie && !isSwat)
-					initgrenadeImpact = 250.0f;
-				else
-					initgrenadeImpact = 500.0f;
-			}
-			else
-			{
-				initgrenadeImpact = 500.0f;
-			}
+			MontagePlayReq(MONTAGE_TYPE::GRENADE);
 		}
 	}
 }
@@ -1184,6 +1169,49 @@ void ASwat::RecoilReq_Implementation(float recoil)
 void ASwat::GunShellEjectionReq_Implementation(float _gunShellEjection)
 {
 	gunShellEjection = _gunShellEjection;
+}
+
+void ASwat::SpawnBullet_Implementation(const FVector& startPos, const FVector& location, const FRotator& rotation)
+{
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), location, rotation);
+	bullet->startPos = startPos;
+}
+
+void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotator& rotation)
+{
+	auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
+	auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
+	muzzleRotVec.Normalize();
+	FHitResult hitResult;
+	FCollisionQueryParams collisionParams;
+	collisionParams.bTraceComplex = false;
+	collisionParams.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, lineBegPos, lineBegPos + muzzleRotVec * 150.0f, ECollisionChannel::ECC_Camera, collisionParams))
+	{
+		auto isSwat = Cast<ASwat>(hitResult.GetActor());
+		auto isZombie = Cast<AZombie>(hitResult.GetActor());
+		if (!isZombie && !isSwat)
+			initgrenadeImpact = 250.0f;
+		else
+			initgrenadeImpact = 500.0f;
+	}
+	else
+	{
+		initgrenadeImpact = 500.0f;
+	}
+
+	AGrenade* grenade = GetWorld()->SpawnActor<AGrenade>(AGrenade::StaticClass(), location, rotation);
+	grenade->ServerSetInitGrenadeImpactReq(initgrenadeImpact);
+	
+	grenade->ServerAddImpactReq(initgrenadeImpact, initGrenadeSpawnRot);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, initGrenadeSpawnRot.ToString());
+	//grenade->initGrenadeImpact = initgrenadeImpact;
+	grenade->SetOwner(this);
+}
+
+void ASwat::SetInitGrenadeSpawnRotReq_Implementation(const FVector& rot)
+{
+	initGrenadeSpawnRot = rot;
 }
 
 bool ASwat::isMyComputer()

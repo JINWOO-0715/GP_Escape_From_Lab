@@ -10,6 +10,7 @@ class UBoxComponent;
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
 class UParticleSystem;
+class AZombie;
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ABullet : public AActor
@@ -33,7 +34,7 @@ public:
 		UBoxComponent* boxCollision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* bulletMeshComp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		FVector startPos {
 		0.0f, 0.0f, 0.0f
 	};
@@ -43,6 +44,20 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AActor> bulletHoleBP = nullptr;
 
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
+	UFUNCTION(Server, Reliable)
+	void ServerPlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
+	UFUNCTION(NetMulticast, Reliable)
+	void SpawnBloodDecalReq(bool isFloorBlood, UPrimitiveComponent* component, const FVector& location, const FRotator& rotation);
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnBloodDecalReq(bool isFloorBlood, UPrimitiveComponent* component, const FVector& location, const FRotator& rotation);
+	UFUNCTION(NetMulticast, Reliable)
+	void SpawnBulletHoleDecalReq(const FVector& location, const FRotator& rotation);
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnBulletHoleDecalReq(const FVector& location, const FRotator& rotation);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	FVector befPos{ 0.0f,0.0f,0.0f };

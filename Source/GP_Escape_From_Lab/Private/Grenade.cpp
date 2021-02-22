@@ -17,7 +17,7 @@
 #include "Zombie.h"
 #include "GlobalFunctionsAndVariables.h"
 #include "Sound/SoundBase.h"
-
+#include "Net/UnrealNetwork.h"
 USoundBase* explosionSound = nullptr;
 UParticleSystem* explosionParticle = nullptr;
 // Sets default values
@@ -25,6 +25,7 @@ AGrenade::AGrenade()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;	
+	SetReplicates(true);
 
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphere collision comp"));
 	if (IsValid(sphereComp))
@@ -65,34 +66,43 @@ AGrenade::AGrenade()
 void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();
-	SetLifeSpan(2.0f);
+	SetLifeSpan(100.0f);
+}
+
+void AGrenade::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGrenade, initGrenadeImpact);
 }
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
-	Super::EndPlay(EndPlayReason);
-	for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
-	{
-		auto zombie = Cast<AZombie>(*iter);
-		if (zombie)
-		{
-			auto dist = zombie->GetActorLocation() - this->GetActorLocation();
-			if ((dist.X * dist.X) + (dist.Y * dist.Y) + (dist.Z * dist.Z)<=reach)
-			{
-				dist.Normalize();
-				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, dist.ToString());
-				zombie->MyReceiveRadialDamageAndImpact(5000.0f, dist, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-			}
-		}
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
-		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
-	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
-	TArray<AActor*>ignoredActor;
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
+	//Super::EndPlay(EndPlayReason);
+	//for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
+	//{
+	//	auto zombie = Cast<AZombie>(*iter);
+	//	if (zombie)
+	//	{
+	//		auto dist = zombie->GetActorLocation() - this->GetActorLocation();
+	//		if ((dist.X * dist.X) + (dist.Y * dist.Y) + (dist.Z * dist.Z)<=reach)
+	//		{
+	//			dist.Normalize();
+	//			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, dist.ToString());
+	//			zombie->MyReceiveRadialDamageAndImpact(5000.0f, dist, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	//		}
+	//	}
+	//}
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
+	////UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
+	//	//->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+	//ServerSpawnExplosionParticle();
+
+	//auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
+	//TArray<AActor*>ignoredActor;
+	//UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
 
 }
 
@@ -102,10 +112,35 @@ void AGrenade::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (initGrenadeImpact != 0.0f)
 	{
-		auto player = Cast<ASwat>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-		sphereComp->AddImpulse(player->initGrenadeSpawnRot * initGrenadeImpact);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(initGrenadeImpact)); 
-		initGrenadeImpact = 0.0f;
+		//ServerAddImpactReq(initGrenadeImpact);
 	}
 }
 
+void AGrenade::ServerSpawnExplosionParticle_Implementation()
+{
+	SpawnExplosionParticle();
+}
+
+void AGrenade::ServerSetInitGrenadeImpactReq_Implementation(float initImpact)
+{
+	initGrenadeImpact = initImpact;
+}
+
+
+void AGrenade::SpawnExplosionParticle_Implementation()
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
+		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+}
+
+void AGrenade::ServerAddImpactReq_Implementation(float initImpact, const FVector& SpawnRot)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "Call Add impact server func");
+	AddImpactReq(initImpact,SpawnRot);
+}
+void AGrenade::AddImpactReq_Implementation(float initImpact, const FVector& SpawnRot)
+{
+	//auto player = Cast<ASwat>(this->GetOwner());
+	sphereComp->AddImpulse(SpawnRot * initImpact);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(initImpact));
+}
