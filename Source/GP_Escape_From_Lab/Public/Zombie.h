@@ -66,6 +66,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+
 	UFUNCTION(BlueprintCallable)
 	void MyReceivePointDmage(float damage, FName boneName, AActor* damageCauser);
 
@@ -75,14 +78,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void OnPlayerCaught(APawn* apawn);
 
-	public:
+public:
 	UFUNCTION(BlueprintCallable)
 		void SetupZombie(FName ZombieName);
 
-	UPROPERTY(EditAnyWhere)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SetZombieHPReq(bool isExplosionDeath, float _hp, const FVector& impulseDir);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void TurnOnRagdoll(bool isExplosionDeath, const FVector& impulseDir);
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		FName DefaultZombieName;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class UDataTable* ZombieDataTable;
 
 	UPROPERTY(EditAnyWhere, Category = AI)
@@ -95,7 +104,7 @@ public:
 	FZombieData* ZombieData;
 
 	int32 WayNum = 0;
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	float hp = 100;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)

@@ -17,7 +17,7 @@
 #include "Zombie.h"
 #include "GlobalFunctionsAndVariables.h"
 #include "Sound/SoundBase.h"
-
+#include "Net/UnrealNetwork.h"
 USoundBase* explosionSound = nullptr;
 UParticleSystem* explosionParticle = nullptr;
 // Sets default values
@@ -25,6 +25,7 @@ AGrenade::AGrenade()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;	
+	SetReplicates(true);
 
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphere collision comp"));
 	if (IsValid(sphereComp))
@@ -39,7 +40,7 @@ AGrenade::AGrenade()
 	{
 		meshComp->SetupAttachment(RootComponent);
 	}
-	const ConstructorHelpers::FObjectFinder<UStaticMesh> grenade(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/G67_Grenade/SM_G67_Thrown.SM_G67_Thrown"));
+	const ConstructorHelpers::FObjectFinder<UStaticMesh> grenade(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/G67_Grenade/SM_G67_Thrown"));
 	if (grenade.Succeeded())
 	{
 		meshComp->SetStaticMesh(grenade.Object);
@@ -52,12 +53,12 @@ AGrenade::AGrenade()
 
 	if (!explosionParticle)
 	{
-		const ConstructorHelpers::FObjectFinder<UParticleSystem> explosion(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"));
+		const ConstructorHelpers::FObjectFinder<UParticleSystem> explosion(TEXT("/Game/StarterContent/Particles/P_Explosion"));
 		explosionParticle = explosion.Object;
 	}
 	if (!explosionSound)
 	{
-		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Explosion_Cue.Explosion_Cue")).Object;
+		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Explosion_Cue")).Object;
 	}
 }
 
@@ -65,13 +66,68 @@ AGrenade::AGrenade()
 void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();
-	SetLifeSpan(2.0f);
+	
+}
+
+void AGrenade::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGrenade, initGrenadeImpact);
 }
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	//Super::EndPlay(EndPlayReason);
+	//for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
+	//{
+	//	auto zombie = Cast<AZombie>(*iter);
+	//	if (zombie)
+	//	{
+	//		auto dist = zombie->GetActorLocation() - this->GetActorLocation();
+	//		if ((dist.X * dist.X) + (dist.Y * dist.Y) + (dist.Z * dist.Z)<=reach)
+	//		{
+	//			dist.Normalize();
+	//			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, dist.ToString());
+	//			zombie->MyReceiveRadialDamageAndImpact(5000.0f, dist, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	//		}
+	//	}
+	//}
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
+	////UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
+	//	//->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+	
+	//auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
+	//TArray<AActor*>ignoredActor;
+	//UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
 
-	Super::EndPlay(EndPlayReason);
+}
+
+// Called every frame
+void AGrenade::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	lifeTime -= DeltaTime;
+
+	if (lifeTime < 0.0f	&& !HasAuthority()/*&& this->GetOwner() == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)*/)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
+			->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+		ServerSpawnExplosionParticle();
+		lifeTime = 100.0f;
+	}
+}
+
+void AGrenade::ServerSpawnExplosionParticle_Implementation()
+{
+	SpawnExplosionParticle();
+	SetLifeSpan(0.5f);
+}
+
+void AGrenade::SpawnExplosionParticle_Implementation()
+{
 	for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
 	{
 		auto zombie = Cast<AZombie>(*iter);
@@ -86,26 +142,27 @@ void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 			}
 		}
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
-		->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
-	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
+
+	//auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
 	TArray<AActor*>ignoredActor;
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
-
 }
 
-// Called every frame
-void AGrenade::Tick(float DeltaTime)
+void AGrenade::ServerSetInitGrenadeImpactReq_Implementation(float initImpact)
 {
-	Super::Tick(DeltaTime);
-	if (initGrenadeImpact != 0.0f)
-	{
-		auto player = Cast<ASwat>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-		sphereComp->AddImpulse(player->initGrenadeSpawnRot * initGrenadeImpact);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(initGrenadeImpact)); 
-		initGrenadeImpact = 0.0f;
-	}
+	initGrenadeImpact = initImpact;
 }
 
+
+void AGrenade::ServerAddImpactReq_Implementation(float initImpact, const FVector& SpawnRot)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "Call Add impact server func");
+	AddImpactReq(initImpact,SpawnRot);
+}
+void AGrenade::AddImpactReq_Implementation(float initImpact, const FVector& SpawnRot)
+{
+	//auto player = Cast<ASwat>(this->GetOwner());
+	sphereComp->AddImpulse(SpawnRot * initImpact);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(initImpact));
+}

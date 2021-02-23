@@ -15,7 +15,10 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "Components/SphereComponent.h"
 
+#include "Bullet.h"
+#include "Grenade.h"
 #include "PickUps.h"
 #include "WeaponBase.h"
 #include "LineTrace.h"
@@ -49,11 +52,11 @@ USoundBase* ar4Sound = nullptr;
 USoundBase* akSound = nullptr;
 USoundBase* silencerSound = nullptr;
 
-UAnimBlueprint* ar4AnimBP = nullptr;
-UAnimBlueprint* ak47AnimBP = nullptr;
-UAnimBlueprint* ak74AnimBP = nullptr;
-UAnimBlueprint* KAVALAnimBP = nullptr;
-
+UClass* ar4AnimBP = nullptr;
+UClass* ak47AnimBP = nullptr;
+UClass* ak74AnimBP = nullptr;
+UClass* KAVALAnimBP = nullptr;
+UClass* AnimBP = nullptr;
 
 
 ASwat::ASwat()
@@ -63,21 +66,21 @@ ASwat::ASwat()
 	SetReplicates(true);
 	if (!ar4AnimBP)
 	{
-		ar4AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AR4.AnimBP_AR4")).Object;
+		ar4AnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AR4.AnimBP_AR4_C")).Object;
 	}
 	if (!ak47AnimBP)
 	{
-		ak47AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AK47.AnimBP_AK47")).Object;
+		ak47AnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AK47.AnimBP_AK47_C")).Object;
 	}
 	if (!ak74AnimBP)
 	{
-		ak74AnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AK74.AnimBP_AK74")).Object;
+		ak74AnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AK74.AnimBP_AK74_C")).Object;
 	}
 	if (!KAVALAnimBP)
 	{
-		KAVALAnimBP = ConstructorHelpers::FObjectFinder<UAnimBlueprint>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_KAVAL.AnimBP_KAVAL")).Object;
+		KAVALAnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_KAVAL.AnimBP_KAVAL_C")).Object;
 	}
-	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat.swat"));
+	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat"));
 	if (SKMesh.Succeeded())
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
@@ -87,19 +90,14 @@ ASwat::ASwat()
 		mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
 	}
 
-	const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBP
-	(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player"));
+	AnimBP = ConstructorHelpers::FObjectFinder<UClass>
+	(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
 
-	if (AnimBP.Succeeded())
-	{
-		GetMesh()->SetAnimInstanceClass(AnimBP.Object->GeneratedClass);
-	}
+	
 
 	cameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	if (IsValid(cameraComp))
 	{
-		cameraComp->AttachToComponent(GetMesh(),
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Head"));
 		cameraComp->bUsePawnControlRotation = true;
 		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
 		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
@@ -115,17 +113,17 @@ ASwat::ASwat()
 		spotComp->OuterConeAngle = 15.0f;
 		spotComp->SetupAttachment(RootComponent);
 		spotComp->SetVisibility(true);
+		spotComp->SetIsReplicated(true);
 	}
 
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("leftWeaponComp"));
+	weaponMesh->SetIsReplicated(true);
 	if (IsValid(weaponMesh))
 	{
 		weaponMesh->SetSimulatePhysics(false);
 		weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		weaponMesh->AttachToComponent(GetMesh(),
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GunHand"));
+		
 		weaponMesh->SetVisibility(false);
-		weaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
 	}
 
 	leftWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponComp"));
@@ -133,13 +131,11 @@ ASwat::ASwat()
 	{
 		leftWeaponMesh->SetSimulatePhysics(false);
 		leftWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		leftWeaponMesh->AttachToComponent(GetMesh(),
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LeftGunHand"));
+		
 		leftWeaponMesh->SetVisibility(true);
-		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
 	}
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
-		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4")).Object;
+		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4")).Object;
 
 	if (rifleMesh)
 	{
@@ -166,11 +162,10 @@ ASwat::ASwat()
 	{
 		knifeMesh->SetSimulatePhysics(false);
 		knifeMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-		knifeMesh->AttachToComponent(GetMesh(),
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("KnifeHand"));
+		knifeMesh->SetIsReplicated(true);
 	}
 	const ConstructorHelpers::FObjectFinder<UStaticMesh> knifeSM
-	(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/M9_Knife/SM_M9_Knife.SM_M9_Knife"));
+	(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/M9_Knife/SM_M9_Knife"));
 	if (knifeSM.Succeeded())
 	{
 		knifeMesh->SetStaticMesh(knifeSM.Object);
@@ -179,8 +174,7 @@ ASwat::ASwat()
 	magMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magMesh"));
 	if (IsValid(magMesh))
 	{
-		magMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-			TEXT("MagHand"));
+		
 		magMesh->SetVisibility(false);
 	}
 
@@ -189,24 +183,24 @@ ASwat::ASwat()
 		(GetCharacterMovement());
 	movement->MaxWalkSpeed = walkSpeed;
 
-	fireMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Firing_Rifle_Montage.Firing_Rifle_Montage")).Object;
-	knifeMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/stabbing_Montage.stabbing_Montage")).Object;
-	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/shortThrow_Montage.shortThrow_Montage")).Object;
-	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage.Reloading_Montage")).Object;
+	fireMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Firing_Rifle_Montage")).Object;
+	knifeMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/stabbing_Montage")).Object;
+	throwMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/shortThrow_Montage")).Object;
+	reloadMontage = ConstructorHelpers::FObjectFinder<UAnimMontage>(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/Reloading_Montage")).Object;
 
-	curveFloat = ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("/Game/Movable/Curves/ARRecoil.ARRecoil")).Object;
+	curveFloat = ConstructorHelpers::FObjectFinder<UCurveFloat>(TEXT("/Game/Movable/Curves/ARRecoil")).Object;
 
 	//
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
-	ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase.BP_WeaponBase"));
+	ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase.BP_WeaponBase_C"));
 	if (ItemBlueprint.Object) {
-		MyItemBlueprint = (UClass*)ItemBlueprint.Object->GeneratedClass;
+		MyItemBlueprint = (UClass*)ItemBlueprint.Object;
 	}
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/Movable/Sound/EmptyGun.EmptyGun"));
+	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/Movable/Sound/EmptyGun"));
 	EmptyGunShotSound = Soundf.Object;
 
 	SwatWeaponDataTable = WeaponData.Object;
@@ -214,28 +208,26 @@ ASwat::ASwat()
 
 	if (!ar4Sound)
 	{
-		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue.m4GunFire_Cue")).Object;
+		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue")).Object;
 	}
 	if (!akSound)
 	{
-		akSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/AK-47_Cue.AK-47_Cue")).Object;
+		akSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/AK-47_Cue")).Object;
 	}
 	if (!silencerSound)
 	{
-		silencerSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/silencer_gun_sound_Cue.silencer_gun_sound_Cue")).Object;
+		silencerSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/silencer_gun_sound_Cue")).Object;
 	}
 
 	scopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("scopeMesh"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> scope(TEXT("StaticMesh'/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/SM_Scope_25x56_Y.SM_Scope_25x56_Y'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> scope(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/SM_Scope_25x56_Y"));
 	scopeMesh->SetStaticMesh(scope.Object);
-	scopeMesh->AttachToComponent(weaponMesh,
-		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+	
 	scopeMesh->SetVisibility(false);
 
 	leftScopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leftScopeMesh"));
 	leftScopeMesh->SetStaticMesh(scope.Object);
-	leftScopeMesh->AttachToComponent(leftWeaponMesh,
-		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+	
 	leftScopeMesh->SetVisibility(false);
 	
 	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
@@ -245,7 +237,7 @@ ASwat::ASwat()
 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 	sceneCaptureCamera->FOVAngle = 4.0f;
 
-	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope.RT_Scope"));
+	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
 
 	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/UI/BP_InventoryWidget"));
@@ -266,41 +258,74 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, forwardAxisVal);
 	DOREPLIFETIME(ASwat, strafeAxisVal);
 	DOREPLIFETIME(ASwat, isDashing);
-
+	DOREPLIFETIME(ASwat, playerPitchVal);
+	DOREPLIFETIME(ASwat, knifeMesh);
+	DOREPLIFETIME(ASwat, isAiming);
+	DOREPLIFETIME(ASwat, isReloading);
+	DOREPLIFETIME(ASwat, isStabbing);
+	DOREPLIFETIME(ASwat, isThrowing);
+	DOREPLIFETIME(ASwat, isLightOn);
+	DOREPLIFETIME(ASwat, spotComp);
+	DOREPLIFETIME(ASwat, weaponMesh);
+	DOREPLIFETIME(ASwat, recoilValue);
+	DOREPLIFETIME(ASwat, gunShellEjection);
+	DOREPLIFETIME(ASwat, initGrenadeSpawnRot);
 }
+
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 
-	MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
-	InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
-	MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
-	HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
-
-
-	if (curveFloat)
+	if (!HasAuthority())
 	{
-		FOnTimelineFloat TimelineProgress;
-		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
-		curveTimeline.AddInterpFloat(curveFloat, TimelineProgress);
-		curveTimeline.SetLooping(true);
-		curveTimeline.PlayFromStart();
+		MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
+		InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
+		MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
+		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
+		InGameUI->AddToViewport();
+		if (curveFloat)
+		{
+			FOnTimelineFloat TimelineProgress;
+			TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
+			curveTimeline.AddInterpFloat(curveFloat, TimelineProgress);
+			curveTimeline.SetLooping(true);
+			curveTimeline.PlayFromStart();
+		}
+		
+		cameraComp->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
+		weaponMesh->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("GunHand"));
+		leftWeaponMesh->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("LeftGunHand"));
+		knifeMesh->AttachToComponent(GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("KnifeHand"));
+		magMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			TEXT("MagHand"));
+		leftScopeMesh->AttachToComponent(leftWeaponMesh,
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
+		scopeMesh->AttachToComponent(weaponMesh,
+			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
+		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		GetMesh()->SetAnimInstanceClass(AnimBP);
 	}
-	InGameUI->AddToViewport();
 }
 void ASwat::Minimap()
 {
-	
-	if (!isMapOpen)
+	if (!HasAuthority()&&GetOwner()==UGameplayStatics::GetPlayerController(GetWorld(),0))//only the player calling this function can view the map.
 	{
-		MinimapUI->AddToViewport();
-		isMapOpen = true;
-	}
-	else
-	{
-		MinimapUI->RemoveFromParent();
-		isMapOpen = false;
+		if (!isMapOpen)
+		{
+			MinimapUI->AddToViewport();
+			isMapOpen = true;
+		}
+		else
+		{
+			MinimapUI->RemoveFromParent();
+			isMapOpen = false;
+		}
 	}
 
 
@@ -366,7 +391,7 @@ void ASwat::DropItem(FName ItemName)
 
 }
 
-void ASwat::KnifeAttack()
+AZombie* ASwat::KnifeAttack()
 {
 	auto leftHandPos = GetMesh()->GetSocketLocation("KnifeHand");
 	auto leftHandRot = GetMesh()->GetSocketRotation("LeftShoulder");
@@ -395,10 +420,12 @@ void ASwat::KnifeAttack()
 
 		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
-		zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
+		//zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "Knife Point Damage");
 
 		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, soundPlayLoc, knifeBodyImpactSound);
 	}
+
 
 	else if (hitResult.IsValidBlockingHit())
 	{
@@ -432,6 +459,8 @@ void ASwat::KnifeAttack()
 			break;
 		}
 	}
+
+	return zombieActor;
 }
 
 void ASwat::EndStabbing()
@@ -439,6 +468,7 @@ void ASwat::EndStabbing()
 	isCanFire = true;
 	isStabbing = false;
 	knifeMesh->SetVisibility(false);
+	KnifeAttackReq(false);
 }
 
 void ASwat::EndThrowing()
@@ -472,8 +502,7 @@ void ASwat::MoveForward(float value)
 		AddMovementInput(GetActorForwardVector(), value);
 		forwardAxisVal = value;
 	}
-	Moveforward_Req(forwardAxisVal);
-
+	MoveForwardReq(forwardAxisVal);
 }
 
 void ASwat::MoveRight(float value)
@@ -483,8 +512,7 @@ void ASwat::MoveRight(float value)
 		AddMovementInput(GetActorRightVector(), value);
 		strafeAxisVal = value;
 	}
-	MoveStrafe_Req(strafeAxisVal);
-
+	MoveStrafeReq(strafeAxisVal);
 }
 
 void ASwat::TurnRate(float value)
@@ -503,11 +531,13 @@ void ASwat::TurnOnOffFlashLight()
 	{
 		isLightOn = false;
 		spotComp->SetIntensity(0.0f);
+		FlashlightReq(isLightOn);
 	}
 	else
 	{
 		isLightOn = true;
 		spotComp->SetIntensity(100000.0f);
+		FlashlightReq(isLightOn);
 	}
 }
 
@@ -524,13 +554,13 @@ void ASwat::CheckReleasedWS()
 void ASwat::DashOn()
 {
 	isDashing = true;
-	IsDash_Req(isDashing);
+	SetIsDashingReq(isDashing);
 }
 
 void ASwat::DashOff()
 {
 	isDashing = false;
-	IsDash_Req(isDashing);
+	SetIsDashingReq(isDashing);
 }
 
 void ASwat::GunFireOn()
@@ -588,30 +618,14 @@ void ASwat::ThrowGrenade()
 			isCanFire = false;
 			isThrowing = true;
 			animInstance->Montage_Play(throwMontage);
+
 			weaponMesh->SetVisibility(false);
 			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
 			initGrenadeSpawnRot.Normalize();
+			
+			SetInitGrenadeSpawnRotReq(initGrenadeSpawnRot);
 
-			auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
-			auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
-			muzzleRotVec.Normalize();
-			FHitResult hitResult;
-			FCollisionQueryParams collisionParams;
-			collisionParams.bTraceComplex = false;
-			collisionParams.AddIgnoredActor(this);
-			if (GetWorld()->LineTraceSingleByChannel(hitResult, lineBegPos, lineBegPos + muzzleRotVec * 150.0f, ECollisionChannel::ECC_Camera, collisionParams))
-			{
-				auto isSwat = Cast<ASwat>(hitResult.GetActor());
-				auto isZombie = Cast<AZombie>(hitResult.GetActor());
-				if (!isZombie && !isSwat)
-					initgrenadeImpact = 250.0f;
-				else
-					initgrenadeImpact = 500.0f;
-			}
-			else
-			{
-				initgrenadeImpact = 500.0f;
-			}
+			MontagePlayReq(MONTAGE_TYPE::GRENADE);
 		}
 	}
 }
@@ -630,7 +644,10 @@ void ASwat::StabKnife()
 			isCanFire = false;
 			isStabbing = true;
 			animInstance->Montage_Play(knifeMontage);
+
+			MontagePlayReq(MONTAGE_TYPE::KNIFE);
 		}
+		KnifeAttackReq(true);
 	}
 }
 
@@ -651,11 +668,18 @@ void ASwat::ReloadGun()
 				UnAimGun();
 				isReloading = true;
 				isCanFire = false;
+				
 				knifeMesh->SetVisibility(false);
+				KnifeAttackReq(false);
+				
 				isStabbing = false;
 				isThrowing = false;
 				animInstance->Montage_Play(reloadMontage);
-				weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+				//서버에게 요청
+				MontagePlayReq(MONTAGE_TYPE::RELOAD);
+				
+				//weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+
 				// 총알수 줄이기. 저장탄창 -없는 총알수만큼. 총알 + 있는만큼.
 				// 충전에 필요한 총알수
 				int temp = 30 - hasFiveAmmo;
@@ -683,11 +707,17 @@ void ASwat::ReloadGun()
 				UnAimGun();
 				isReloading = true;
 				isCanFire = false;
+
 				knifeMesh->SetVisibility(false);
+				KnifeAttackReq(false);
+
 				isStabbing = false;
 				isThrowing = false;
 				animInstance->Montage_Play(reloadMontage);
-				weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+
+				MontagePlayReq(MONTAGE_TYPE::RELOAD);
+
+				//weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
 				// 총알수 줄이기. 저장탄창 -없는 총알수만큼. 총알 + 있는만큼.
 				// 충전에 필요한 총알수
 				int temp = 30 - hasSevenAmmo;
@@ -783,29 +813,29 @@ void ASwat::Interact()
 
 			if (Weapon->WeaponData->WeaponName == "AR4")
 			{
-				weaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
-				leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP->GeneratedClass);
+				weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+				leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 				leftScopeMesh->SetVisibility(false);
 				scopeMesh->SetVisibility(false);
 			}
 			else if (Weapon->WeaponData->WeaponName == "AK74")
 			{
-				weaponMesh->SetAnimInstanceClass(ak74AnimBP->GeneratedClass);
-				leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP->GeneratedClass);
+				weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+				leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
 				leftScopeMesh->SetVisibility(false);
 				scopeMesh->SetVisibility(false);
 			}
 			else if (Weapon->WeaponData->WeaponName == "AK47")
 			{
-				weaponMesh->SetAnimInstanceClass(ak47AnimBP->GeneratedClass);
-				leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP->GeneratedClass);
+				weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+				leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
 				leftScopeMesh->SetVisibility(false);
 				scopeMesh->SetVisibility(false);
 			}
 			else if (Weapon->WeaponData->WeaponName == "KAVAL")
 			{
-				weaponMesh->SetAnimInstanceClass(KAVALAnimBP->GeneratedClass);
-				leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP->GeneratedClass);
+				weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+				leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
 				leftScopeMesh->SetVisibility(true);
 				scopeMesh->SetVisibility(true);
 
@@ -878,6 +908,7 @@ void ASwat::PlayGunFireSound()
 void ASwat::TimelineProgress(float value)
 {
 	recoilValue = value;
+	RecoilReq(recoilValue);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(value));
 }
 
@@ -922,6 +953,8 @@ void ASwat::Tick(float DeltaTime)
 		{
 			gunShellEjection = -7.0f;
 			animInstance->Montage_Play(fireMontage);
+
+			FireMontagePlayReq();
 		}
 
 		curFireRate = maxFireRate;
@@ -949,6 +982,8 @@ void ASwat::Tick(float DeltaTime)
 			scopeMesh->SetVisibility(false);
 		}
 	}
+
+	GunHandReq(isAiming, isThrowing, isStabbing, isReloading);
 
 	auto targetTrans = weaponMesh->GetSocketTransform("IronSight");
 	aimCamera->SetWorldTransform(FTransform(targetTrans.GetRotation(), targetTrans.GetLocation(), FVector(0.001f, 0.001f, 0.001f)));
@@ -994,10 +1029,21 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveLeft", this, &ASwat::MoveRight);
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASwat::AddControllerPitchInput);
 
 
 
+}
+
+void ASwat::AddControllerPitchInput(float Val)
+{
+	if (Val != 0.f && Controller && Controller->IsLocalPlayerController())
+	{
+		APlayerController* const PC = CastChecked<APlayerController>(Controller);
+		PC->AddPitchInput(Val);
+	}
+	playerPitchVal = GetControlRotation().Pitch;
+	SetPlayerPitchReq(playerPitchVal);
 }
 
 void ASwat::UseAmmo()
@@ -1026,17 +1072,163 @@ void ASwat::UseMedkit()
 
 }
 
-void ASwat::Moveforward_Req_Implementation(float movefoward)
+
+void ASwat::MoveForwardReq_Implementation(float moveForwardAxisVal)
 {
-	forwardAxisVal = movefoward;
+	forwardAxisVal = moveForwardAxisVal;
 }
 
-void ASwat::MoveStrafe_Req_Implementation(float movestrafe)
+void ASwat::MoveStrafeReq_Implementation(float moveStrafeAxisVal)
 {
-	strafeAxisVal = movestrafe;
+	strafeAxisVal = moveStrafeAxisVal;
 }
 
-void ASwat::IsDash_Req_Implementation(bool isdash)
+void ASwat::SetIsDashingReq_Implementation(bool isPlayerDash)
 {
-	isDashing = isdash;
+	isDashing = isPlayerDash;
+}
+
+void ASwat::SetPlayerPitchReq_Implementation(float playerPitch)
+{
+	playerPitchVal = playerPitch;
+}
+
+void ASwat::FireMontagePlayReq_Implementation()
+{
+	FireMontagePlayMulticastReq();
+	gunShellEjection = -7.0f;
+}
+
+void ASwat::FireMontagePlayMulticastReq_Implementation()
+{
+	if (!isMyComputer())
+	{
+		auto animInstance = GetMesh()->GetAnimInstance();
+		if (animInstance)
+		{
+			animInstance->Montage_Play(fireMontage);
+		}
+	}
+}
+
+void ASwat::MontagePlayReq_Implementation(MONTAGE_TYPE montageType)
+{
+	MontagePlayMulticastReq(montageType);
+}
+
+void ASwat::MontagePlayMulticastReq_Implementation(MONTAGE_TYPE montageType)
+{
+	if (!isMyComputer())
+	{
+		auto animInstance = GetMesh()->GetAnimInstance();
+		if (animInstance)
+		{
+			if(montageType==MONTAGE_TYPE::RELOAD)
+				animInstance->Montage_Play(reloadMontage);
+			else if (montageType == MONTAGE_TYPE::KNIFE)
+				animInstance->Montage_Play(knifeMontage);
+			else if (montageType == MONTAGE_TYPE::GRENADE)
+				animInstance->Montage_Play(throwMontage);
+		}
+	}
+}
+
+void ASwat::KnifeAttackReq_Implementation(bool isKnifeVisible)
+{
+	knifeMesh->SetVisibility(isKnifeVisible);
+}
+
+void ASwat::GunHandReq_Implementation(bool _isAiming, bool _isThrowing, bool _isStabbing, bool _isReloading)
+{
+	isAiming = _isAiming;
+	isThrowing = _isThrowing;
+	isStabbing = _isStabbing;
+	isReloading = _isReloading;
+}
+void ASwat::FlashlightReq_Implementation(bool _isLightOn)
+{
+	FlashlightMulticastReq(_isLightOn);
+}
+
+void ASwat::FlashlightMulticastReq_Implementation(bool _isLightOn)
+{
+	if (_isLightOn)
+	{
+		isLightOn = _isLightOn;
+		spotComp->SetIntensity(100000.0f);
+	}
+	else
+	{
+		isLightOn = _isLightOn;
+		spotComp->SetIntensity(0.0f);
+	}
+}
+
+void ASwat::RecoilReq_Implementation(float recoil)
+{
+	recoilValue = recoil;
+}
+
+void ASwat::GunShellEjectionReq_Implementation(float _gunShellEjection)
+{
+	gunShellEjection = _gunShellEjection;
+}
+
+void ASwat::SpawnBullet_Implementation(const FVector& startPos, const FVector& location, const FRotator& rotation)
+{
+	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), location, rotation);
+	bullet->startPos = startPos;
+	bullet->SetOwner(this);
+}
+
+void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotator& rotation)
+{
+	auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
+	auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
+	muzzleRotVec.Normalize();
+	FHitResult hitResult;
+	FCollisionQueryParams collisionParams;
+	collisionParams.bTraceComplex = false;
+	collisionParams.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, lineBegPos, lineBegPos + muzzleRotVec * 150.0f, ECollisionChannel::ECC_Camera, collisionParams))
+	{
+		auto isSwat = Cast<ASwat>(hitResult.GetActor());
+		auto isZombie = Cast<AZombie>(hitResult.GetActor());
+		if (!isZombie && !isSwat)
+			initgrenadeImpact = 250.0f;
+		else
+			initgrenadeImpact = 500.0f;
+	}
+	else
+	{
+		initgrenadeImpact = 500.0f;
+	}
+
+	AGrenade* grenade = GetWorld()->SpawnActor<AGrenade>(AGrenade::StaticClass(), location, rotation);
+	grenade->ServerSetInitGrenadeImpactReq(initgrenadeImpact);
+	
+	grenade->ServerAddImpactReq(initgrenadeImpact, initGrenadeSpawnRot);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, initGrenadeSpawnRot.ToString());
+	//grenade->initGrenadeImpact = initgrenadeImpact;
+	grenade->SetOwner(this);
+}
+
+void ASwat::SetInitGrenadeSpawnRotReq_Implementation(const FVector& rot)
+{
+	initGrenadeSpawnRot = rot;
+}
+
+bool ASwat::isMyComputer()
+{
+	return this->GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0);
+}
+
+void ASwat::ServerKnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
+{
+	KnifeZombieDamageReq(hitedZombie);
+}
+
+void ASwat::KnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
+{
+	hitedZombie->MyReceivePointDmage(50.0f, NAME_None, nullptr);
 }
