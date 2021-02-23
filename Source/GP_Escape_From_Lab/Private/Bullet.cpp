@@ -163,7 +163,7 @@ void ABullet::Tick(float DeltaTime)
 			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
 			//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-			//여기 데미지 준 주체를 고쳐야 함 지금은 무조건 플레이어 1으로 되어있음.
+			//만약에 데미지를 준 주체가 총알을 쏜 장본인이라면 좀비에게 데미지를 준다.
 
 			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
 			//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);

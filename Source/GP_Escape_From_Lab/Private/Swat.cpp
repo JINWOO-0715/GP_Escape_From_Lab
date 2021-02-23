@@ -391,7 +391,7 @@ void ASwat::DropItem(FName ItemName)
 
 }
 
-void ASwat::KnifeAttack()
+AZombie* ASwat::KnifeAttack()
 {
 	auto leftHandPos = GetMesh()->GetSocketLocation("KnifeHand");
 	auto leftHandRot = GetMesh()->GetSocketRotation("LeftShoulder");
@@ -420,7 +420,8 @@ void ASwat::KnifeAttack()
 
 		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
-		zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
+		//zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "Knife Point Damage");
 
 		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, soundPlayLoc, knifeBodyImpactSound);
 	}
@@ -458,6 +459,8 @@ void ASwat::KnifeAttack()
 			break;
 		}
 	}
+
+	return zombieActor;
 }
 
 void ASwat::EndStabbing()
@@ -1175,6 +1178,7 @@ void ASwat::SpawnBullet_Implementation(const FVector& startPos, const FVector& l
 {
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), location, rotation);
 	bullet->startPos = startPos;
+	bullet->SetOwner(this);
 }
 
 void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotator& rotation)
@@ -1217,4 +1221,14 @@ void ASwat::SetInitGrenadeSpawnRotReq_Implementation(const FVector& rot)
 bool ASwat::isMyComputer()
 {
 	return this->GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0);
+}
+
+void ASwat::ServerKnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
+{
+	KnifeZombieDamageReq(hitedZombie);
+}
+
+void ASwat::KnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
+{
+	hitedZombie->MyReceivePointDmage(50.0f, NAME_None, nullptr);
 }

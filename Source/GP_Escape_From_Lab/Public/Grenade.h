@@ -54,4 +54,5 @@ public:
 
 private:
 	const float reach = 700.0f * 700.0f;
+	float lifeTime = 3.0f;
 };

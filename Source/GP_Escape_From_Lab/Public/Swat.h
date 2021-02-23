@@ -120,7 +120,7 @@ public:
 		void DropItem(FName ItemName);
 
 	UFUNCTION(BlueprintCallable)
-		void KnifeAttack();
+		AZombie* KnifeAttack();
 
 public:
 
@@ -313,6 +313,12 @@ public:
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SetInitGrenadeSpawnRotReq(const FVector& rot);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerKnifeZombieDamageReq(AZombie* hitedZombie);
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void KnifeZombieDamageReq(AZombie* hitedZombie);
 
 private:
 	bool isMyComputer();
