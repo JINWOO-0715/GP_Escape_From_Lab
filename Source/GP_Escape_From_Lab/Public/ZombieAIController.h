@@ -24,12 +24,7 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 	GENERATED_BODY()
 
 	// 비헤이비어 트리
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	UBehaviorTreeComponent* BehaviorComp;
 
-	// 블랙보드
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	UBlackboardComponent* BlackboardComp;
 
 	// 로케이션 키
 	UPROPERTY(EditDefaultsOnly, Category = AI)
@@ -51,6 +46,12 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 	
 public:
 	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UBehaviorTreeComponent* BehaviorComp;
+
+	// 블랙보드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UBlackboardComponent* BlackboardComp;
 
 	AZombieAIController(const FObjectInitializer& ObjectInitializer =FObjectInitializer::Get());
 

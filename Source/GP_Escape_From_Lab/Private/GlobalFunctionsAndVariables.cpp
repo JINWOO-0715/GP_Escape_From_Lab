@@ -23,6 +23,8 @@
 #include "ZombieAIController.h"
 
 
+
+
 UParticleSystem* wallHitParticle = nullptr;
 UParticleSystem* zombieHitParticle = nullptr;
 
@@ -271,18 +273,18 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 			soundDir = (soundSourceLocation - ZombieLocation);
 			soundDir.Normalize();
 			// 일단 60으로 잡아봄
-			if (finaldB > 60.f)
-			{
-				auto d = Cast<AZombie>(mZombie);
-				if (d)
-				{
-					d->isHearingSound = true;
-					AZombieAIController* AICon = Cast<AZombieAIController>(d->GetController());
-					AICon->SetSoundCaught(startTrace);
+			//if (finaldB > 60.f)
+			//{
+			//	auto d = Cast<AZombie>(mZombie);
+			//	if (d)
+			//	{
+			//		d->isHearingSound = true;
+			//		AZombieAIController* AICon = Cast<AZombieAIController>(d->GetController());
+			//		AICon->SetSoundCaught(startTrace);
 
-				}
+			//	}
 
-			}
+			//}
 			
 		}
 

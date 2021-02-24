@@ -14,7 +14,7 @@ APickups::APickups()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	RootComponent = MeshComp;
-
+	bReplicates = true;
 	DefaultItemName = FName("");
 }
 
@@ -32,7 +32,7 @@ void APickups::BeginPlay()
 
 
 
-void APickups::SetupItemFromDT (FName ItemName)
+void APickups::SetupItemFromDT_Implementation (FName ItemName)
 {
 	if (ItemDataTable)
 	{

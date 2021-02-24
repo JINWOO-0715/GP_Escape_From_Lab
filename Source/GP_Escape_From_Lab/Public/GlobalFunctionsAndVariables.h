@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+
 #include "GlobalFunctionsAndVariables.generated.h"
 
 /**
@@ -11,6 +12,8 @@
  */
 class USoundBase;
 class ASwat;
+
+
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API UGlobalFunctionsAndVariables : public UBlueprintFunctionLibrary
