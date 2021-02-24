@@ -279,9 +279,9 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 					d->isHearingSound = true;
 					AZombieAIController* AICon = Cast<AZombieAIController>(d->GetController());
 					AICon->SetSoundCaught(startTrace);
-				
+
 				}
-			
+
 			}
 			
 		}

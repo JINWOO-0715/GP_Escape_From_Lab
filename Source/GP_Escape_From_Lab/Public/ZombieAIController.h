@@ -24,9 +24,11 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 	GENERATED_BODY()
 
 	// 비헤이비어 트리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	UBehaviorTreeComponent* BehaviorComp;
 
 	// 블랙보드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	UBlackboardComponent* BlackboardComp;
 
 	// 로케이션 키
@@ -46,14 +48,17 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 
 	virtual void OnPossess(APawn* apawn) override;
 
-
-
 	
 public:
+	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	AZombieAIController(const FObjectInitializer& ObjectInitializer =FObjectInitializer::Get());
 
 	// 플레이어 공격하기 (잡기)
 	void SetPlayerCaught(APawn* apawn);
+	
+	
+	UFUNCTION(BlueprintCallable)
 	void SetSoundCaught(FVector soundlocation);
 
 	void ClearSoundKey();
