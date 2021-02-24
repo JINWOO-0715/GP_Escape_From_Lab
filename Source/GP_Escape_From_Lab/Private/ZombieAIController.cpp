@@ -17,6 +17,8 @@
 #include "GameFramework/Controller.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
 #include "Components/SplineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -41,6 +43,15 @@ AZombieAIController::AZombieAIController(const FObjectInitializer& ObjectInitial
 	SoundKey= "SoundTarget";
 	CurrentPatrolPoint = 0;
 }
+//void AZombieAIController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//	DOREPLIFETIME(AZombieAIController, BehaviorComp);
+//	DOREPLIFETIME(AZombieAIController, BlackboardComp);
+//
+//
+//}
 void AZombieAIController::SetSeparationWeight(UCrowdFollowingComponent* inCrowdFolowingComponent, int32 inWeight)
 {
 	if (inCrowdFolowingComponent)
@@ -53,9 +64,10 @@ void AZombieAIController::SetSoundCaught(FVector soundlocation)
 {
 	if (BlackboardComp)
 	{
-		FVector locationV;
+
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, soundlocation.ToString());
 		// 플레이어 키로 변경 설정함 
-		BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
+		//BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
 	}
 	
 }
@@ -78,11 +90,8 @@ void AZombieAIController::OnPossess(APawn* apawn)
 {
 	Super::OnPossess(apawn);
 
-	//좀비 참조 가져오기
 	AZombie* AIZomibe = Cast<AZombie>(apawn);
 
-	
-	
 	if (AIZomibe)
 	{
 		// 좀비의 블랙보드를 가져온다.
@@ -96,14 +105,14 @@ void AZombieAIController::OnPossess(APawn* apawn)
 
 		if (AIZomibe->WayNum == 0)
 		{
-			
+
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPoint::StaticClass(), PatrolPoints);
-			
+
 		}
 		// 패트롤 포인트 채우기
 		if (AIZomibe->WayNum == 1)
 		{
-		
+
 			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPointPath2::StaticClass(), PatrolPoints);
 		}
 		if (AIZomibe->WayNum == 2)
@@ -121,5 +130,6 @@ void AZombieAIController::OnPossess(APawn* apawn)
 		BehaviorComp->StartTree(*AIZomibe->BehaviorTree);
 
 	}
+	
 	
 }
