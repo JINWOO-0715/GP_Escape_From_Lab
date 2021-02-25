@@ -25,7 +25,6 @@ EBTNodeResult::Type UBTSelectPatrolPoint::ExecuteTask(UBehaviorTreeComponent& Ow
 
 		UBlackboardComponent* BlackboardComp = AICon->GetBlackboardComp();
 
-	
 		if (tempZombie->WayNum == 0)
 		{
 

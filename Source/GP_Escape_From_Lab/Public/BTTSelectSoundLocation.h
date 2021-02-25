@@ -13,6 +13,7 @@ UCLASS()
 class GP_ESCAPE_FROM_LAB_API UBTTSelectSoundLocation : public UBTTaskNode
 {
 	GENERATED_BODY()
+	UFUNCTION(NetMulticast, Unreliable,BlueprintCallable)
 		virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 };
