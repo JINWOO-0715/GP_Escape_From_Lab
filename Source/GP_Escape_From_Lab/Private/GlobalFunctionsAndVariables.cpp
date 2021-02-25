@@ -21,7 +21,7 @@
 #include "Zombie.h"
 #include "ZombieManageActor.h"
 #include "ZombieAIController.h"
-
+#include "EngineUtils.h"
 
 
 
@@ -222,7 +222,7 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	
 
 	UGameplayStatics::PlaySoundAtLocation(playerCharacter->GetWorld(), sound, playerCharacterLocation + soundDir*100.0f/*playerCharacterLocation*/, finaldB / GUNFIRE_dB);
-	
+
 	TArray<AActor*> GZombie;
 	TSubclassOf<AZombie> ClassWeNeed;
 	UGameplayStatics::GetAllActorsOfClass(playerCharacter->GetWorld(),AZombie::StaticClass(), GZombie);
@@ -235,59 +235,121 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 	-> 인자값으로 알려주기?
 	}*/
 	// 좀비가 있다면.
-	if (GZombie.Num()-1)
+	//if (GZombie.Num()-1)
+	//{
+	//	for (auto& mZombie : GZombie)
+	//	{
+	//		if (IsValid(mZombie))
+	//		{
+	//			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Silver, "Valid Zombie");
+	//		}
+	//		auto ZombieLocation = mZombie->GetActorLocation();
+	//		auto distanceBetZombieAndSoundSource = (ZombieLocation - soundSourceLocation).Size();
+	//		distanceBetZombieAndSoundSource /= 100.0f;
+	//		i = 0;
+	//		for (i; i < 10; ++i)
+	//		{
+	//			if (distanceBetZombieAndSoundSource < FMath::Pow(2, i))
+	//				break;
+	//		}
+	//		firstRange = FMath::Pow(2, i);
+	//		range = firstRange - FMath::Pow(2, i - 1);
+
+	//		ratioInRange = (distanceBetZombieAndSoundSource - range) / firstRange;
+
+	//		finaldB = 0.0f;
+	//		finaldB = (originaldB - (i * 7 + ratioInRange * 7));
+
+	//		FCollisionQueryParams m_collisionParams;
+	//		m_collisionParams.bTraceComplex = false;
+	//		m_collisionParams.bReturnPhysicalMaterial = true;
+	//		m_collisionParams.AddIgnoredActor(playerCharacter);
+	//		startTrace = soundSourceLocation;
+	//		endTrace = ZombieLocation;
+	//		TArray<FHitResult> m_hitResults;
+
+	//		mZombie->GetWorld()->LineTraceMultiByChannel(m_hitResults, startTrace, endTrace, ECollisionChannel::ECC_GameTraceChannel1,
+	//			m_collisionParams);
+
+	//		finaldB -= m_hitResults.Num() * TRANSMISSION_LOSS;
+	//		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB : zombie");
+
+	//		soundDir = (soundSourceLocation - ZombieLocation);
+	//		soundDir.Normalize();
+	//		// 일단 60으로 잡아봄
+	//		if (finaldB > 60.f)
+	//		{
+	//			auto d = Cast<AZombie>(mZombie);
+	//			if (d)
+	//			{
+	//				d->isHearingSound = true;
+	//				AZombieAIController* AICon = Cast<AZombieAIController>(d->GetController());
+	//				if (IsValid(AICon))
+	//					AICon->SetSoundCaught(startTrace);
+	//				else
+	//					GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is not valid");
+	//			}
+
+	//		}
+	//		
+	//	}
+
+	//}
+
+	for (TActorIterator<AZombie> iter(playerCharacter->GetWorld()); iter; ++iter)
 	{
-		for (auto& mZombie : GZombie)
+		auto mZombie = Cast<AZombie>(*iter);
+		
+		
+		auto ZombieLocation = mZombie->GetActorLocation();
+		auto distanceBetZombieAndSoundSource = (ZombieLocation - soundSourceLocation).Size();
+		distanceBetZombieAndSoundSource /= 100.0f;
+		i = 0;
+		for (i; i < 10; ++i)
 		{
-			auto ZombieLocation = mZombie->GetActorLocation();
-			auto distanceBetZombieAndSoundSource = (ZombieLocation - soundSourceLocation).Size();
-			distanceBetZombieAndSoundSource /= 100.0f;
-			i = 0;
-			for (i; i < 10; ++i)
-			{
-				if (distanceBetZombieAndSoundSource < FMath::Pow(2, i))
-					break;
-			}
-			firstRange = FMath::Pow(2, i);
-			range = firstRange - FMath::Pow(2, i - 1);
+			if (distanceBetZombieAndSoundSource < FMath::Pow(2, i))
+				break;
+		}
+		firstRange = FMath::Pow(2, i);
+		range = firstRange - FMath::Pow(2, i - 1);
 
-			ratioInRange = (distanceBetZombieAndSoundSource - range) / firstRange;
+		ratioInRange = (distanceBetZombieAndSoundSource - range) / firstRange;
 
-			finaldB = 0.0f;
-			finaldB = (originaldB - (i * 7 + ratioInRange * 7));
+		finaldB = 0.0f;
+		finaldB = (originaldB - (i * 7 + ratioInRange * 7));
 
-			FCollisionQueryParams m_collisionParams;
-			m_collisionParams.bTraceComplex = false;
-			m_collisionParams.bReturnPhysicalMaterial = true;
-			m_collisionParams.AddIgnoredActor(playerCharacter);
-			startTrace = soundSourceLocation;
-			endTrace = ZombieLocation;
-			TArray<FHitResult> m_hitResults;
+		FCollisionQueryParams m_collisionParams;
+		m_collisionParams.bTraceComplex = false;
+		m_collisionParams.bReturnPhysicalMaterial = true;
+		m_collisionParams.AddIgnoredActor(playerCharacter);
+		startTrace = soundSourceLocation;
+		endTrace = ZombieLocation;
+		TArray<FHitResult> m_hitResults;
 
-			mZombie->GetWorld()->LineTraceMultiByChannel(m_hitResults, startTrace, endTrace, ECollisionChannel::ECC_GameTraceChannel1,
-				m_collisionParams);
+		mZombie->GetWorld()->LineTraceMultiByChannel(m_hitResults, startTrace, endTrace, ECollisionChannel::ECC_GameTraceChannel1,
+			m_collisionParams);
 
-			finaldB -= m_hitResults.Num() * TRANSMISSION_LOSS;
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB : zombie");
+		finaldB -= m_hitResults.Num() * TRANSMISSION_LOSS;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, FString::SanitizeFloat(finaldB) + "dB : zombie");
 
-			soundDir = (soundSourceLocation - ZombieLocation);
-			soundDir.Normalize();
-			// 일단 60으로 잡아봄
-			if (finaldB > 60.f)
-			{
-				auto d = Cast<AZombie>(mZombie);
-				if (d)
-				{
-					d->isHearingSound = true;
-					AZombieAIController* AICon = Cast<AZombieAIController>(d->GetController());
-					AICon->SetSoundCaught(startTrace);
-
-				}
-
-			}
+		soundDir = (soundSourceLocation - ZombieLocation);
+		soundDir.Normalize();
+		// 일단 60으로 잡아봄
+		if (finaldB > 60.f)
+		{
 			
+			mZombie->isHearingSound = true;
+			AZombieAIController* AICon = Cast<AZombieAIController>(mZombie->GetController());
+			if (AICon)
+				//AICon->SetSoundCaught(startTrace);
+				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is valid");
+			else
+				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is not valid");
+			
+
 		}
 
 	}
+
 
 }

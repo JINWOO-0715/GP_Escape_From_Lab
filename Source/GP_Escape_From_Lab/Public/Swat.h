@@ -331,6 +331,9 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void DestroyWeaponServer(AWeaponBase* HitWeapon);
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void PlayPhysicsSoundOnServerReq(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
+
 private:
 	bool isMyComputer();
 };

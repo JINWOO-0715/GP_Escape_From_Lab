@@ -901,15 +901,18 @@ void ASwat::PlayGunFireSound()
 {
 	if (hasWeaponName == "AR4")
 	{
-		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), ar4Sound);
+		PlayPhysicsSoundOnServerReq(this, weaponMesh->GetSocketLocation("Muzzle"), ar4Sound);
+		//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), ar4Sound);
 	}
 	else if (hasWeaponName == "AK74" || hasWeaponName == "AK47")
 	{
-		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), akSound);
+		PlayPhysicsSoundOnServerReq(this, weaponMesh->GetSocketLocation("Muzzle"), akSound);
+		//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), akSound);
 	}
 	else if (hasWeaponName == "KAVAL")
 	{
-		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), silencerSound);
+		PlayPhysicsSoundOnServerReq(this, weaponMesh->GetSocketLocation("Muzzle"), akSound);
+		//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), silencerSound);
 	}
 }
 
@@ -1239,4 +1242,9 @@ void ASwat::ServerKnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
 void ASwat::KnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
 {
 	hitedZombie->MyReceivePointDmage(50.0f, NAME_None, nullptr);
+}
+
+void ASwat::PlayPhysicsSoundOnServerReq_Implementation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
+{
+	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, soundSourceLocation, sound);
 }
