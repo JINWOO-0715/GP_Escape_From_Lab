@@ -66,7 +66,7 @@ void AZombieAIController::SetSoundCaught(FVector soundlocation)
 
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, soundlocation.ToString());
 		// 플레이어 키로 변경 설정함 
-		//BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
+		BlackboardComp->SetValueAsVector(SoundKey, soundlocation);
 	}
 	
 }

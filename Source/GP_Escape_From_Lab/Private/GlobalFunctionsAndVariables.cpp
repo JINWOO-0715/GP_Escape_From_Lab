@@ -341,11 +341,11 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 			mZombie->isHearingSound = true;
 			AZombieAIController* AICon = Cast<AZombieAIController>(mZombie->GetController());
 			if (AICon)
-				//AICon->SetSoundCaught(startTrace);
+			{
+				AICon->SetSoundCaught(startTrace);
 				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is valid");
-			else
-				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is not valid");
-			
+			}
+			//
 
 		}
 
