@@ -61,7 +61,7 @@ UClass* AnimBP = nullptr;
 
 ASwat::ASwat()
 {
-	
+
 	PrimaryActorTick.bCanEverTick = true;
 	SetReplicates(true);
 	if (!ar4AnimBP)
@@ -91,9 +91,9 @@ ASwat::ASwat()
 	}
 
 	AnimBP = ConstructorHelpers::FObjectFinder<UClass>
-	(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
+		(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
 
-	
+
 
 	cameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	if (IsValid(cameraComp))
@@ -122,7 +122,7 @@ ASwat::ASwat()
 	{
 		weaponMesh->SetSimulatePhysics(false);
 		weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
+
 		weaponMesh->SetVisibility(false);
 	}
 
@@ -131,7 +131,7 @@ ASwat::ASwat()
 	{
 		leftWeaponMesh->SetSimulatePhysics(false);
 		leftWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
+
 		leftWeaponMesh->SetVisibility(true);
 	}
 	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
@@ -174,7 +174,7 @@ ASwat::ASwat()
 	magMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("magMesh"));
 	if (IsValid(magMesh))
 	{
-		
+
 		magMesh->SetVisibility(false);
 	}
 
@@ -222,14 +222,14 @@ ASwat::ASwat()
 	scopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("scopeMesh"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> scope(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/SM_Scope_25x56_Y"));
 	scopeMesh->SetStaticMesh(scope.Object);
-	
+
 	scopeMesh->SetVisibility(false);
 
 	leftScopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("leftScopeMesh"));
 	leftScopeMesh->SetStaticMesh(scope.Object);
-	
+
 	leftScopeMesh->SetVisibility(false);
-	
+
 	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
 	sceneCaptureCamera->SetupAttachment(leftScopeMesh);
 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
@@ -248,7 +248,7 @@ ASwat::ASwat()
 	MinimapWidget = Minimapadd.Class;
 	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
 	HeatedUIWidget = HeatedUiAdd.Class;
-	
+
 }// Called when the game starts or when spawned
 
 void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -292,7 +292,7 @@ void ASwat::BeginPlay()
 			curveTimeline.SetLooping(true);
 			curveTimeline.PlayFromStart();
 		}
-		
+
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
 		weaponMesh->AttachToComponent(GetMesh(),
@@ -314,7 +314,7 @@ void ASwat::BeginPlay()
 }
 void ASwat::Minimap()
 {
-	if (!HasAuthority()&&GetOwner()==UGameplayStatics::GetPlayerController(GetWorld(),0))//only the player calling this function can view the map.
+	if (!HasAuthority() && GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0))//only the player calling this function can view the map.
 	{
 		if (!isMapOpen)
 		{
@@ -363,7 +363,7 @@ void ASwat::Inventory()
 
 }
 
-void ASwat::DropItem(FName ItemName)
+void ASwat::DropItem_Implementation(FName ItemName)
 {
 
 
@@ -375,19 +375,29 @@ void ASwat::DropItem(FName ItemName)
 	APickups* Ammo = GetWorld()->SpawnActor<APickups>(End, FRotator(0, 0, 0));
 	Ammo->ItemDataTable = SwatItemDataTable;
 	Ammo->MeshComp->SetSimulatePhysics(true);
-
-
+	float d = 0.9f;
 	if (ItemName == FName("Ammo"))
 	{
 		Ammo->SetupItemFromDT(FName("Ammo"));
+		if (Ammo->ItemDataTable)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
+
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
+
 	}
 
 	if (ItemName == FName("Medkit"))
 	{
 		Ammo->SetupItemFromDT(FName("Medkit"));
+		if (Ammo->ItemDataTable)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
+
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
 	}
-
-
 
 }
 
@@ -622,7 +632,7 @@ void ASwat::ThrowGrenade()
 			weaponMesh->SetVisibility(false);
 			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
 			initGrenadeSpawnRot.Normalize();
-			
+
 			SetInitGrenadeSpawnRotReq(initGrenadeSpawnRot);
 
 			MontagePlayReq(MONTAGE_TYPE::GRENADE);
@@ -668,16 +678,16 @@ void ASwat::ReloadGun()
 				UnAimGun();
 				isReloading = true;
 				isCanFire = false;
-				
+
 				knifeMesh->SetVisibility(false);
 				KnifeAttackReq(false);
-				
+
 				isStabbing = false;
 				isThrowing = false;
 				animInstance->Montage_Play(reloadMontage);
 				//서버에게 요청
 				MontagePlayReq(MONTAGE_TYPE::RELOAD);
-				
+
 				//weaponMesh->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
 
 				// 총알수 줄이기. 저장탄창 -없는 총알수만큼. 총알 + 있는만큼.
@@ -768,7 +778,7 @@ void ASwat::UnAimGun()
 	}
 }
 
-void ASwat::Interact()
+void ASwat::Interact_Implementation()
 {
 
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
@@ -787,70 +797,70 @@ void ASwat::Interact()
 			if (!isReloading)
 			{
 
-			
-			Weapon = HitWeapon;
-			Weapon->SetActorEnableCollision(false);
 
-			//이런식으로 가져다가 사용하면 된다.
-			rifleMesh = Weapon->WeaponData->WeaponMesh;
-			FString tempWeaponName = hasWeaponName;
-			hasWeaponName = Weapon->WeaponData->WeaponName;
+				Weapon = HitWeapon;
+				Weapon->SetActorEnableCollision(false);
 
-			// 장착 무기 바꾸고...
-			weaponMesh->SetSkeletalMesh(rifleMesh);
-			leftWeaponMesh->SetSkeletalMesh(rifleMesh);
-			FVector f(0.f, 0.f, 100.f);
-			End += f;
-			//UE_LOG(LogTemp, Warning, TEXT("히트"));
-			//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
-			AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
-			//가지고 있던 무기를 버린다.
-			DroppedItem->SetupWeapon(FName(tempWeaponName));
+				//이런식으로 가져다가 사용하면 된다.
+				rifleMesh = Weapon->WeaponData->WeaponMesh;
+				FString tempWeaponName = hasWeaponName;
+				hasWeaponName = Weapon->WeaponData->WeaponName;
 
-			maxFireRate = Weapon->WeaponData->FireRate;
-			attackPower = Weapon->WeaponData->AttackPower;
-			recoilPower = Weapon->WeaponData->RecoilPower;
+				// 장착 무기 바꾸고...
+				weaponMesh->SetSkeletalMesh(rifleMesh);
+				leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+				FVector f(0.f, 0.f, 100.f);
+				End += f;
+				//UE_LOG(LogTemp, Warning, TEXT("히트"));
+				//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
+				AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
+				//가지고 있던 무기를 버린다.
+				DroppedItem->SetupWeapon(FName(tempWeaponName));
 
-			if (Weapon->WeaponData->WeaponName == "AR4")
-			{
-				weaponMesh->SetAnimInstanceClass(ar4AnimBP);
-				leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
-				leftScopeMesh->SetVisibility(false);
-				scopeMesh->SetVisibility(false);
-			}
-			else if (Weapon->WeaponData->WeaponName == "AK74")
-			{
-				weaponMesh->SetAnimInstanceClass(ak74AnimBP);
-				leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
-				leftScopeMesh->SetVisibility(false);
-				scopeMesh->SetVisibility(false);
-			}
-			else if (Weapon->WeaponData->WeaponName == "AK47")
-			{
-				weaponMesh->SetAnimInstanceClass(ak47AnimBP);
-				leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
-				leftScopeMesh->SetVisibility(false);
-				scopeMesh->SetVisibility(false);
-			}
-			else if (Weapon->WeaponData->WeaponName == "KAVAL")
-			{
-				weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-				leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-				leftScopeMesh->SetVisibility(true);
-				scopeMesh->SetVisibility(true);
+				maxFireRate = Weapon->WeaponData->FireRate;
+				attackPower = Weapon->WeaponData->AttackPower;
+				recoilPower = Weapon->WeaponData->RecoilPower;
 
-				//scopeActor->AttachToComponent(weaponMesh,
-					//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
-			}
-			HitWeapon->Destroy();
+				if (Weapon->WeaponData->WeaponName == "AR4")
+				{
+					weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+					leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+					leftScopeMesh->SetVisibility(false);
+					scopeMesh->SetVisibility(false);
+				}
+				else if (Weapon->WeaponData->WeaponName == "AK74")
+				{
+					weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+					leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+					leftScopeMesh->SetVisibility(false);
+					scopeMesh->SetVisibility(false);
+				}
+				else if (Weapon->WeaponData->WeaponName == "AK47")
+				{
+					weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+					leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+					leftScopeMesh->SetVisibility(false);
+					scopeMesh->SetVisibility(false);
+				}
+				else if (Weapon->WeaponData->WeaponName == "KAVAL")
+				{
+					weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+					leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+					leftScopeMesh->SetVisibility(true);
+					scopeMesh->SetVisibility(true);
+
+					//scopeActor->AttachToComponent(weaponMesh,
+						//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+				}
+				HitWeapon->Destroy();
 
 
 
-			// 내가 쓰는 무기를 바꾼다.
+				// 내가 쓰는 무기를 바꾼다.
 
-			// 아래 줌 위치 적용하는거. 
-			//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
-			//Weapon->SetupWeapon(FName("AR4"));
+				// 아래 줌 위치 적용하는거. 
+				//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
+				//Weapon->SetupWeapon(FName("AR4"));
 
 
 			}
@@ -865,6 +875,7 @@ void ASwat::Interact()
 			if (Pickup->ItemData->ItemName == "Medkit")
 			{
 				hasMedkit += 1;
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(hasMedkit));
 			}
 			if (Pickup->ItemData->ItemName == "Ammo")
 			{
@@ -1123,7 +1134,7 @@ void ASwat::MontagePlayMulticastReq_Implementation(MONTAGE_TYPE montageType)
 		auto animInstance = GetMesh()->GetAnimInstance();
 		if (animInstance)
 		{
-			if(montageType==MONTAGE_TYPE::RELOAD)
+			if (montageType == MONTAGE_TYPE::RELOAD)
 				animInstance->Montage_Play(reloadMontage);
 			else if (montageType == MONTAGE_TYPE::KNIFE)
 				animInstance->Montage_Play(knifeMontage);
@@ -1206,7 +1217,7 @@ void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotat
 
 	AGrenade* grenade = GetWorld()->SpawnActor<AGrenade>(AGrenade::StaticClass(), location, rotation);
 	grenade->ServerSetInitGrenadeImpactReq(initgrenadeImpact);
-	
+
 	grenade->ServerAddImpactReq(initgrenadeImpact, initGrenadeSpawnRot);
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, initGrenadeSpawnRot.ToString());
 	//grenade->initGrenadeImpact = initgrenadeImpact;

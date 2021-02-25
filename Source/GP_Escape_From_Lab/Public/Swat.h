@@ -57,7 +57,6 @@ protected:
 	void AimGun();
 	void UnAimGun();
 
-	void Interact();
 	void Inventory();
 	void Minimap();
 
@@ -80,6 +79,7 @@ protected:
 
 	class USoundWave* EmptyGunShotSound;
 
+	
 
 
 protected:
@@ -107,7 +107,8 @@ public:
 		void SpawnGrenade();
 	UFUNCTION(BlueprintCallable)
 		USkeletalMeshComponent* GetWeaponMeshComponent() { return weaponMesh; }
-
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+		void Interact();
 
 	UFUNCTION(BlueprintCallable)
 		void PlayGunFireSound();
@@ -116,7 +117,7 @@ public:
 		void TimelineProgress(float value);
 
 	//무기 버리기를 위한 linetrace위치 설정및 spawn까지
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 		void DropItem(FName ItemName);
 
 	UFUNCTION(BlueprintCallable)
