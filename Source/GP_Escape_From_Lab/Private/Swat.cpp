@@ -118,6 +118,24 @@ ASwat::ASwat()
 		spotComp->SetVisibility(true);
 		spotComp->SetIsReplicated(true);
 	}
+	//원뿔 충돌체크 좀비야 도망가라
+	ConstructorHelpers::FObjectFinder<UStaticMesh> m_cone(TEXT("/Game/StarterContent/Shapes/Shape_Cone.Shape_Cone"));
+	coneMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ConeComp"));
+	if (IsValid(coneMeshComp))
+	{
+		coneMeshComp->SetSimulatePhysics(false);
+		coneMeshComp->SetupAttachment(spotComp);
+		coneMeshComp->SetRelativeRotation(FRotator(-90.f, 0.0f, 180.f));
+		coneMeshComp->SetRelativeLocation(FVector(230.f, 0.0f, 0.0f));
+		coneMeshComp->SetRelativeScale3D(FVector(1.5f, 1.5f, 2.5f));
+		coneMeshComp->SetStaticMesh(m_cone.Object);
+		coneMeshComp->SetVisibility(true);
+
+		coneMeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+		// 충돌체크 설정해주는방법. 
+		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
+		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+	}
 
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("leftWeaponComp"));
 	weaponMesh->SetIsReplicated(true);
@@ -287,6 +305,10 @@ void ASwat::BeginPlay()
 		MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 		InGameUI->AddToViewport();
+
+		coneMeshComp->OnComponentBeginOverlap.AddDynamic(this, &ASwat::OnOverlapBegin);
+		coneMeshComp->OnComponentEndOverlap.AddDynamic(this, &ASwat::OnOverlapEnd);
+
 		if (curveFloat)
 		{
 			FOnTimelineFloat TimelineProgress;
@@ -332,6 +354,33 @@ void ASwat::Minimap()
 	}
 
 
+}
+void ASwat::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	//if (isLightOn)
+	//{
+	//	auto hitzombie = Cast<AZombie>(OtherActor);
+	//	if (hitzombie)
+	//	{
+	//		// 움직이게 하자
+
+	//		auto c = hitzombie->GetCharacterMovement();
+	//		AZombieAIController* AICon = Cast<AZombieAIController>(hitzombie->GetController());
+	//		UBlackboardComponent* BlackboardComp = AICon->GetBlackboardComp();
+	//		BlackboardComp->SetValueAsBool("BBisHeatedLight", true);
+
+	//	}
+	//}
+}
+//원뿔 충돌체크 좀비야 도망가라
+void ASwat::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	/*
+	if (isLightOn)
+	{
+
+	}*/
 }
 
 void ASwat::Inventory()
