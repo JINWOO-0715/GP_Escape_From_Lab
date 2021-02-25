@@ -41,6 +41,8 @@ class GP_ESCAPE_FROM_LAB_API AZombieAIController : public AAIController
 	//이동 포인트
 	TArray<AActor*> PatrolPoints;
 
+
+
 	virtual void OnPossess(APawn* apawn) override;
 
 	

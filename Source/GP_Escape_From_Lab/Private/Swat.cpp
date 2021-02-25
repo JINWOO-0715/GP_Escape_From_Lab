@@ -59,11 +59,14 @@ UClass* KAVALAnimBP = nullptr;
 UClass* AnimBP = nullptr;
 
 
+
+
 ASwat::ASwat()
 {
 
 	PrimaryActorTick.bCanEverTick = true;
 	SetReplicates(true);
+
 	if (!ar4AnimBP)
 	{
 		ar4AnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_AR4.AnimBP_AR4_C")).Object;
@@ -372,31 +375,19 @@ void ASwat::DropItem_Implementation(FName ItemName)
 
 	FVector End = Start + cameraComp->GetForwardVector() * 200.0f;
 
+
 	APickups* Ammo = GetWorld()->SpawnActor<APickups>(End, FRotator(0, 0, 0));
-	Ammo->ItemDataTable = SwatItemDataTable;
-	Ammo->MeshComp->SetSimulatePhysics(true);
-	float d = 0.9f;
+	
 	if (ItemName == FName("Ammo"))
 	{
+		Ammo->DefaultItemName = FName("Ammo");
 		Ammo->SetupItemFromDT(FName("Ammo"));
-		if (Ammo->ItemDataTable)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
-
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
-
 	}
 
 	if (ItemName == FName("Medkit"))
 	{
+		Ammo->DefaultItemName = FName("Medkit");
 		Ammo->SetupItemFromDT(FName("Medkit"));
-		if (Ammo->ItemDataTable)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
-
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
 	}
 
 }
@@ -777,8 +768,16 @@ void ASwat::UnAimGun()
 		isAiming = false;
 	}
 }
-
-void ASwat::Interact_Implementation()
+void ASwat::DropWeaponServer_Implementation(const FString &WeaponName , FVector End)
+{
+	AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
+	DroppedItem->SetupWeapon(FName(WeaponName));
+}
+void ASwat::DestroyWeaponServer_Implementation(AWeaponBase* HitWeapon)
+{
+	HitWeapon->Destroy();
+}
+void ASwat::Interact()
 {
 
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
@@ -813,9 +812,10 @@ void ASwat::Interact_Implementation()
 				End += f;
 				//UE_LOG(LogTemp, Warning, TEXT("히트"));
 				//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
-				AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
+				
 				//가지고 있던 무기를 버린다.
-				DroppedItem->SetupWeapon(FName(tempWeaponName));
+				DropWeaponServer(tempWeaponName, End);
+
 
 				maxFireRate = Weapon->WeaponData->FireRate;
 				attackPower = Weapon->WeaponData->AttackPower;
@@ -852,12 +852,9 @@ void ASwat::Interact_Implementation()
 					//scopeActor->AttachToComponent(weaponMesh,
 						//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
 				}
-				HitWeapon->Destroy();
-
-
-
+				DestroyWeaponServer(HitWeapon);
+		
 				// 내가 쓰는 무기를 바꾼다.
-
 				// 아래 줌 위치 적용하는거. 
 				//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
 				//Weapon->SetupWeapon(FName("AR4"));
@@ -881,23 +878,23 @@ void ASwat::Interact_Implementation()
 			{
 				hasFiveSaveAmmo += 30;
 			}
-
 			//UE_LOG(LogTemp, Warning, TEXT("HIT")); 
 			//UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
 			//UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
-
-
-		   // 인벤토리에 추가하는 기능을 넣는다.
+  		   // 인벤토리에 추가하는 기능을 넣는다.
 		   // UE_LOG(LogTemp, Warning, TEXT("히트"));
-		   // UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
-
+	        // UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
+			
 		   // 이런식으로 아이템 사용가능.
-
-			Pickup->Destroy();
+			DestroyItemServer(Pickup);
 		}
 
 	}
 
+}
+void ASwat::DestroyItemServer_Implementation(APickups* item)
+{
+	item->Destroy();
 }
 
 void ASwat::PlayGunFireSound()

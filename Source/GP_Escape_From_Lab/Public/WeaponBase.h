@@ -68,19 +68,20 @@ protected:
 	FVector AimPos;
 
 public:
-	UFUNCTION(BlueprintCallable)
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void SetupWeapon(FName WeaponName);
 
 	//밖에서 넣을 데이터 테이블.
 	UPROPERTY(EditAnyWhere)
 		class UDataTable* WeaponDataTable;
-	// 총기 애니메이션 혹시 있으면 임시용.
-	//void Fire();
-		//무기 메시
+
+	//무기 메시
 	UPROPERTY(EditAnyWhere)
 		class USkeletalMeshComponent* MeshComp;
 	// 디폴트 무기.
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		FName DefaultWeaponName;
 
 	//가져올 데이터 테이블 행1

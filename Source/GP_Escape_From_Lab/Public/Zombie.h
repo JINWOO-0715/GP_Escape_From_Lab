@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Engine/DataTable.h"
+#include "AIPatrolPoint.h"
+#include "AIPatrolPointPath2.h"
+#include "AIPatrolPointPath3.h"
+#include "AIPatrolPointPath4.h"
 
 
 #include "Components/SplineComponent.h"
@@ -103,7 +107,9 @@ public:
 
 	FZombieData* ZombieData;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	int32 WayNum = 0;
+
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	float hp = 100;
 

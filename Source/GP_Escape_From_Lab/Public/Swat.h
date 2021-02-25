@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
-
+#include "Pickups.h"
+#include "WeaponBase.h"
 #include "Engine/DataTable.h"
 
 #include "Swat.generated.h"
@@ -107,8 +108,11 @@ public:
 		void SpawnGrenade();
 	UFUNCTION(BlueprintCallable)
 		USkeletalMeshComponent* GetWeaponMeshComponent() { return weaponMesh; }
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 		void Interact();
+
+	UFUNCTION(Server,Reliable,BlueprintCallable)
+		void DestroyItemServer(APickups* item);
 
 	UFUNCTION(BlueprintCallable)
 		void PlayGunFireSound();
@@ -320,6 +324,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void KnifeZombieDamageReq(AZombie* hitedZombie);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void DropWeaponServer(const FString &WeaponName , FVector End);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void DestroyWeaponServer(AWeaponBase* HitWeapon);
 
 private:
 	bool isMyComputer();
