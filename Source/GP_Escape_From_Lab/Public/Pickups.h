@@ -41,20 +41,15 @@ public:
 	// Sets default values for this actor's properties
 	APickups();
 protected:
-
-
-
-
-	// 아이템 이름.
-	UPROPERTY(EditAnyWhere)
-		FName DefaultItemName;
-
-
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+
+	// 아이템 이름.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName DefaultItemName;
+
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	class UDataTable* ItemDataTable;
 
@@ -63,10 +58,8 @@ public:
 
 
 	//가져올 데이터 테이블 행1 데이터테이블에서 이름으로 가져옴!!!
-	UFUNCTION(BlueprintCallable,Server, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void SetupItemFromDT(FName ItemName);
-
-	
 	
 	FItemData* ItemData;
 };

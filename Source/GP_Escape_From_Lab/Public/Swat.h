@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
-
+#include "Pickups.h"
 #include "Engine/DataTable.h"
 
 #include "Swat.generated.h"
@@ -107,8 +107,11 @@ public:
 		void SpawnGrenade();
 	UFUNCTION(BlueprintCallable)
 		USkeletalMeshComponent* GetWeaponMeshComponent() { return weaponMesh; }
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 		void Interact();
+
+	UFUNCTION(Server,Reliable,BlueprintCallable)
+		void DestroyItemServer(APickups* item);
 
 	UFUNCTION(BlueprintCallable)
 		void PlayGunFireSound();
