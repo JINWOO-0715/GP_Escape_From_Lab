@@ -4,7 +4,7 @@
 #include "WeaponBase.h"
 
 #include "Components/SkeletalMeshComponent.h"
-
+#include "Net/UnrealNetwork.h"
 // Sets default values
 AWeaponBase::AWeaponBase()
 {
@@ -12,8 +12,15 @@ AWeaponBase::AWeaponBase()
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	RootComponent = MeshComp;
+	bReplicates = true;
+	DefaultWeaponName = FName("AR4");
 
-	DefaultWeaponName = FName("");
+	static ConstructorHelpers::FObjectFinder<UDataTable> tempWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	if (tempWeaponData.Succeeded())
+	{
+		WeaponDataTable = tempWeaponData.Object;
+	}
+	
 
 }
 
@@ -22,25 +29,41 @@ void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (DefaultWeaponName != "")
-	{
-		SetupWeapon(DefaultWeaponName);
-	}
+	SetupWeapon(DefaultWeaponName);
+
 			
 }
+void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-void AWeaponBase::SetupWeapon(FName WeaponName)
+	DOREPLIFETIME(AWeaponBase, DefaultWeaponName);
+}
+void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 {
 	if (WeaponDataTable)
 	{
 		static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
 		WeaponData = WeaponDataTable->FindRow<FWeaponData>(WeaponName, PString, true);
-
-		if (WeaponData)
+		if (WeaponName == "")
 		{
-			// 무기 메쉬 설정하기
-			MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+			if (WeaponData)
+			{
+				WeaponName = FName("AR4");
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "HelloWorld");
+				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+			}
 		}
+		else
+		{
+			if (WeaponData)
+			{
+			
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, WeaponName.ToString());
+				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+			}
+		}
+	
 	}
 }
 

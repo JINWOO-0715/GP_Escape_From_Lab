@@ -6,6 +6,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Swat.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -35,6 +36,12 @@ void APickups::BeginPlay()
 }
 
 
+void APickups::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APickups, DefaultItemName);
+}
 
 
 void APickups::SetupItemFromDT_Implementation (FName ItemName)
@@ -52,7 +59,6 @@ void APickups::SetupItemFromDT_Implementation (FName ItemName)
 			{
 				// 아이템 메쉬 설정하기
 				MeshComp->SetStaticMesh(ItemData->ItemMesh);
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
 				MeshComp->SetSimulatePhysics(true);
 				MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 				MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
@@ -70,7 +76,7 @@ void APickups::SetupItemFromDT_Implementation (FName ItemName)
 			{
 				// 아이템 메쉬 설정하기
 				MeshComp->SetStaticMesh(ItemData->ItemMesh);
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(d));
+				
 				MeshComp->SetSimulatePhysics(true);
 				MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 				MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Overlap);

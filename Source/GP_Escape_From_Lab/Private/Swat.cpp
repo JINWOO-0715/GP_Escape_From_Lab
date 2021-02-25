@@ -768,7 +768,15 @@ void ASwat::UnAimGun()
 		isAiming = false;
 	}
 }
-
+void ASwat::DropWeaponServer_Implementation(const FString &WeaponName , FVector End)
+{
+	AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
+	DroppedItem->SetupWeapon(FName(WeaponName));
+}
+void ASwat::DestroyWeaponServer_Implementation(AWeaponBase* HitWeapon)
+{
+	HitWeapon->Destroy();
+}
 void ASwat::Interact()
 {
 
@@ -804,9 +812,10 @@ void ASwat::Interact()
 				End += f;
 				//UE_LOG(LogTemp, Warning, TEXT("히트"));
 				//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
-				AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
+				
 				//가지고 있던 무기를 버린다.
-				DroppedItem->SetupWeapon(FName(tempWeaponName));
+				DropWeaponServer(tempWeaponName, End);
+
 
 				maxFireRate = Weapon->WeaponData->FireRate;
 				attackPower = Weapon->WeaponData->AttackPower;
@@ -843,7 +852,8 @@ void ASwat::Interact()
 					//scopeActor->AttachToComponent(weaponMesh,
 						//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
 				}
-				HitWeapon->Destroy();
+				DestroyWeaponServer(HitWeapon);
+		
 				// 내가 쓰는 무기를 바꾼다.
 				// 아래 줌 위치 적용하는거. 
 				//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 

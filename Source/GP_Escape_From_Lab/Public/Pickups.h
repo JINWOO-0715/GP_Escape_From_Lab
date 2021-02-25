@@ -46,8 +46,9 @@ protected:
 
 public:	
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// 아이템 이름.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Replicated)
 	FName DefaultItemName;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
