@@ -218,6 +218,7 @@ ASwat::ASwat()
 	if (ItemBlueprint.Object) {
 		MyItemBlueprint = (UClass*)ItemBlueprint.Object;
 	}
+	
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
 
@@ -845,69 +846,81 @@ void ASwat::Interact()
 			if (!isReloading)
 			{
 
-
-				Weapon = HitWeapon;
-				Weapon->SetActorEnableCollision(false);
-
-				//이런식으로 가져다가 사용하면 된다.
-				rifleMesh = Weapon->WeaponData->WeaponMesh;
-				FString tempWeaponName = hasWeaponName;
-				hasWeaponName = Weapon->WeaponData->WeaponName;
-
-				// 장착 무기 바꾸고...
-				weaponMesh->SetSkeletalMesh(rifleMesh);
-				leftWeaponMesh->SetSkeletalMesh(rifleMesh);
-				FVector f(0.f, 0.f, 100.f);
-				End += f;
-				//UE_LOG(LogTemp, Warning, TEXT("히트"));
-				//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
-				
-				//가지고 있던 무기를 버린다.
-				DropWeaponServer(tempWeaponName, End);
-
-
-				maxFireRate = Weapon->WeaponData->FireRate;
-				attackPower = Weapon->WeaponData->AttackPower;
-				recoilPower = Weapon->WeaponData->RecoilPower;
-
-				if (Weapon->WeaponData->WeaponName == "AR4")
+				if (hasSubWeapon)
 				{
-					weaponMesh->SetAnimInstanceClass(ar4AnimBP);
-					leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
-					leftScopeMesh->SetVisibility(false);
-					scopeMesh->SetVisibility(false);
-				}
-				else if (Weapon->WeaponData->WeaponName == "AK74")
-				{
-					weaponMesh->SetAnimInstanceClass(ak74AnimBP);
-					leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
-					leftScopeMesh->SetVisibility(false);
-					scopeMesh->SetVisibility(false);
-				}
-				else if (Weapon->WeaponData->WeaponName == "AK47")
-				{
-					weaponMesh->SetAnimInstanceClass(ak47AnimBP);
-					leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
-					leftScopeMesh->SetVisibility(false);
-					scopeMesh->SetVisibility(false);
-				}
-				else if (Weapon->WeaponData->WeaponName == "KAVAL")
-				{
-					weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-					leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-					leftScopeMesh->SetVisibility(true);
-					scopeMesh->SetVisibility(true);
+					Weapon = HitWeapon;
+					Weapon->SetActorEnableCollision(false);
 
-					//scopeActor->AttachToComponent(weaponMesh,
-						//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
-				}
-				DestroyWeaponServer(HitWeapon);
-		
-				// 내가 쓰는 무기를 바꾼다.
-				// 아래 줌 위치 적용하는거. 
-				//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
-				//Weapon->SetupWeapon(FName("AR4"));
+					//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
+					rifleMesh = Weapon->WeaponData->WeaponMesh;
+					// 현재 들고 있는 무기이름
+					FString tempWeaponName = hasWeaponName;
+					// 무기이름을 히트무기로 바꿈
+					hasWeaponName = Weapon->WeaponData->WeaponName;
 
+					// 장착 무기 바꾸고...
+					weaponMesh->SetSkeletalMesh(rifleMesh);
+					leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+					FVector f(0.f, 0.f, 100.f);
+					End += f;
+					//UE_LOG(LogTemp, Warning, TEXT("히트"));
+					//UE_LOG(LogTemp, Warning, TEXT("히트 : %f"), End.Z);
+
+					//가지고 있던 무기를 버린다.
+					DropWeaponServer(tempWeaponName, End);
+
+
+					maxFireRate = Weapon->WeaponData->FireRate;
+					attackPower = Weapon->WeaponData->AttackPower;
+					recoilPower = Weapon->WeaponData->RecoilPower;
+
+					if (Weapon->WeaponData->WeaponName == "AR4")
+					{
+						weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+						leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+						leftScopeMesh->SetVisibility(false);
+						scopeMesh->SetVisibility(false);
+					}
+					else if (Weapon->WeaponData->WeaponName == "AK74")
+					{
+						weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+						leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+						leftScopeMesh->SetVisibility(false);
+						scopeMesh->SetVisibility(false);
+					}
+					else if (Weapon->WeaponData->WeaponName == "AK47")
+					{
+						weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+						leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+						leftScopeMesh->SetVisibility(false);
+						scopeMesh->SetVisibility(false);
+					}
+					else if (Weapon->WeaponData->WeaponName == "KAVAL")
+					{
+						weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+						leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+						leftScopeMesh->SetVisibility(true);
+						scopeMesh->SetVisibility(true);
+
+						//scopeActor->AttachToComponent(weaponMesh,
+							//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+					}
+					DestroyWeaponServer(HitWeapon);
+
+					// 내가 쓰는 무기를 바꾼다.
+					// 아래 줌 위치 적용하는거. 
+					//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
+					//Weapon->SetupWeapon(FName("AR4"));
+
+				}
+				else
+				{
+					SubWeapon = HitWeapon;
+					SubWeapon->SetActorEnableCollision(false);
+					hasSuvWeaponName =SubWeapon->WeaponData->WeaponName;
+					hasSubWeapon = true;
+					DestroyWeaponServer(HitWeapon);
+				}
 
 			}
 

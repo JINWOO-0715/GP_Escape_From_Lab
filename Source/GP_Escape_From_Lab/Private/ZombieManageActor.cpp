@@ -20,7 +20,7 @@ void AZombieManageActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+
 }
 
 // Called every frame

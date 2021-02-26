@@ -70,8 +70,17 @@ protected:
 	//¡¶¿€
 	TSubclassOf<class AWeaponBase> MyItemBlueprint;
 
+
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	bool hasSubWeapon = false;
+
+
 	UPROPERTY(EditAnyWhere)
 		class AWeaponBase* Weapon;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		class AWeaponBase* SubWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineTrace* LineTraceComp;
