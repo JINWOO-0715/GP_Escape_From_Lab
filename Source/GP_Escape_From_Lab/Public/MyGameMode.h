@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Zombie.h"
 #include "GameFramework/GameMode.h"
+
 #include "MyGameMode.generated.h"
 
 /**
@@ -19,6 +21,12 @@ protected:
 
 public:
 	AMyGameMode();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<AZombie*> GlobalZombie;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AZombie> ZombieSub;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool is_heated;

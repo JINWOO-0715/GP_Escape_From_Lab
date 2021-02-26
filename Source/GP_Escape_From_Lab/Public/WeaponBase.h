@@ -73,6 +73,10 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void SetupWeapon(FName WeaponName);
 
+
+	UFUNCTION(BlueprintCallable)
+		void OnlyClientSetupWeapon(FName WeaponName);
+
 	//밖에서 넣을 데이터 테이블.
 	UPROPERTY(EditAnyWhere)
 		class UDataTable* WeaponDataTable;
