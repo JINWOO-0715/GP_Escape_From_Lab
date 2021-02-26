@@ -60,7 +60,7 @@ protected:
 
 	void Inventory();
 	void Minimap();
-
+	void ChangeWeapon();
 
 	void UseAmmo();
 	void UseMedkit();
@@ -73,13 +73,13 @@ protected:
 
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	bool hasSubWeapon = false;
+		bool hasSubWeapon = false;
 
 
 	UPROPERTY(EditAnyWhere)
-		class AWeaponBase* Weapon;
+		class AWeaponBase* mainWeapon;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere)
 		class AWeaponBase* SubWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -262,7 +262,7 @@ public:
 		FString hasWeaponName = "AR4";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString hasSuvWeaponName = "";
+		FString hasSubWeaponName = "";
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite ,Replicated)
 		FVector initGrenadeSpawnRot {

@@ -39,6 +39,35 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 	DOREPLIFETIME(AWeaponBase, DefaultWeaponName);
 }
+
+void AWeaponBase::OnlyClientSetupWeapon(FName WeaponName)
+{
+	if (WeaponDataTable)
+	{
+		static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
+		WeaponData = WeaponDataTable->FindRow<FWeaponData>(WeaponName, PString, true);
+		if (WeaponName == "")
+		{
+			if (WeaponData)
+			{
+				WeaponName = FName("AR4");
+			
+				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+			}
+		}
+		else
+		{
+			if (WeaponData)
+			{
+
+				
+				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+			}
+		}
+
+	}
+
+}
 void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 {
 	if (WeaponDataTable)
@@ -50,7 +79,7 @@ void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 			if (WeaponData)
 			{
 				WeaponName = FName("AR4");
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "HelloWorld");
+			
 				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
 			}
 		}
@@ -59,7 +88,7 @@ void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 			if (WeaponData)
 			{
 			
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, WeaponName.ToString());
+			
 				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
 			}
 		}

@@ -136,7 +136,7 @@ ASwat::ASwat()
 		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
 		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 	}
-
+	
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("leftWeaponComp"));
 	weaponMesh->SetIsReplicated(true);
 	if (IsValid(weaponMesh))
@@ -227,7 +227,10 @@ ASwat::ASwat()
 
 	SwatWeaponDataTable = WeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
-
+	//mainWeapon->WeaponDataTable = SwatWeaponDataTable;
+	//static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
+	//mainWeapon->WeaponData = mainWeapon->WeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString, true);
+	//
 	if (!ar4Sound)
 	{
 		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue")).Object;
@@ -318,6 +321,8 @@ void ASwat::BeginPlay()
 			curveTimeline.SetLooping(true);
 			curveTimeline.PlayFromStart();
 		}
+
+
 
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
@@ -848,15 +853,15 @@ void ASwat::Interact()
 
 				if (hasSubWeapon)
 				{
-					Weapon = HitWeapon;
-					Weapon->SetActorEnableCollision(false);
+					mainWeapon = HitWeapon;
+					mainWeapon->SetActorEnableCollision(false);
 
 					//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
-					rifleMesh = Weapon->WeaponData->WeaponMesh;
+					rifleMesh = mainWeapon->WeaponData->WeaponMesh;
 					// 현재 들고 있는 무기이름
 					FString tempWeaponName = hasWeaponName;
 					// 무기이름을 히트무기로 바꿈
-					hasWeaponName = Weapon->WeaponData->WeaponName;
+					hasWeaponName = mainWeapon->WeaponData->WeaponName;
 
 					// 장착 무기 바꾸고...
 					weaponMesh->SetSkeletalMesh(rifleMesh);
@@ -870,32 +875,32 @@ void ASwat::Interact()
 					DropWeaponServer(tempWeaponName, End);
 
 
-					maxFireRate = Weapon->WeaponData->FireRate;
-					attackPower = Weapon->WeaponData->AttackPower;
-					recoilPower = Weapon->WeaponData->RecoilPower;
+					maxFireRate = mainWeapon->WeaponData->FireRate;
+					attackPower = mainWeapon->WeaponData->AttackPower;
+					recoilPower = mainWeapon->WeaponData->RecoilPower;
 
-					if (Weapon->WeaponData->WeaponName == "AR4")
+					if (mainWeapon->WeaponData->WeaponName == "AR4")
 					{
 						weaponMesh->SetAnimInstanceClass(ar4AnimBP);
 						leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 						leftScopeMesh->SetVisibility(false);
 						scopeMesh->SetVisibility(false);
 					}
-					else if (Weapon->WeaponData->WeaponName == "AK74")
+					else if (mainWeapon->WeaponData->WeaponName == "AK74")
 					{
 						weaponMesh->SetAnimInstanceClass(ak74AnimBP);
 						leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
 						leftScopeMesh->SetVisibility(false);
 						scopeMesh->SetVisibility(false);
 					}
-					else if (Weapon->WeaponData->WeaponName == "AK47")
+					else if (mainWeapon->WeaponData->WeaponName == "AK47")
 					{
 						weaponMesh->SetAnimInstanceClass(ak47AnimBP);
 						leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
 						leftScopeMesh->SetVisibility(false);
 						scopeMesh->SetVisibility(false);
 					}
-					else if (Weapon->WeaponData->WeaponName == "KAVAL")
+					else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
 					{
 						weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
 						leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
@@ -917,7 +922,7 @@ void ASwat::Interact()
 				{
 					SubWeapon = HitWeapon;
 					SubWeapon->SetActorEnableCollision(false);
-					hasSuvWeaponName =SubWeapon->WeaponData->WeaponName;
+					hasSubWeaponName =SubWeapon->WeaponData->WeaponName;
 					hasSubWeapon = true;
 					DestroyWeaponServer(HitWeapon);
 				}
@@ -983,6 +988,66 @@ void ASwat::TimelineProgress(float value)
 	recoilValue = value;
 	RecoilReq(recoilValue);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(value));
+}
+void ASwat::ChangeWeapon()
+{
+	float f = 0.f;
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(f));
+	if (hasSubWeapon)
+	{
+		// Weapon= 지금들고있는거
+		// sub= 서브 무기
+		auto temp = mainWeapon;
+		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
+		mainWeapon = SubWeapon;
+		SubWeapon = temp;
+		rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+		// 지금 들고있는 무기를 서브무기로 
+		hasWeaponName = mainWeapon->WeaponData->WeaponName;
+		weaponMesh->SetSkeletalMesh(rifleMesh);
+		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+
+		// 서브무기를 지금 들고있는 무기로
+		maxFireRate = mainWeapon->WeaponData->FireRate;
+		attackPower = mainWeapon->WeaponData->AttackPower;
+		recoilPower = mainWeapon->WeaponData->RecoilPower;
+
+		if (mainWeapon->WeaponData->WeaponName == "AR4")
+		{
+			weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(false);
+		}
+		else if (mainWeapon->WeaponData->WeaponName == "AK74")
+		{
+			weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(false);
+		}
+		else if (mainWeapon->WeaponData->WeaponName == "AK47")
+		{
+			weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(false);
+		}
+		else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
+		{
+			weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+			leftScopeMesh->SetVisibility(true);
+			scopeMesh->SetVisibility(true);
+
+			//scopeActor->AttachToComponent(weaponMesh,
+				//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+		}
+	}
+	else
+	{
+		return;
+	}
 }
 
 // Called every frame
@@ -1085,6 +1150,7 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASwat::ReloadGun);
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &ASwat::AimGun);
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &ASwat::UnAimGun);
+	PlayerInputComponent->BindAction("SwitchWeapon", IE_Released, this, &ASwat::ChangeWeapon);
 
 	// 무기 줍는 기 누르면.
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
