@@ -244,6 +244,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float recoilPower = 2.0f;
 
+	// 가지고 있는 키카드수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		int hasKeyCard = 0;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString hasWeaponName = "AR4";
