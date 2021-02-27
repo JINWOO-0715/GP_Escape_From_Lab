@@ -361,6 +361,10 @@ public:
 	void DestroyWeaponServer(AWeaponBase* HitWeapon);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void HasKeyCardReq(int KeyCard);
+
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void PlayPhysicsSoundOnServerReq(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
 
 private:

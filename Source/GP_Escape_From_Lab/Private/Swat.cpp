@@ -298,6 +298,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, recoilValue);
 	DOREPLIFETIME(ASwat, gunShellEjection);
 	DOREPLIFETIME(ASwat, initGrenadeSpawnRot);
+	DOREPLIFETIME(ASwat, hasKeyCard);
 }
 
 void ASwat::BeginPlay()
@@ -1317,6 +1318,11 @@ void ASwat::FlashlightMulticastReq_Implementation(bool _isLightOn)
 void ASwat::RecoilReq_Implementation(float recoil)
 {
 	recoilValue = recoil;
+}
+
+void ASwat::HasKeyCardReq_Implementation(int KeyCard)
+{
+	hasKeyCard = KeyCard;
 }
 
 void ASwat::GunShellEjectionReq_Implementation(float _gunShellEjection)
