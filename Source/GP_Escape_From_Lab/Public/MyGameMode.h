@@ -30,4 +30,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool is_heated;
+
 };
