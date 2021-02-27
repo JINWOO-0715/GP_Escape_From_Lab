@@ -274,6 +274,9 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
 	HeatedUIWidget = HeatedUiAdd.Class;
 
+	ConstructorHelpers::FClassFinder<UUserWidget> Mission1add(TEXT("/Game/Movable/UI/BP_Mission1Widget"));
+	Mission1Widget = Mission1add.Class;
+
 }// Called when the game starts or when spawned
 
 void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -309,6 +312,14 @@ void ASwat::BeginPlay()
 		MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 		InGameUI->AddToViewport();
+
+		//스테이지별 미션용 UI
+		if (NowStage == 1)
+		{
+			Mission1UI = CreateWidget<UUserWidget>(PlayerController, Mission1Widget);
+			Mission1UI->AddToViewport();
+		}
+
 
 		coneMeshComp->OnComponentBeginOverlap.AddDynamic(this, &ASwat::OnOverlapBegin);
 		coneMeshComp->OnComponentEndOverlap.AddDynamic(this, &ASwat::OnOverlapEnd);

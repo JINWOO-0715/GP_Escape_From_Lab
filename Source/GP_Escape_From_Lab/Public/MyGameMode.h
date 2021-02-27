@@ -31,4 +31,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool is_heated;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int hasKeyCard = 0;
+
 };

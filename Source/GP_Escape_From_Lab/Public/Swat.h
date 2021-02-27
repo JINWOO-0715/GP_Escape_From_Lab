@@ -216,6 +216,10 @@ public:
 	TSubclassOf<class UUserWidget> HeatedUIWidget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> MinimapWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> Mission1Widget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* MainMenu;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -224,6 +228,10 @@ public:
 	UUserWidget* HeatedUI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* MinimapUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* Mission1UI;
+
 public:
 	// 플레이어 hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
