@@ -256,6 +256,9 @@ public:
 	// 가지고 있는 키카드수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		int hasKeyCard = 0;
+	// 현재 스테이지 단계
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		int NowStage = 1;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
