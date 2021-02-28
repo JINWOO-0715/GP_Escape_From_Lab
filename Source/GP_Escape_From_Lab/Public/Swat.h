@@ -262,10 +262,10 @@ public:
 		float recoilPower = 2.0f;
 
 	// 가지고 있는 키카드수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasKeyCard = 0;
 	// 현재 스테이지 단계
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int NowStage = 1;
 
 
@@ -360,7 +360,7 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void DestroyWeaponServer(AWeaponBase* HitWeapon);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void HasKeyCardReq(int KeyCard);
 
 
