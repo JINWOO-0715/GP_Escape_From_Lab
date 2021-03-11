@@ -223,46 +223,49 @@ SynthesizedSound::SynthesizedSound()
 float SynthesizedSound::play()
 {
 // 	++tick;
-// 	if (tick > 50000)
-// 	{
-// 		isPlaying = false;
-// 		sourceSound.clear();
-// 	}
+
 	
-//	if (isPlaying)
-//	{
-//// 		auto out = 0.0f;
-//// 		auto playValue = sourceSound.play();
-//// 		float decayVolume[MAX_MODES] = { 0, };
-//// 		for (int i = 0; i < modesNumber; ++i)
-//// 		{
-//// 			decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
-//// 
-//// 			out += (originOsc[i].sinewave(steelModesData[i][0]) * steelModesData[i][1]) * decayVolume[i];
-//// 		}
-//// 		playValue *= originEnv.adsr(1, originEnv.trigger);
-//// 		auto residual = playValue - out;
-//// 		auto fixedOut = 0.0f;
-//// 		for (int i = 0; i < modesNumber; ++i)
-//// 		{
-//// 			fixedOut += (fixedOsc[i].sinewave(steelModesData[i][0]) * fixedGain[i]) * decayVolume[i];
-//// 		}
-//// 		
-//// 		if (isPlayOnce)
-//// 		{
-//// 			originEnv.trigger = 0.0f;
-//// 			for (int i = 0; i < modesNumber; ++i)
-//// 			{
-//// 				modesEnv[i].trigger = 0.0f;
-//// 			}
-//// 			isPlayOnce = false;
-//// 		}
-//
-//		return tempOSc.sinewave(500);//fixedOut+residual;
-//	}
-//	else
-//		return 0.0f;
-	return tempOSc.sinewave(500);
+	if (isPlaying)
+	{
+
+		++tick;
+ 		auto out = 0.0f;
+ 		auto playValue = sourceSound.play();
+ 		float decayVolume[MAX_MODES] = { 0, };
+ 		for (int i = 0; i < modesNumber; ++i)
+ 		{
+ 			decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
+ 
+ 			out += (originOsc[i].sinewave(steelModesData[i][0]) * steelModesData[i][1]) * decayVolume[i];
+ 		}
+ 		playValue *= originEnv.adsr(1, originEnv.trigger);
+ 		auto residual = playValue - out;
+ 		auto fixedOut = 0.0f;
+ 		for (int i = 0; i < modesNumber; ++i)
+ 		{
+ 			fixedOut += (fixedOsc[i].sinewave(steelModesData[i][0]) * fixedGain[i]) * decayVolume[i];
+ 		}
+ 		
+ 		if (isPlayOnce)
+ 		{
+ 			originEnv.trigger = 0.0f;
+ 			for (int i = 0; i < modesNumber; ++i)
+ 			{
+ 				modesEnv[i].trigger = 0.0f;
+ 			}
+ 			isPlayOnce = false;
+ 		}
+		if (tick > 50000)
+		{
+			isPlaying = false;
+			sourceSound.clear();
+			tick = 0;
+		}
+		return fixedOut+residual;
+	}
+	else
+		return 0.0f;
+
 	
 }
 
@@ -299,7 +302,7 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		break;
 	case WhichSound::WALK:
 		modesNumber = MODES_NUMS[int(whichSound)];
-		sourceSound.load("/Game/walk.wav");
+		sourceSound.load("C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav");
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
