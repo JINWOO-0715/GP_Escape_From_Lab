@@ -34,6 +34,7 @@
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 
+#include "Misc/FileHelper.h"
 #include "Net/UnrealNetwork.h"
 
 #include "RtAudio.h"
@@ -430,9 +431,32 @@ void ASwat::BeginPlay()
 				sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
 
 			DAC->startStream();
+			/// <summary>
+			/// 
+			/// </summary>
+			//FString CompleteFilePath = "C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav";
+			//if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*CompleteFilePath))
+			//{
+			//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Could not Find File"));
+			//	return;
+			//}
+
+			//const int64 FileSize = FPlatformFileManager::Get().GetPlatformFile().FileSize(*CompleteFilePath);
+
+			////if not in player controller use UE_LOG. ClientMessages show up if you press ~ in-game
+
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::FromInt(FileSize));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("File Size is: (in kb)"));
+			//FString FileData = "TEST";
+			//FFileHelper::LoadFileToString(FileData, *CompleteFilePath);
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FileData);
+	
+			///// <summary>
+			///// C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav
+			///// </summary>
 
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
-			if (testAudiofile.load("/Game/walk.wav"))
+			if (testAudiofile.load("C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav"))
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
 			else
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
