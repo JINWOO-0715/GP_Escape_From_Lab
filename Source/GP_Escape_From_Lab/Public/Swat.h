@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
-#include "Pickups.h"
 #include "WeaponBase.h"
 #include "Engine/DataTable.h"
+#include "SynthesizedSound.h"
+#include <vector>
+#include <sstream>
 
 #include "Swat.generated.h"
 
@@ -19,7 +21,8 @@ class UAnimMontage;
 class UStaticMesh;
 class USkeletalMesh;
 class USceneCaptureComponent2D;
-
+class APickups;
+class RtAudio;
 UENUM()
 enum class MONTAGE_TYPE
 {
@@ -36,10 +39,10 @@ class GP_ESCAPE_FROM_LAB_API ASwat : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASwat();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void MoveForward(float value);
 	void MoveRight(float value);
@@ -369,8 +372,15 @@ public:
 
 private:
 	bool isMyComputer();
-};
 
+private:
+	RtAudio* DAC;
+	std::vector<float> data;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void playSynthesizedSound(WhichSound whichSound);
+};
 //조준기능 트랜스폼 벨류
 //auto activate off
 //attach to gun socket is muzzle

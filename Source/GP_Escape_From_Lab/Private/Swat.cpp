@@ -36,6 +36,9 @@
 
 #include "Net/UnrealNetwork.h"
 
+#include "RtAudio.h"
+
+
 //캐릭터 클래스는 상속시 캡슐, 캐릭터 무브먼트, 스켈레탈 메쉬를 상속받는다.
 //직접 접근은 허용되지 않으며 Get 메소드를 통해 접근할 수 있다.
 
@@ -58,12 +61,69 @@ UClass* ak74AnimBP = nullptr;
 UClass* KAVALAnimBP = nullptr;
 UClass* AnimBP = nullptr;
 
+maxiOsc tempOsc;
+
+maxiSample testAudiofile;
+
+const int SOUND_BUFFER_SIZE = 7;
+SynthesizedSound synthesizedSoundBuffer[7];
+
+void ASwat::playSynthesizedSound(WhichSound whichSound)
+{
+	for (int i = 0; i < SOUND_BUFFER_SIZE; ++i)
+	{
+		if (!synthesizedSoundBuffer[i].getIsPlaying())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "sound play call!"+FString::FromInt(i));
+			synthesizedSoundBuffer[i].initSoundData(whichSound);
+			break;
+		}
+	}
+}
+
+void play(double* output) 
+{
+	float out = 0.0f;
+	for (int i = 0; i < SOUND_BUFFER_SIZE; ++i)
+	{
+		if (synthesizedSoundBuffer[i].getIsPlaying())
+		{
+			out += synthesizedSoundBuffer[i].play();
+		}
+	}
+	
+	
+	output[0] = out;//testAudiofile.play();
+	output[1] = output[0];
+}
+int routing(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames,
+	double streamTime, RtAudioStreamStatus status, void* userData)
+{
+	unsigned int i, j;
+	
+	// 없어도 실행된다.
+	double* buffer = (double*)outputBuffer;
 
 
+	double* lastValues = (double*)userData;
+	//   double currentTime = (double) streamTime; Might come in handy for control
+	if (status)
+		std::cout << "Stream underflow detected!" << std::endl;
+
+	// Write interleaved audio data.
+	for (i = 0; i < nBufferFrames; i++)
+	{
+		play(lastValues);
+		for (j = 0; j < 2; j++)
+		{
+			*buffer++ = lastValues[j];
+		}
+	}
+	return 0;
+}
 
 ASwat::ASwat()
 {
-
 	PrimaryActorTick.bCanEverTick = true;
 	SetReplicates(true);
 
@@ -300,7 +360,6 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, initGrenadeSpawnRot);
 	
 }
-
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
@@ -334,8 +393,6 @@ void ASwat::BeginPlay()
 			curveTimeline.PlayFromStart();
 		}
 
-
-
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
 		weaponMesh->AttachToComponent(GetMesh(),
@@ -353,6 +410,46 @@ void ASwat::BeginPlay()
 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		GetMesh()->SetAnimInstanceClass(AnimBP);
+		
+		if (isMyComputer())
+		{
+			DAC = new RtAudio(RtAudio::WINDOWS_DS);
+			if (DAC->getDeviceCount() < 1)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "failed to find audio device(from RtAudio)");
+			}
+			RtAudio::StreamParameters parameters;
+			parameters.deviceId = DAC->getDefaultOutputDevice();
+			parameters.nChannels = 2;
+			parameters.firstChannel = 0;
+
+			unsigned int sampleRate = 44100;
+			unsigned int bufferFrames = 1024;
+			data.resize(2);
+			DAC->openStream(&parameters, NULL, RTAUDIO_FLOAT64,
+				sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
+
+			DAC->startStream();
+
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
+			if (testAudiofile.load("/Game/walk.wav"))
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
+			else
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
+		}
+		else
+			DAC = nullptr;
+	}
+}
+void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (!HasAuthority()&&isMyComputer())
+	{
+		//DAC->stopStream();
+		//DAC->closeStream();
+		//delete DAC;
+		//스트림을 닫아야하는데 닫는 순간 에러가 난다....
+		//추후 수정
 	}
 }
 void ASwat::Minimap()
