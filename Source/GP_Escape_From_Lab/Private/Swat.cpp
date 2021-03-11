@@ -34,7 +34,8 @@
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 
-#include "Misc/FileHelper.h"
+
+#include "Misc/Paths.h"
 #include "Net/UnrealNetwork.h"
 
 #include "RtAudio.h"
@@ -431,9 +432,7 @@ void ASwat::BeginPlay()
 				sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
 
 			DAC->startStream();
-			/// <summary>
-			/// 
-			/// </summary>
+
 			//FString CompleteFilePath = "C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav";
 			//if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*CompleteFilePath))
 			//{
@@ -450,15 +449,22 @@ void ASwat::BeginPlay()
 			//FString FileData = "TEST";
 			//FFileHelper::LoadFileToString(FileData, *CompleteFilePath);
 			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FileData);
-	
-			///// <summary>
-			///// C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav
-			///// </summary>
 
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
-			if (testAudiofile.load("C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav"))
+
+			// 파일이름가져와라
+			FString tempProjectContentPath = FPaths::ProjectContentDir();
+			// 풀로 가져와라
+			FString fileFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*tempProjectContentPath);
+			// 찾는 파일이름
+			FString findWavName = "walk.wav";
+			// 풀파일이름 + 찾는 파일이름
+			fileFullPath += findWavName;
+			// FString파일을 string로 변환해주자
+			std::string test2 = TCHAR_TO_UTF8(*fileFullPath);
+			if (testAudiofile.load(test2))
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
-			else
+			else				
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
 		}
 		else
