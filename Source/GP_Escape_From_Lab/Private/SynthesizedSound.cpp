@@ -1,5 +1,7 @@
 #include "SynthesizedSound.h"
 #include <random>
+#include "Misc/Paths.h"
+#include "Containers/UnrealString.h"
 
 std::random_device rd;
 std::default_random_engine dre(rd());
@@ -274,12 +276,23 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 {
 	isPlaying = true;
 	isPlayOnce = true;
+	// 파일이름가져와라
+	FString tempProjectContentPath = FPaths::ProjectContentDir();
+	// 풀로 가져와라
+	FString fileFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*tempProjectContentPath);
+	// 찾는 파일이름
+	FString findWavName = "qwe.wav";
+	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 
 	switch (whichSound)
 	{
 	case WhichSound::STEEL:
 		modesNumber = MODES_NUMS[int(whichSound)];
-		sourceSound.load("/Game/steel.wav");
+		findWavName = "steel.wav";
+		fileFullPath += findWavName;
+		filePath = TCHAR_TO_UTF8(*fileFullPath);
+
+		sourceSound.load(filePath);
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
@@ -302,7 +315,11 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		break;
 	case WhichSound::WALK:
 		modesNumber = MODES_NUMS[int(whichSound)];
-		sourceSound.load("C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav");
+		findWavName = "walk.wav";
+		fileFullPath += findWavName;
+		filePath = TCHAR_TO_UTF8(*fileFullPath);
+		
+		sourceSound.load(filePath);
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
@@ -325,7 +342,10 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		break;
 	case WhichSound::PLASTIC:
 		modesNumber = MODES_NUMS[int(whichSound)];
-		sourceSound.load("/Game/plastic.wav");
+		findWavName = "plastic.wav";
+		fileFullPath += findWavName;
+		filePath = TCHAR_TO_UTF8(*fileFullPath);
+		sourceSound.load(filePath);
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);

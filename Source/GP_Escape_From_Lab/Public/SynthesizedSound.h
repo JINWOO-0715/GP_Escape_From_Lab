@@ -1,6 +1,7 @@
 #pragma once
 
 #include "maximilian.h"
+#include "cstring"
 
 const unsigned short MAX_MODES = 150;
 
