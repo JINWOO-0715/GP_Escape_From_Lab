@@ -103,7 +103,7 @@ int routing(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames,
 {
 	unsigned int i, j;
 	
-	// 없어도 실행된다.
+	
 	double* buffer = (double*)outputBuffer;
 
 
@@ -366,7 +366,6 @@ void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-
 	if (!HasAuthority())
 	{
 		MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
@@ -415,67 +414,50 @@ void ASwat::BeginPlay()
 		
 		if (isMyComputer())
 		{
+			DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
+			if (DAC->getDeviceCount() < 1)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "failed to find audio device(from RtAudio)");
+			}
+			MyRtAudio::StreamParameters parameters;
+			parameters.deviceId = DAC->getDefaultOutputDevice();
+			parameters.nChannels = 2;
+			parameters.firstChannel = 0;
 
+			unsigned int sampleRate = 44100;
+			unsigned int bufferFrames = 1024;
+			data.resize(2);
+			DAC->openStream(&parameters, NULL, RTAUDIO_FLOAT64,
+				sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
+
+			DAC->startStream();
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
+
+			// 파일이름가져와라
+			FString tempProjectContentPath = FPaths::ProjectContentDir();
+			// 풀로 가져와라
+			FString fileFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*tempProjectContentPath);
+			// 찾는 파일이름
+			FString findWavName = "walk.wav";
+			// 풀파일이름 + 찾는 파일이름
+			fileFullPath += findWavName;
+			// FString파일을 string로 변환해주자
+			std::string test2 = TCHAR_TO_UTF8(*fileFullPath);
+			if (testAudiofile.load(test2))
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
+			else
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
 		}
 		else
 			DAC = nullptr;
 	}
-	DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
-	if (DAC->getDeviceCount() < 1)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "failed to find audio device(from RtAudio)");
-	}
-	MyRtAudio::StreamParameters parameters;
-	parameters.deviceId = DAC->getDefaultOutputDevice();
-	parameters.nChannels = 2;
-	parameters.firstChannel = 0;
-
-	unsigned int sampleRate = 44100;
-	unsigned int bufferFrames = 1024;
-	data.resize(2);
-	DAC->openStream(&parameters, NULL, RTAUDIO_FLOAT64,
-		sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
-
-	DAC->startStream();
-
-	//FString CompleteFilePath = "C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav";
-	//if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*CompleteFilePath))
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Could not Find File"));
-	//	return;
-	//}
-
-	//const int64 FileSize = FPlatformFileManager::Get().GetPlatformFile().FileSize(*CompleteFilePath);
-
-	////if not in player controller use UE_LOG. ClientMessages show up if you press ~ in-game
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::FromInt(FileSize));
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("File Size is: (in kb)"));
-	//FString FileData = "TEST";
-	//FFileHelper::LoadFileToString(FileData, *CompleteFilePath);
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FileData);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
-
-	// 파일이름가져와라
-	FString tempProjectContentPath = FPaths::ProjectContentDir();
-	// 풀로 가져와라
-	FString fileFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*tempProjectContentPath);
-	// 찾는 파일이름
-	FString findWavName = "walk.wav";
-	// 풀파일이름 + 찾는 파일이름
-	fileFullPath += findWavName;
-	// FString파일을 string로 변환해주자
-	std::string test2 = TCHAR_TO_UTF8(*fileFullPath);
-	if (testAudiofile.load(test2))
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
+	
 }
 void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (!HasAuthority()&&isMyComputer())
 	{
+	
 		//DAC->stopStream();
 		//DAC->closeStream();
 		//delete DAC;

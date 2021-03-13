@@ -10,7 +10,7 @@ std::uniform_real_distribution<float> urd(-1.0, 1.0);
 
 maxiOsc tempOSc;
 
-float SynthesizedSound::steelModesData[MAX_MODES][2]=
+float SynthesizedSound::steelModesData[MAX_MODES][2] =
 {
 	{2314.819336, 1.000000},
 {812.878418, 0.823778},
@@ -133,7 +133,7 @@ float SynthesizedSound::steelModesData[MAX_MODES][2]=
 {11423.364258, 0.054588},
 {14007.348633, 0.036473}
 };
-float SynthesizedSound::walkModesData[MAX_MODES][2]=
+float SynthesizedSound::walkModesData[MAX_MODES][2] =
 {
 {401.055908, 1.000000},
 {139.965820, 0.903084},
@@ -156,7 +156,7 @@ float SynthesizedSound::walkModesData[MAX_MODES][2]=
 {1270.458984, 0.174300},
 {1391.583252, 0.170874}
 };
-float SynthesizedSound::plasticModesData[MAX_MODES][2]=
+float SynthesizedSound::plasticModesData[MAX_MODES][2] =
 {
 {387.597656, 0.981703},
 {896.319580, 1.000000},
@@ -240,11 +240,11 @@ SynthesizedSound::SynthesizedSound()
 		BASE_RELEASES[(int)(WhichSound::STEEL)] = 450;
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(BASE_RELEASES[(int)(WhichSound::STEEL)]));
 
-		MODES_NUMS[(int)(WhichSound::STEEL)] = 120;		
+		MODES_NUMS[(int)(WhichSound::STEEL)] = 120;
 		SHORTEST_FREQS[(int)(WhichSound::PLASTIC)] = 142.657471;
 		BASE_RELEASES[(int)(WhichSound::PLASTIC)] = 200;//이 값은 실험으로 다시 결정해야함.
 		MODES_NUMS[(int)(WhichSound::PLASTIC)] = 60;
-	
+
 		SHORTEST_FREQS[(int)(WhichSound::WALK)] = 94.207764;;
 		BASE_RELEASES[(int)(WhichSound::WALK)] = 70;
 		MODES_NUMS[(int)(WhichSound::WALK)] = 20;
@@ -301,8 +301,8 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
-		originEnv.setRelease(70.0f);
-		
+		originEnv.setRelease(70.f);
+
 		for (int i = 0; i < modesNumber; ++i)
 		{
 			modesEnv[i].setAttack(1.0f);
@@ -359,8 +359,8 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 float SynthesizedSound::play()
 {
 
-	if (isPlayOnce&&isPlaying)
-	{	
+	if (isPlayOnce && isPlaying)
+	{
 
 		originEnv.trigger = 1.0f;
 
@@ -372,7 +372,7 @@ float SynthesizedSound::play()
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Trigger");
 		isPlayOnce = false;
 	}
-	else if((!isPlayOnce) &&(isPlaying))
+	else if ((!isPlayOnce) && (isPlaying))
 	{
 
 		for (int i = 0; i < modesNumber; ++i)
@@ -381,47 +381,46 @@ float SynthesizedSound::play()
 		}
 		originEnv.trigger = 0.0f;
 	}
-	if(isPlaying)
-	{ 
-	++tick;
-	auto out = 0.0f;
-	auto playValue = sourceSound.play();
-	float decayVolume[MAX_MODES] = { 0, };
-	for (int i = 0; i < modesNumber; ++i)
+	if (isPlaying)
 	{
-		decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
-
-		out += (originOsc[i].sinewave(walkModesData[i][0]) * walkModesData[i][1]) * decayVolume[i];
-	}
-
-	//이게 없으면 소리가 안남.
-	playValue *= originEnv.adsr(1, originEnv.trigger);
-	
-	auto residual = playValue - out;
-	auto fixedOut = 0.0f;
-	for (int i = 0; i < modesNumber; ++i)
-	{
-		fixedOut += (fixedOsc[i].sinewave(walkModesData[i][0]) * fixedGain[i]) * decayVolume[i];
-	}
-
-	/*if (isPlayOnce)
-	{
-		originEnv.trigger = 0.0f;
+		++tick;
+		auto out = 0.0f;
+		auto playValue = sourceSound.play();
+		float decayVolume[MAX_MODES] = { 0, };
 		for (int i = 0; i < modesNumber; ++i)
 		{
-			modesEnv[i].trigger = 0.0f;
+			decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
+			out += (originOsc[i].sinewave(walkModesData[i][0]) * walkModesData[i][1]) * decayVolume[i];
 		}
-		isPlayOnce = false;
-	}*/
-	if (tick > 25000)
-	{
-		isPlaying = false;
-		//sourceSound.clear();
-		tick = 0;
-	}
 
-	//playValue;
-		return fixedOut+residual;
+		//이게 없으면 소리가 안남.
+		playValue *= originEnv.adsr(1, originEnv.trigger);
+
+		auto residual = playValue - out;
+		auto fixedOut = 0.0f;
+		for (int i = 0; i < modesNumber; ++i)
+		{
+			fixedOut += (fixedOsc[i].sinewave(walkModesData[i][0]) * fixedGain[i]) * decayVolume[i];
+		}
+
+		/*if (isPlayOnce)
+		{
+			originEnv.trigger = 0.0f;
+			for (int i = 0; i < modesNumber; ++i)
+			{
+				modesEnv[i].trigger = 0.0f;
+			}
+			isPlayOnce = false;
+		}*/
+		if (tick > 25000)
+		{
+			isPlaying = false;
+			//sourceSound.clear();
+			tick = 0;
+		}
+
+		//playValue;
+		return fixedOut + residual;
 
 	}
 	return 0.f;//fixedOut+residual;
