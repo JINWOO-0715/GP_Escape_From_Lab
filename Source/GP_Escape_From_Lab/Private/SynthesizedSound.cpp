@@ -133,7 +133,29 @@ float SynthesizedSound::steelModesData[MAX_MODES][2]=
 {11423.364258, 0.054588},
 {14007.348633, 0.036473}
 };
-float SynthesizedSound::walkModesData[MAX_MODES][2];
+float SynthesizedSound::walkModesData[MAX_MODES][2]=
+{
+{401.055908, 1.000000},
+{139.965820, 0.903084},
+{355.297852, 0.812509},
+{94.207764, 0.807320},
+{309.539795, 0.780818},
+{444.122314, 0.760091},
+{183.032227, 0.589359},
+{487.188721, 0.590386},
+{734.820557, 0.503911},
+{689.062500, 0.493426},
+{777.886963, 0.440752},
+{532.946777, 0.433747},
+{263.781738, 0.418869},
+{586.779785, 0.400621},
+{643.304443, 0.336125},
+{820.953369, 0.284421},
+{1316.217041, 0.197935},
+{864.019775, 0.183203},
+{1270.458984, 0.174300},
+{1391.583252, 0.170874}
+};
 float SynthesizedSound::plasticModesData[MAX_MODES][2]=
 {
 {387.597656, 0.981703},
@@ -202,24 +224,30 @@ float SynthesizedSound::SHORTEST_FREQS[3];
 float SynthesizedSound::BASE_RELEASES[3];
 float SynthesizedSound::MODES_NUMS[3];
 
+float SF = 94.207764;
+float BR = 70;
+float MN = 20;
+
 bool SynthesizedSound::isInitOnce = false;
+
 
 SynthesizedSound::SynthesizedSound()
 {
 	if (!isInitOnce)
 	{
 		isInitOnce = true;
-
 		SHORTEST_FREQS[(int)(WhichSound::STEEL)] = 812.878418;
 		BASE_RELEASES[(int)(WhichSound::STEEL)] = 450;
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(BASE_RELEASES[(int)(WhichSound::STEEL)]));
+
 		MODES_NUMS[(int)(WhichSound::STEEL)] = 120;		
 		SHORTEST_FREQS[(int)(WhichSound::PLASTIC)] = 142.657471;
 		BASE_RELEASES[(int)(WhichSound::PLASTIC)] = 200;//이 값은 실험으로 다시 결정해야함.
 		MODES_NUMS[(int)(WhichSound::PLASTIC)] = 60;
+	
 		SHORTEST_FREQS[(int)(WhichSound::WALK)] = 94.207764;;
 		BASE_RELEASES[(int)(WhichSound::WALK)] = 70;
 		MODES_NUMS[(int)(WhichSound::WALK)] = 20;
-
 	}
 }
 
@@ -264,7 +292,7 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		}
 		break;
 	case WhichSound::WALK:
-		modesNumber = MODES_NUMS[int(whichSound)];
+		modesNumber = MN;
 		findWavName = "walk.wav";
 		fileFullPath += findWavName;
 		filePath = TCHAR_TO_UTF8(*fileFullPath);
@@ -273,20 +301,20 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
-		originEnv.setRelease(700.0f);
-
+		originEnv.setRelease(70.0f);
+		
 		for (int i = 0; i < modesNumber; ++i)
 		{
 			modesEnv[i].setAttack(1.0f);
 			modesEnv[i].setDecay(1.0f);
 			modesEnv[i].setSustain(1.0f);
-			modesEnv[i].setRelease(BASE_RELEASES[int(whichSound)] / (walkModesData[i][0] / SHORTEST_FREQS[int(whichSound)]));
+			modesEnv[i].setRelease(BR / (walkModesData[i][0] / SF));
 
 			if (urd(dre) > 0.0f)
 				fixedGain[i] = walkModesData[i][1] / 1.3;
 			else
 				fixedGain[i] = walkModesData[i][1] * 1.3;
-			modesEnv[i].trigger = 1.0f;
+			//modesEnv[i].trigger = 1.0f;
 		}
 		break;
 	case WhichSound::PLASTIC:
@@ -324,6 +352,10 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 
 }
 
+// 소리 1번 남
+// 같은소리 남
+// 스트림 오류 주의
+
 float SynthesizedSound::play()
 {
 
@@ -331,12 +363,22 @@ float SynthesizedSound::play()
 	{	
 
 		originEnv.trigger = 1.0f;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Trigger");
+
+		for (int i = 0; i < modesNumber; ++i)
+		{
+			modesEnv[i].trigger = 1.0f;
+		}
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(BASE_RELEASES[(int)(WhichSound::STEEL)]));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Trigger");
 		isPlayOnce = false;
 	}
 	else if((!isPlayOnce) &&(isPlaying))
 	{
 
+		for (int i = 0; i < modesNumber; ++i)
+		{
+			modesEnv[i].trigger = 0.0f;
+		}
 		originEnv.trigger = 0.0f;
 	}
 	if(isPlaying)
@@ -349,7 +391,7 @@ float SynthesizedSound::play()
 	{
 		decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
 
-		out += (originOsc[i].sinewave(steelModesData[i][0]) * steelModesData[i][1]) * decayVolume[i];
+		out += (originOsc[i].sinewave(walkModesData[i][0]) * walkModesData[i][1]) * decayVolume[i];
 	}
 
 	//이게 없으면 소리가 안남.
@@ -359,7 +401,7 @@ float SynthesizedSound::play()
 	auto fixedOut = 0.0f;
 	for (int i = 0; i < modesNumber; ++i)
 	{
-		fixedOut += (fixedOsc[i].sinewave(steelModesData[i][0]) * fixedGain[i]) * decayVolume[i];
+		fixedOut += (fixedOsc[i].sinewave(walkModesData[i][0]) * fixedGain[i]) * decayVolume[i];
 	}
 
 	/*if (isPlayOnce)
@@ -371,15 +413,15 @@ float SynthesizedSound::play()
 		}
 		isPlayOnce = false;
 	}*/
-	//if (tick > 50000)
-	//{
-	//	isPlaying = false;
-	//	//sourceSound.clear();
-	//	tick = 0;
-	//}
+	if (tick > 25000)
+	{
+		isPlaying = false;
+		//sourceSound.clear();
+		tick = 0;
+	}
 
-	
-	return playValue;//fixedOut+residual;
+	//playValue;
+		return fixedOut+residual;
 
 	}
 	return 0.f;//fixedOut+residual;
