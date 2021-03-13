@@ -1,6 +1,7 @@
 #include "SynthesizedSound.h"
 #include <random>
 #include "Misc/Paths.h"
+#include "Engine/Engine.h"
 #include "Containers/UnrealString.h"
 
 std::random_device rd;
@@ -222,60 +223,9 @@ SynthesizedSound::SynthesizedSound()
 	}
 }
 
-float SynthesizedSound::play()
-{
-// 	++tick;
-
-	
-	if (isPlaying)
-	{
-
-		++tick;
- 		auto out = 0.0f;
- 		auto playValue = sourceSound.play();
- 		float decayVolume[MAX_MODES] = { 0, };
- 		for (int i = 0; i < modesNumber; ++i)
- 		{
- 			decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
- 
- 			out += (originOsc[i].sinewave(steelModesData[i][0]) * steelModesData[i][1]) * decayVolume[i];
- 		}
- 		playValue *= originEnv.adsr(1, originEnv.trigger);
- 		auto residual = playValue - out;
- 		auto fixedOut = 0.0f;
- 		for (int i = 0; i < modesNumber; ++i)
- 		{
- 			fixedOut += (fixedOsc[i].sinewave(steelModesData[i][0]) * fixedGain[i]) * decayVolume[i];
- 		}
- 		
- 		if (isPlayOnce)
- 		{
- 			originEnv.trigger = 0.0f;
- 			for (int i = 0; i < modesNumber; ++i)
- 			{
- 				modesEnv[i].trigger = 0.0f;
- 			}
- 			isPlayOnce = false;
- 		}
-		if (tick > 50000)
-		{
-			isPlaying = false;
-			sourceSound.clear();
-			tick = 0;
-		}
-		return fixedOut+residual;
-	}
-	else
-		return 0.0f;
-
-	
-}
-
-
 void SynthesizedSound::initSoundData(WhichSound whichSound)
 {
-	isPlaying = true;
-	isPlayOnce = true;
+
 	// 파일이름가져와라
 	FString tempProjectContentPath = FPaths::ProjectContentDir();
 	// 풀로 가져와라
@@ -297,8 +247,8 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
 		originEnv.setRelease(250.0f);
-		originEnv.trigger = 1.0f;
-		
+		//originEnv.trigger = 1.0f;
+
 		for (int i = 0; i < modesNumber; ++i)
 		{
 			modesEnv[i].setAttack(1.0f);
@@ -318,13 +268,12 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 		findWavName = "walk.wav";
 		fileFullPath += findWavName;
 		filePath = TCHAR_TO_UTF8(*fileFullPath);
-		
+		sourceSound.clear();
 		sourceSound.load(filePath);
 		originEnv.setAttack(1.0f);
 		originEnv.setDecay(1);
 		originEnv.setSustain(1);
-		originEnv.setRelease(70.0f);
-		originEnv.trigger = 1.0f;
+		originEnv.setRelease(700.0f);
 
 		for (int i = 0; i < modesNumber; ++i)
 		{
@@ -369,4 +318,70 @@ void SynthesizedSound::initSoundData(WhichSound whichSound)
 	default:
 		break;
 	}
+	isPlaying = true;
+	isPlayOnce = true;
+	//originEnv.trigger = 1.0f;
+
 }
+
+float SynthesizedSound::play()
+{
+
+	if (isPlayOnce&&isPlaying)
+	{	
+
+		originEnv.trigger = 1.0f;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "Trigger");
+		isPlayOnce = false;
+	}
+	else if((!isPlayOnce) &&(isPlaying))
+	{
+
+		originEnv.trigger = 0.0f;
+	}
+	if(isPlaying)
+	{ 
+	++tick;
+	auto out = 0.0f;
+	auto playValue = sourceSound.play();
+	float decayVolume[MAX_MODES] = { 0, };
+	for (int i = 0; i < modesNumber; ++i)
+	{
+		decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
+
+		out += (originOsc[i].sinewave(steelModesData[i][0]) * steelModesData[i][1]) * decayVolume[i];
+	}
+
+	//이게 없으면 소리가 안남.
+	playValue *= originEnv.adsr(1, originEnv.trigger);
+	
+	auto residual = playValue - out;
+	auto fixedOut = 0.0f;
+	for (int i = 0; i < modesNumber; ++i)
+	{
+		fixedOut += (fixedOsc[i].sinewave(steelModesData[i][0]) * fixedGain[i]) * decayVolume[i];
+	}
+
+	/*if (isPlayOnce)
+	{
+		originEnv.trigger = 0.0f;
+		for (int i = 0; i < modesNumber; ++i)
+		{
+			modesEnv[i].trigger = 0.0f;
+		}
+		isPlayOnce = false;
+	}*/
+	//if (tick > 50000)
+	//{
+	//	isPlaying = false;
+	//	//sourceSound.clear();
+	//	tick = 0;
+	//}
+
+	
+	return playValue;//fixedOut+residual;
+
+	}
+	return 0.f;//fixedOut+residual;
+}
+

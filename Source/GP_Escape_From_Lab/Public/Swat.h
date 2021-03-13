@@ -22,7 +22,7 @@ class UStaticMesh;
 class USkeletalMesh;
 class USceneCaptureComponent2D;
 class APickups;
-class RtAudio;
+class MyRtAudio;
 UENUM()
 enum class MONTAGE_TYPE
 {
@@ -374,7 +374,7 @@ private:
 	bool isMyComputer();
 
 private:
-	RtAudio* DAC;
+	MyRtAudio* DAC;
 	std::vector<float> data;
 
 public:
