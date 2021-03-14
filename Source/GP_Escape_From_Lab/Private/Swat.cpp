@@ -62,6 +62,7 @@ UClass* ak47AnimBP = nullptr;
 UClass* ak74AnimBP = nullptr;
 UClass* KAVALAnimBP = nullptr;
 UClass* AnimBP = nullptr;
+USkeletalMesh* SKMesh = nullptr;
 
 maxiOsc tempOsc;
 
@@ -145,15 +146,19 @@ ASwat::ASwat()
 	{
 		KAVALAnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_KAVAL.AnimBP_KAVAL_C")).Object;
 	}
-	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat"));
-	if (SKMesh.Succeeded())
+	if (!SKMesh)
 	{
-		GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
-		GetCapsuleComponent()->SetCapsuleRadius(65.0f);
-		auto mesh = GetMesh();
-		mesh->SetSkeletalMesh(SKMesh.Object);
-		mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+		SKMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("/Game/NonMovable/Asset/swat")).Object;
 	}
+	
+	
+	
+	GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
+	GetCapsuleComponent()->SetCapsuleRadius(65.0f);
+	auto mesh = GetMesh();
+	mesh->SetSkeletalMesh(SKMesh);
+	mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+	
 
 	AnimBP = ConstructorHelpers::FObjectFinder<UClass>
 		(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
@@ -164,8 +169,8 @@ ASwat::ASwat()
 	if (IsValid(cameraComp))
 	{
 		cameraComp->bUsePawnControlRotation = true;
-		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
-		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
+//  		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
+//  		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
 	}
 
 	spotComp = CreateDefaultSubobject<USpotLightComponent>(TEXT("spotComp"));
@@ -319,10 +324,10 @@ ASwat::ASwat()
 
 	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
 	sceneCaptureCamera->SetupAttachment(leftScopeMesh);
-	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
-	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
-	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 	sceneCaptureCamera->FOVAngle = 4.0f;
+// 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+// 	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+// 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 
 	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
@@ -396,7 +401,9 @@ void ASwat::BeginPlay()
 
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
-		weaponMesh->AttachToComponent(GetMesh(),
+		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
+		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
+ 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("GunHand"));
 		leftWeaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("LeftGunHand"));
@@ -408,6 +415,11 @@ void ASwat::BeginPlay()
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
 		scopeMesh->AttachToComponent(weaponMesh,
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
+
+		sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+		sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+		sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
+
 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		GetMesh()->SetAnimInstanceClass(AnimBP);
