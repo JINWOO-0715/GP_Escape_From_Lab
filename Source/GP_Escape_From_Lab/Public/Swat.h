@@ -22,7 +22,7 @@ class UStaticMesh;
 class USkeletalMesh;
 class USceneCaptureComponent2D;
 class APickups;
-class RtAudio;
+class MyRtAudio;
 UENUM()
 enum class MONTAGE_TYPE
 {
@@ -79,7 +79,7 @@ protected:
 		bool hasSubWeapon = false;
 
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class AWeaponBase* mainWeapon;
 
 	UPROPERTY(EditAnyWhere)
@@ -374,7 +374,7 @@ private:
 	bool isMyComputer();
 
 private:
-	RtAudio* DAC;
+	MyRtAudio* DAC;
 	std::vector<float> data;
 
 public:

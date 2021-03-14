@@ -38,7 +38,7 @@
 #include "Misc/Paths.h"
 #include "Net/UnrealNetwork.h"
 
-#include "RtAudio.h"
+#include "MyRtAudio.h"
 
 
 //캐릭터 클래스는 상속시 캡슐, 캐릭터 무브먼트, 스켈레탈 메쉬를 상속받는다.
@@ -62,6 +62,7 @@ UClass* ak47AnimBP = nullptr;
 UClass* ak74AnimBP = nullptr;
 UClass* KAVALAnimBP = nullptr;
 UClass* AnimBP = nullptr;
+USkeletalMesh* SKMesh = nullptr;
 
 maxiOsc tempOsc;
 
@@ -99,11 +100,11 @@ void play(double* output)
 	output[1] = output[0];
 }
 int routing(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames,
-	double streamTime, RtAudioStreamStatus status, void* userData)
+	double streamTime, MyRtAudioStreamStatus status, void* userData)
 {
 	unsigned int i, j;
 	
-	// 없어도 실행된다.
+	
 	double* buffer = (double*)outputBuffer;
 
 
@@ -145,15 +146,19 @@ ASwat::ASwat()
 	{
 		KAVALAnimBP = ConstructorHelpers::FObjectFinder<UClass>(TEXT("/Game/Movable/AnimationBP/Weapon/AnimBP_KAVAL.AnimBP_KAVAL_C")).Object;
 	}
-	const ConstructorHelpers::FObjectFinder<USkeletalMesh> SKMesh(TEXT("/Game/NonMovable/Asset/swat"));
-	if (SKMesh.Succeeded())
+	if (!SKMesh)
 	{
-		GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
-		GetCapsuleComponent()->SetCapsuleRadius(65.0f);
-		auto mesh = GetMesh();
-		mesh->SetSkeletalMesh(SKMesh.Object);
-		mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+		SKMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("/Game/NonMovable/Asset/swat")).Object;
 	}
+	
+	
+	
+	GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
+	GetCapsuleComponent()->SetCapsuleRadius(65.0f);
+	auto mesh = GetMesh();
+	mesh->SetSkeletalMesh(SKMesh);
+	mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
+	
 
 	AnimBP = ConstructorHelpers::FObjectFinder<UClass>
 		(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
@@ -164,8 +169,8 @@ ASwat::ASwat()
 	if (IsValid(cameraComp))
 	{
 		cameraComp->bUsePawnControlRotation = true;
-		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
-		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
+//  		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
+//  		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
 	}
 
 	spotComp = CreateDefaultSubobject<USpotLightComponent>(TEXT("spotComp"));
@@ -281,19 +286,17 @@ ASwat::ASwat()
 		MyItemBlueprint = (UClass*)ItemBlueprint.Object;
 	}
 	
+
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
-	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	ConstructorHelpers::FObjectFinder<UDataTable> SwatWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	ConstructorHelpers::FObjectFinder<UBlueprint> WeaponBPTemp(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase"));
+	mainWeapon = CreateDefaultSubobject<AWeaponBase>(TEXT("MainWaepon"));
 
 	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/Movable/Sound/EmptyGun"));
 	EmptyGunShotSound = Soundf.Object;
-
-	SwatWeaponDataTable = WeaponData.Object;
+	SwatWeaponDataTable = SwatWeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
-	//mainWeapon->WeaponDataTable = SwatWeaponDataTable;
-	//static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
-	//mainWeapon->WeaponData = mainWeapon->WeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString, true);
-	//
-	if (!ar4Sound)
+		if (!ar4Sound)
 	{
 		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue")).Object;
 	}
@@ -319,10 +322,10 @@ ASwat::ASwat()
 
 	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
 	sceneCaptureCamera->SetupAttachment(leftScopeMesh);
-	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
-	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
-	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 	sceneCaptureCamera->FOVAngle = 4.0f;
+// 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+// 	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+// 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 
 	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
@@ -365,8 +368,10 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
-	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 
+	
+
+	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	if (!HasAuthority())
 	{
 		MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
@@ -394,10 +399,13 @@ void ASwat::BeginPlay()
 			curveTimeline.SetLooping(true);
 			curveTimeline.PlayFromStart();
 		}
+		
 
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
-		weaponMesh->AttachToComponent(GetMesh(),
+		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
+		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
+ 		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("GunHand"));
 		leftWeaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("LeftGunHand"));
@@ -409,18 +417,28 @@ void ASwat::BeginPlay()
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
 		scopeMesh->AttachToComponent(weaponMesh,
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
+
+		sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+		sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+		sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
+
 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		GetMesh()->SetAnimInstanceClass(AnimBP);
-		
+	
 		if (isMyComputer())
-		{
-			DAC = new RtAudio(RtAudio::WINDOWS_DS);
+		{	
+			// 무기 초기화!!!!!왜 안돼
+		
+			mainWeapon->WeaponDataTable = SwatWeaponDataTable;
+			mainWeapon->OnlyClientSetupWeapon(FName("AR4"));
+
+			DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
 			if (DAC->getDeviceCount() < 1)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "failed to find audio device(from RtAudio)");
 			}
-			RtAudio::StreamParameters parameters;
+			MyRtAudio::StreamParameters parameters;
 			parameters.deviceId = DAC->getDefaultOutputDevice();
 			parameters.nChannels = 2;
 			parameters.firstChannel = 0;
@@ -432,24 +450,6 @@ void ASwat::BeginPlay()
 				sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
 
 			DAC->startStream();
-
-			//FString CompleteFilePath = "C:/Users/user/Desktop/GP_Escape_From_Lab/Content/walk.wav";
-			//if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*CompleteFilePath))
-			//{
-			//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Could not Find File"));
-			//	return;
-			//}
-
-			//const int64 FileSize = FPlatformFileManager::Get().GetPlatformFile().FileSize(*CompleteFilePath);
-
-			////if not in player controller use UE_LOG. ClientMessages show up if you press ~ in-game
-
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::FromInt(FileSize));
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("File Size is: (in kb)"));
-			//FString FileData = "TEST";
-			//FFileHelper::LoadFileToString(FileData, *CompleteFilePath);
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FileData);
-
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
 
 			// 파일이름가져와라
@@ -464,17 +464,19 @@ void ASwat::BeginPlay()
 			std::string test2 = TCHAR_TO_UTF8(*fileFullPath);
 			if (testAudiofile.load(test2))
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
-			else				
+			else
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
 		}
 		else
 			DAC = nullptr;
 	}
+	
 }
 void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (!HasAuthority()&&isMyComputer())
 	{
+	
 		//DAC->stopStream();
 		//DAC->closeStream();
 		//delete DAC;
@@ -995,6 +997,8 @@ void ASwat::Interact()
 					mainWeapon = HitWeapon;
 					mainWeapon->SetActorEnableCollision(false);
 
+
+
 					//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
 					rifleMesh = mainWeapon->WeaponData->WeaponMesh;
 					// 현재 들고 있는 무기이름
@@ -1134,13 +1138,32 @@ void ASwat::ChangeWeapon()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(f));
 	if (hasSubWeapon)
 	{
+		/*;
+		mainWeapon = odowi;*/
+
 		// Weapon= 지금들고있는거
 		// sub= 서브 무기
-		auto temp = mainWeapon;
 		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
+
+		FString PString222 = FString("AR4");
+		auto asdaass = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
+		//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
+		// 메인 서브 무기 바꾸기.
+		auto temp = mainWeapon;
 		mainWeapon = SubWeapon;
 		SubWeapon = temp;
-		rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+
+		
+		if (IsValid(mainWeapon->WeaponData->WeaponMesh))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "mainWeapon sucess");
+			rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+		}
+		else
+		{
+			rifleMesh = asdaass->WeaponMesh;
+		
+		}
 		// 지금 들고있는 무기를 서브무기로 
 		hasWeaponName = mainWeapon->WeaponData->WeaponName;
 		weaponMesh->SetSkeletalMesh(rifleMesh);

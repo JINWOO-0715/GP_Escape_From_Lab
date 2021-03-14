@@ -23,27 +23,27 @@ struct FZombieData : public FTableRowBase
 
 
 	// 좀비 이름
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere,BlueprintReadWrite)
 		FString ZombieName;
 
 	// 좀비 SK메쉬
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class USkeletalMesh* ZombieMesh;
 
 	//좀비 HP
-	UPROPERTY(EditAnyWhere)
-		int ZombieHP;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		float ZombieHP;
 
 	//좀비 speed
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		float ZombieSpeed;
 
 	//좀비 공격력
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		float ZombieAttackPower;
 
 	//좀비 애니메이션???
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	 class UAnimBlueprint* ZombieAnimBP;
 
 
