@@ -89,7 +89,7 @@ public:
 		FName DefaultWeaponName;
 
 	//가져올 데이터 테이블 행1
-	FWeaponData* WeaponData;
+		FWeaponData* WeaponData;
 };
 
 

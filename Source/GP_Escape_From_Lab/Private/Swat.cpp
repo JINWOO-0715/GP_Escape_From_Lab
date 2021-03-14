@@ -286,19 +286,17 @@ ASwat::ASwat()
 		MyItemBlueprint = (UClass*)ItemBlueprint.Object;
 	}
 	
+
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
-	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	ConstructorHelpers::FObjectFinder<UDataTable> SwatWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	ConstructorHelpers::FObjectFinder<UBlueprint> WeaponBPTemp(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase"));
+	mainWeapon = CreateDefaultSubobject<AWeaponBase>(TEXT("MainWaepon"));
 
 	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/Movable/Sound/EmptyGun"));
 	EmptyGunShotSound = Soundf.Object;
-
-	SwatWeaponDataTable = WeaponData.Object;
+	SwatWeaponDataTable = SwatWeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
-	//mainWeapon->WeaponDataTable = SwatWeaponDataTable;
-	//static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
-	//mainWeapon->WeaponData = mainWeapon->WeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString, true);
-	//
-	if (!ar4Sound)
+		if (!ar4Sound)
 	{
 		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue")).Object;
 	}
@@ -370,6 +368,9 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	if (!HasAuthority())
 	{
@@ -398,6 +399,7 @@ void ASwat::BeginPlay()
 			curveTimeline.SetLooping(true);
 			curveTimeline.PlayFromStart();
 		}
+		
 
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
@@ -423,9 +425,14 @@ void ASwat::BeginPlay()
 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		GetMesh()->SetAnimInstanceClass(AnimBP);
-		
+	
 		if (isMyComputer())
-		{
+		{	
+			// 무기 초기화!!!!!왜 안돼
+		
+			mainWeapon->WeaponDataTable = SwatWeaponDataTable;
+			mainWeapon->OnlyClientSetupWeapon(FName("AR4"));
+
 			DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
 			if (DAC->getDeviceCount() < 1)
 			{
@@ -990,6 +997,8 @@ void ASwat::Interact()
 					mainWeapon = HitWeapon;
 					mainWeapon->SetActorEnableCollision(false);
 
+
+
 					//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
 					rifleMesh = mainWeapon->WeaponData->WeaponMesh;
 					// 현재 들고 있는 무기이름
@@ -1129,13 +1138,32 @@ void ASwat::ChangeWeapon()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(f));
 	if (hasSubWeapon)
 	{
+		/*;
+		mainWeapon = odowi;*/
+
 		// Weapon= 지금들고있는거
 		// sub= 서브 무기
-		auto temp = mainWeapon;
 		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
+
+		FString PString222 = FString("AR4");
+		auto asdaass = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
+		//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
+		// 메인 서브 무기 바꾸기.
+		auto temp = mainWeapon;
 		mainWeapon = SubWeapon;
 		SubWeapon = temp;
-		rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+
+		
+		if (IsValid(mainWeapon->WeaponData->WeaponMesh))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "mainWeapon sucess");
+			rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+		}
+		else
+		{
+			rifleMesh = asdaass->WeaponMesh;
+		
+		}
 		// 지금 들고있는 무기를 서브무기로 
 		hasWeaponName = mainWeapon->WeaponData->WeaponName;
 		weaponMesh->SetSkeletalMesh(rifleMesh);
