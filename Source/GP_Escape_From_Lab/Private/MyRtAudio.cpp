@@ -4263,13 +4263,10 @@ bool MyRtApiDs :: probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
 
   // Allocate our DsHandle structures for the stream.
   if ( stream_.apiHandle == 0 ) {
-    try {
+ 
       handle = new DsHandle;
-    }
-    catch ( std::bad_alloc& ) {
-      errorText_ = "MyRtApiDs::probeDeviceOpen: error allocating AsioHandle memory.";
-      goto error;
-    }
+
+
 
     // Create a manual-reset event.
     handle->condition = CreateEvent( NULL,   // no security

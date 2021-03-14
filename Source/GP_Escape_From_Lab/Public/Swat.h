@@ -79,7 +79,7 @@ protected:
 		bool hasSubWeapon = false;
 
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class AWeaponBase* mainWeapon;
 
 	UPROPERTY(EditAnyWhere)
