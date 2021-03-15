@@ -198,10 +198,9 @@ ASwat::ASwat()
 		coneMeshComp->SetStaticMesh(m_cone.Object);
 		coneMeshComp->SetVisibility(true);
 
-		coneMeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+		coneMeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		// 충돌체크 설정해주는방법. 
-		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
-		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	}
 	
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("leftWeaponComp"));
@@ -505,20 +504,20 @@ void ASwat::Minimap()
 void ASwat::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	//if (isLightOn)
-	//{
-	//	auto hitzombie = Cast<AZombie>(OtherActor);
-	//	if (hitzombie)
-	//	{
-	//		// 움직이게 하자
+	if (isLightOn)
+	{
+		auto hitzombie = Cast<AZombie>(OtherActor);
+		if (hitzombie)
+		{
+			// 움직이게 하자
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "HIT ZOMBIE");
+			//auto c = hitzombie->GetCharacterMovement();
+			//AZombieAIController* AICon = Cast<AZombieAIController>(hitzombie->GetController());
+			//UBlackboardComponent* BlackboardComp = AICon->GetBlackboardComp();
+			//BlackboardComp->SetValueAsBool("BBisHeatedLight", true);
 
-	//		auto c = hitzombie->GetCharacterMovement();
-	//		AZombieAIController* AICon = Cast<AZombieAIController>(hitzombie->GetController());
-	//		UBlackboardComponent* BlackboardComp = AICon->GetBlackboardComp();
-	//		BlackboardComp->SetValueAsBool("BBisHeatedLight", true);
-
-	//	}
-	//}
+		}
+	}
 }
 //원뿔 충돌체크 좀비야 도망가라
 void ASwat::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
