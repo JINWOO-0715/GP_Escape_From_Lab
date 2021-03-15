@@ -1553,5 +1553,6 @@ void ASwat::PlayPhysicsSoundOnServerReq_Implementation(const ASwat* playerCharac
 
 void ASwat::PlayPhysicsSoundMulticastReq_Implementation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
 {
-	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, soundSourceLocation, sound);
+	auto PC = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(PC, soundSourceLocation, sound);
 }

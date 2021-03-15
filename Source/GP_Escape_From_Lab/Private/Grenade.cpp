@@ -142,9 +142,9 @@ void AGrenade::SpawnExplosionParticle_Implementation()
 			}
 		}
 	}
+	
+	PlayExplosionSoundMulticast();
 
-	//auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
 	TArray<AActor*>ignoredActor;
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
 }
@@ -165,4 +165,10 @@ void AGrenade::AddImpactReq_Implementation(float initImpact, const FVector& Spaw
 	//auto player = Cast<ASwat>(this->GetOwner());
 	sphereComp->AddImpulse(SpawnRot * initImpact);
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::SanitizeFloat(initImpact));
+}
+
+void AGrenade::PlayExplosionSoundMulticast_Implementation()
+{
+	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation() + FVector(0.0f, 0.0f, 30.0f), explosionSound);
 }

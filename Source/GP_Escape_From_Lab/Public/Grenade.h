@@ -50,6 +50,8 @@ public:
 	void ServerAddImpactReq(float initImpact, const FVector& SpawnRot);
 	UFUNCTION(NetMulticast, Reliable)
 	void AddImpactReq(float initImpact, const FVector& SpawnRot);
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayExplosionSoundMulticast();
 
 
 private:
