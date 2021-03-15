@@ -16,7 +16,7 @@ AMyGameMode::AMyGameMode()
 	//DefaultPawnClass = ASwat::StaticClass();
 	DefaultPawnClass = SwatBP.Object;
 	// 생성자에서만 가능하네
-
+	bUseSeamlessTravel = true;
 	//
 	//ConstructorHelpers::FObjectFinder<UClass> ZombieBP(TEXT("/Game/Movable/Zombie/BP_Zombie.BP_Zombie"));
 	//if (ZombieBP.Object) {
