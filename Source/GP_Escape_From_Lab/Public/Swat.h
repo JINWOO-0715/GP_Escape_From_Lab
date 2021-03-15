@@ -370,6 +370,9 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void PlayPhysicsSoundOnServerReq(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
 
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void PlayPhysicsSoundMulticastReq(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
+
 private:
 	bool isMyComputer();
 

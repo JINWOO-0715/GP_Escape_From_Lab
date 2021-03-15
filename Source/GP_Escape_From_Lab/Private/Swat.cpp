@@ -1126,7 +1126,7 @@ void ASwat::PlayGunFireSound()
 	}
 	else if (hasWeaponName == "KAVAL")
 	{
-		PlayPhysicsSoundOnServerReq(this, weaponMesh->GetSocketLocation("Muzzle"), akSound);
+		PlayPhysicsSoundOnServerReq(this, weaponMesh->GetSocketLocation("Muzzle"), silencerSound);
 		//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, weaponMesh->GetSocketLocation("Muzzle"), silencerSound);
 	}
 }
@@ -1547,6 +1547,11 @@ void ASwat::KnifeZombieDamageReq_Implementation(AZombie* hitedZombie)
 }
 
 void ASwat::PlayPhysicsSoundOnServerReq_Implementation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
+{
+	PlayPhysicsSoundMulticastReq(playerCharacter, soundSourceLocation, sound);
+}
+
+void ASwat::PlayPhysicsSoundMulticastReq_Implementation(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound)
 {
 	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, soundSourceLocation, sound);
 }
