@@ -71,6 +71,8 @@ maxiSample testAudiofile;
 const int SOUND_BUFFER_SIZE = 7;
 SynthesizedSound synthesizedSoundBuffer[7];
 
+MyRtAudio DAC(MyRtAudio::WINDOWS_DS);
+std::vector<float> audioData;
 void ASwat::playSynthesizedSound(WhichSound whichSound)
 {
 	for (int i = 0; i < SOUND_BUFFER_SIZE; ++i)
@@ -432,23 +434,23 @@ void ASwat::BeginPlay()
 			mainWeapon->WeaponDataTable = SwatWeaponDataTable;
 			mainWeapon->OnlyClientSetupWeapon(FName("AR4"));
 
-			DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
-			if (DAC->getDeviceCount() < 1)
+			//DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
+			if (DAC.getDeviceCount() < 1)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, "failed to find audio device(from RtAudio)");
 			}
 			MyRtAudio::StreamParameters parameters;
-			parameters.deviceId = DAC->getDefaultOutputDevice();
+			parameters.deviceId = DAC.getDefaultOutputDevice();
 			parameters.nChannels = 2;
 			parameters.firstChannel = 0;
 
 			unsigned int sampleRate = 44100;
 			unsigned int bufferFrames = 1024;
-			data.resize(2);
-			DAC->openStream(&parameters, NULL, RTAUDIO_FLOAT64,
-				sampleRate, &bufferFrames, &routing, (void*)&(data[0]));
+			audioData.resize(2);
+			DAC.openStream(&parameters, NULL, RTAUDIO_FLOAT64,
+				sampleRate, &bufferFrames, &routing, (void*)&(audioData[0]));
 
-			DAC->startStream();
+			DAC.startStream();
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
 
 			// 파일이름가져와라
@@ -466,8 +468,8 @@ void ASwat::BeginPlay()
 			else
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
 		}
-		else
-			DAC = nullptr;
+// 		else
+// 			DAC = nullptr;
 	}
 	
 }
@@ -475,9 +477,9 @@ void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (!HasAuthority()&&isMyComputer())
 	{
-	
-		//DAC->stopStream();
-		//DAC->closeStream();
+		DAC.stopStream();
+		while(!DAC.isStreamOpen())
+		DAC.closeStream();
 		//delete DAC;
 		//스트림을 닫아야하는데 닫는 순간 에러가 난다....
 		//추후 수정

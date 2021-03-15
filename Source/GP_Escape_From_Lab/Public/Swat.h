@@ -374,8 +374,8 @@ private:
 	bool isMyComputer();
 
 private:
-	MyRtAudio* DAC;
-	std::vector<float> data;
+	//MyRtAudio* DAC;
+	//std::vector<float> data;
 
 public:
 	UFUNCTION(BlueprintCallable)
