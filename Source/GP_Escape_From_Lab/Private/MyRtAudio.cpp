@@ -217,7 +217,7 @@ void MyRtApi :: openStream( MyRtAudio::StreamParameters *oParams,
 {
   if ( stream_.state != STREAM_CLOSED ) {
     errorText_ = "MyRtApi::openStream: a stream is already open!";
-    error( RtError::INVALID_USE );
+    //error( RtError::INVALID_USE );
   }
 
   if ( oParams && oParams->nChannels < 1 ) {

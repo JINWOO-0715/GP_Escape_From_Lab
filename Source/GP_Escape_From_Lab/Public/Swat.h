@@ -22,7 +22,7 @@ class UStaticMesh;
 class USkeletalMesh;
 class USceneCaptureComponent2D;
 class APickups;
-class MyRtAudio;
+
 UENUM()
 enum class MONTAGE_TYPE
 {

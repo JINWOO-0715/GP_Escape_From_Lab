@@ -447,12 +447,14 @@ void ASwat::BeginPlay()
 			unsigned int sampleRate = 44100;
 			unsigned int bufferFrames = 1024;
 			audioData.resize(2);
-			DAC.openStream(&parameters, NULL, RTAUDIO_FLOAT64,
-				sampleRate, &bufferFrames, &routing, (void*)&(audioData[0]));
+			if (!DAC.isStreamOpen())
+			{
+				DAC.openStream(&parameters, NULL, RTAUDIO_FLOAT64,
+					sampleRate, &bufferFrames, &routing, (void*)&(audioData[0]));
 
-			DAC.startStream();
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
-
+				DAC.startStream();
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "make DAC");
+			}
 			// 파일이름가져와라
 			FString tempProjectContentPath = FPaths::ProjectContentDir();
 			// 풀로 가져와라
@@ -467,6 +469,7 @@ void ASwat::BeginPlay()
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
 			else
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
+			
 		}
 // 		else
 // 			DAC = nullptr;
@@ -475,16 +478,17 @@ void ASwat::BeginPlay()
 }
 void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (!HasAuthority()&&isMyComputer())
-	{
-		DAC.stopStream();
-		while(!DAC.isStreamOpen())
-		DAC.closeStream();
-		//delete DAC;
-		//스트림을 닫아야하는데 닫는 순간 에러가 난다....
-		//추후 수정
-	}
+ 	if (!HasAuthority()&&isMyComputer())
+ 	{
+ 		DAC.stopStream();
+ 		while(!DAC.isStreamOpen())
+ 		DAC.closeStream();
+ 		//delete DAC;
+ 		//스트림을 닫아야하는데 닫는 순간 에러가 난다....
+ 		//추후 수정
+ 	}
 }
+
 void ASwat::Minimap()
 {
 	if (!HasAuthority() && GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0))//only the player calling this function can view the map.
