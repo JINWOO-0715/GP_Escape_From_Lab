@@ -238,25 +238,25 @@ public:
 public:
 	// 플레이어 hp
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int swatHp = 99;
+		int swatHp = 100;
 
 	// 가지고있는 메디킷
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasMedkit = 10;
+		int hasMedkit = 0;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasFiveAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasFiveSaveAmmo = 300;
+		int hasFiveSaveAmmo = 0;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasSevenAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasSevenSaveAmmo = 300;
+		int hasSevenSaveAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float attackPower = 30.0f;
