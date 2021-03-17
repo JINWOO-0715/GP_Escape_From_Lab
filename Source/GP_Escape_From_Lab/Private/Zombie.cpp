@@ -53,6 +53,7 @@ void AZombie::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AZombie, hp);
+	DOREPLIFETIME(AZombie, speed);
 }
 
 // Called when the game starts or when spawned
