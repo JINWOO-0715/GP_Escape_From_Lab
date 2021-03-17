@@ -113,7 +113,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	float hp = 100;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	float speed;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
