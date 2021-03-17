@@ -340,8 +340,8 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
 	HeatedUIWidget = HeatedUiAdd.Class;
 
-	ConstructorHelpers::FClassFinder<UUserWidget> Mission1add(TEXT("/Game/Movable/UI/BP_Mission1Widget"));
-	Mission1Widget = Mission1add.Class;
+	//ConstructorHelpers::FClassFinder<UUserWidget> Mission1add(TEXT("/Game/Movable/UI/BP_Mission1Widget"));
+	//Mission1Widget = Mission1add.Class;
 	ConstructorHelpers::FClassFinder<UUserWidget> Clearadd(TEXT("/Game/Movable/UI/BP_ClearWidget"));
 	ClearWidget = Clearadd.Class;
 
@@ -388,8 +388,8 @@ void ASwat::BeginPlay()
 		//스테이지별 미션용 UI
 		if (NowStage == 1)
 		{
-			Mission1UI = CreateWidget<UUserWidget>(PlayerController, Mission1Widget);
-			Mission1UI->AddToViewport();
+			//Mission1UI = CreateWidget<UUserWidget>(PlayerController, Mission1Widget);
+			//Mission1UI->AddToViewport();
 		}
 
 		//미션 클리어 UI
@@ -442,8 +442,8 @@ void ASwat::BeginPlay()
 		{	
 			// 무기 초기화!!!!!왜 안돼
 		
-			mainWeapon->WeaponDataTable = SwatWeaponDataTable;
-			mainWeapon->OnlyClientSetupWeapon(FName("AR4"));
+			//mainWeapon->WeaponDataTable = SwatWeaponDataTable;
+			//mainWeapon->OnlyClientSetupWeapon(FName("AR4"));
 
 			//DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
 			if (DAC.getDeviceCount() < 1)
