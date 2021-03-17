@@ -342,6 +342,8 @@ ASwat::ASwat()
 
 	ConstructorHelpers::FClassFinder<UUserWidget> Mission1add(TEXT("/Game/Movable/UI/BP_Mission1Widget"));
 	Mission1Widget = Mission1add.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> Clearadd(TEXT("/Game/Movable/UI/BP_ClearWidget"));
+	ClearWidget = Clearadd.Class;
 
 }// Called when the game starts or when spawned
 
@@ -379,6 +381,8 @@ void ASwat::BeginPlay()
 		InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
 		MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
+		ClearUI = CreateWidget<UUserWidget>(PlayerController, ClearWidget);
+		
 		InGameUI->AddToViewport();
 
 		//스테이지별 미션용 UI
@@ -387,6 +391,13 @@ void ASwat::BeginPlay()
 			Mission1UI = CreateWidget<UUserWidget>(PlayerController, Mission1Widget);
 			Mission1UI->AddToViewport();
 		}
+
+		//미션 클리어 UI
+		if (Arrived)
+		{
+			ClearUI->AddToViewport();
+		}
+		
 
 
 		coneMeshComp->OnComponentBeginOverlap.AddDynamic(this, &ASwat::OnOverlapBegin);

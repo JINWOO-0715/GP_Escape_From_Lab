@@ -222,6 +222,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> Mission1Widget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> ClearWidget;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* MainMenu;
@@ -234,6 +237,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* Mission1UI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* ClearUI;
 
 public:
 	// 플레이어 hp
@@ -242,21 +247,21 @@ public:
 
 	// 가지고있는 메디킷
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasMedkit = 0;
+		int hasMedkit = 5;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasFiveAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasFiveSaveAmmo = 0;
+		int hasFiveSaveAmmo = 300;
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasSevenAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasSevenSaveAmmo = 0;
+		int hasSevenSaveAmmo = 300;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float attackPower = 30.0f;
@@ -270,6 +275,8 @@ public:
 	// 현재 스테이지 단계
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int NowStage = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool Arrived = false;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
