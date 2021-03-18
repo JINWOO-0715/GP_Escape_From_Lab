@@ -290,14 +290,18 @@ ASwat::ASwat()
 
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> SwatWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
-	ConstructorHelpers::FObjectFinder<UBlueprint> WeaponBPTemp(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase"));
-	mainWeapon = CreateDefaultSubobject<AWeaponBase>(TEXT("MainWaepon"));
+	//ConstructorHelpers::FObjectFinder<UBlueprint> WeaponBPTemp(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase"));
+
+
 
 	static ConstructorHelpers::FObjectFinder<USoundWave> Soundf(TEXT("/Game/Movable/Sound/EmptyGun"));
 	EmptyGunShotSound = Soundf.Object;
 	SwatWeaponDataTable = SwatWeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
-		if (!ar4Sound)
+
+	
+
+	if (!ar4Sound)
 	{
 		ar4Sound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/m4GunFire_Cue")).Object;
 	}
@@ -372,8 +376,6 @@ void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 	if (!HasAuthority())
 	{
@@ -441,9 +443,10 @@ void ASwat::BeginPlay()
 		if (isMyComputer())
 		{	
 			// 무기 초기화!!!!!왜 안돼
-		
-			//mainWeapon->WeaponDataTable = SwatWeaponDataTable;
-			//mainWeapon->OnlyClientSetupWeapon(FName("AR4"));
+
+			mainWeapon = GetWorld()->SpawnActor<AWeaponBase>(FVector::ZeroVector, FRotator::ZeroRotator);
+			mainWeapon->WeaponDataTable = SwatWeaponDataTable;
+			mainWeapon->SetupWeapon(FName("AR4"));
 
 			//DAC = new MyRtAudio(MyRtAudio::WINDOWS_DS);
 			if (DAC.getDeviceCount() < 1)
@@ -1150,8 +1153,7 @@ void ASwat::TimelineProgress(float value)
 }
 void ASwat::ChangeWeapon()
 {
-	float f = 0.f;
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(f));
+
 	if (hasSubWeapon)
 	{
 		/*;
@@ -1161,6 +1163,8 @@ void ASwat::ChangeWeapon()
 		// sub= 서브 무기
 		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
 
+
+
 		FString PString222 = FString("AR4");
 		auto asdaass = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
 		//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
@@ -1169,7 +1173,6 @@ void ASwat::ChangeWeapon()
 		mainWeapon = SubWeapon;
 		SubWeapon = temp;
 
-		
 		if (IsValid(mainWeapon->WeaponData->WeaponMesh))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "mainWeapon sucess");
@@ -1178,8 +1181,12 @@ void ASwat::ChangeWeapon()
 		else
 		{
 			rifleMesh = asdaass->WeaponMesh;
-		
+
 		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "mainWeapon sucess");
+		rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+
 		// 지금 들고있는 무기를 서브무기로 
 		hasWeaponName = mainWeapon->WeaponData->WeaponName;
 		weaponMesh->SetSkeletalMesh(rifleMesh);

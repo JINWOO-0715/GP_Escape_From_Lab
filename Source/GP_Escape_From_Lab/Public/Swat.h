@@ -80,7 +80,7 @@ protected:
 
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-		class AWeaponBase* mainWeapon;
+		class AWeaponBase* mainWeapon = nullptr;
 
 	UPROPERTY(EditAnyWhere)
 		class AWeaponBase* SubWeapon;
