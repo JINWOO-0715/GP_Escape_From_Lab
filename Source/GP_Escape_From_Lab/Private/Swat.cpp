@@ -1189,6 +1189,7 @@ void ASwat::ChangeWeapon()
 
 		// 지금 들고있는 무기를 서브무기로 
 		hasWeaponName = mainWeapon->WeaponData->WeaponName;
+		hasSubWeaponName = SubWeapon->WeaponData->WeaponName;
 		weaponMesh->SetSkeletalMesh(rifleMesh);
 		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
 
