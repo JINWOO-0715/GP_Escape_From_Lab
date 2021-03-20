@@ -608,7 +608,11 @@ void ASwat::DropItem_Implementation(FName ItemName)
 		Ammo->DefaultItemName = FName("Ammo");
 		Ammo->SetupItemFromDT(FName("Ammo"));
 	}
-
+	if (ItemName == FName("SevenAmmo"))
+	{
+		Ammo->DefaultItemName = FName("SevenAmmo");
+		Ammo->SetupItemFromDT(FName("SevenAmmo"));
+	}
 	if (ItemName == FName("Medkit"))
 	{
 		Ammo->DefaultItemName = FName("Medkit");
@@ -1065,6 +1069,11 @@ void ASwat::Interact()
 			if (Pickup->ItemData->ItemName == "Ammo")
 			{
 				hasFiveSaveAmmo += 30;
+			}
+			if (Pickup->ItemData->ItemName == "SevenAmmo")
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(hasSevenSaveAmmo));
+				hasSevenSaveAmmo += 30;
 			}
 			//UE_LOG(LogTemp, Warning, TEXT("HIT")); 
 			//UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
