@@ -48,7 +48,7 @@ void APickups::SetupItemFromDT_Implementation (FName ItemName)
 {
 	if (ItemDataTable)
 	{
-		float d = 0.0f;
+		//float d = 0.0f;
 		if (ItemName == "")
 		{
 			ItemName= FName("Ammo");
@@ -67,6 +67,7 @@ void APickups::SetupItemFromDT_Implementation (FName ItemName)
 				
 			}
 		}
+
 		else
 		{
 			static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
