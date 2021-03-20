@@ -79,14 +79,14 @@ void ASwat::playSynthesizedSound(WhichSound whichSound)
 	{
 		if (!synthesizedSoundBuffer[i].getIsPlaying())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "sound play call!"+FString::FromInt(i));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "sound play call!" + FString::FromInt(i));
 			synthesizedSoundBuffer[i].initSoundData(whichSound);
 			break;
 		}
 	}
 }
 
-void play(double* output) 
+void play(double* output)
 {
 	float out = 0.0f;
 	for (int i = 0; i < SOUND_BUFFER_SIZE; ++i)
@@ -96,8 +96,8 @@ void play(double* output)
 			out += synthesizedSoundBuffer[i].play();
 		}
 	}
-	
-	
+
+
 	output[0] = out;//testAudiofile.play();
 	output[1] = output[0];
 }
@@ -105,8 +105,8 @@ int routing(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames,
 	double streamTime, MyRtAudioStreamStatus status, void* userData)
 {
 	unsigned int i, j;
-	
-	
+
+
 	double* buffer = (double*)outputBuffer;
 
 
@@ -152,15 +152,15 @@ ASwat::ASwat()
 	{
 		SKMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("/Game/NonMovable/Asset/swat")).Object;
 	}
-	
-	
-	
+
+
+
 	GetCapsuleComponent()->SetCapsuleHalfHeight(92.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(65.0f);
 	auto mesh = GetMesh();
 	mesh->SetSkeletalMesh(SKMesh);
 	mesh->SetRelativeLocationAndRotation(FVector(-42.0f, 0.0f, -91.0f), FRotator(0.0f, -90.0f, 0.0f).Quaternion());
-	
+
 
 	AnimBP = ConstructorHelpers::FObjectFinder<UClass>
 		(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
@@ -171,8 +171,8 @@ ASwat::ASwat()
 	if (IsValid(cameraComp))
 	{
 		cameraComp->bUsePawnControlRotation = true;
-//  		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
-//  		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
+		//  		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
+		//  		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
 	}
 
 	spotComp = CreateDefaultSubobject<USpotLightComponent>(TEXT("spotComp"));
@@ -204,7 +204,7 @@ ASwat::ASwat()
 		// 충돌체크 설정해주는방법. 
 		coneMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	}
-	
+
 	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("leftWeaponComp"));
 	weaponMesh->SetIsReplicated(true);
 	if (IsValid(weaponMesh))
@@ -286,7 +286,7 @@ ASwat::ASwat()
 	if (ItemBlueprint.Object) {
 		MyItemBlueprint = (UClass*)ItemBlueprint.Object;
 	}
-	
+
 
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> SwatWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
@@ -299,7 +299,7 @@ ASwat::ASwat()
 	SwatWeaponDataTable = SwatWeaponData.Object;
 	SwatItemDataTable = ItemData.Object;
 
-	
+
 
 	if (!ar4Sound)
 	{
@@ -328,9 +328,9 @@ ASwat::ASwat()
 	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
 	sceneCaptureCamera->SetupAttachment(leftScopeMesh);
 	sceneCaptureCamera->FOVAngle = 4.0f;
-// 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
-// 	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
-// 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
+	// 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+	// 	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+	// 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 
 	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
@@ -380,7 +380,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, attackPower);
 	DOREPLIFETIME(ASwat, maxFireRate);
 	DOREPLIFETIME(ASwat, recoilValue);
-	
+
 }
 void ASwat::BeginPlay()
 {
@@ -394,7 +394,7 @@ void ASwat::BeginPlay()
 		MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 		ClearUI = CreateWidget<UUserWidget>(PlayerController, ClearWidget);
-		
+
 		InGameUI->AddToViewport();
 
 		//스테이지별 미션용 UI
@@ -409,7 +409,7 @@ void ASwat::BeginPlay()
 		{
 			ClearUI->AddToViewport();
 		}
-		
+
 
 
 		coneMeshComp->OnComponentBeginOverlap.AddDynamic(this, &ASwat::OnOverlapBegin);
@@ -423,13 +423,13 @@ void ASwat::BeginPlay()
 			curveTimeline.SetLooping(true);
 			curveTimeline.PlayFromStart();
 		}
-		
+
 
 		cameraComp->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Head"));
 		cameraComp->SetRelativeRotation(FRotator(65.0f, -90.0f, 180.0f));
 		cameraComp->SetRelativeLocation(FVector(4.5f, -10.0f, 13.0f));
- 		weaponMesh->AttachToComponent(GetMesh(),
+		weaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("GunHand"));
 		leftWeaponMesh->AttachToComponent(GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("LeftGunHand"));
@@ -449,9 +449,9 @@ void ASwat::BeginPlay()
 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		GetMesh()->SetAnimInstanceClass(AnimBP);
-	
+
 		if (isMyComputer())
-		{	
+		{
 			// 무기 초기화!!!!!왜 안돼
 
 			mainWeapon = GetWorld()->SpawnActor<AWeaponBase>(FVector::ZeroVector, FRotator::ZeroRotator);
@@ -493,24 +493,24 @@ void ASwat::BeginPlay()
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load success");
 			else
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Load failed");
-			
+
 		}
-// 		else
-// 			DAC = nullptr;
+		// 		else
+		// 			DAC = nullptr;
 	}
-	
+
 }
 void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
- 	if (!HasAuthority()&&isMyComputer())
- 	{
- 		DAC.stopStream();
- 		while(!DAC.isStreamOpen())
- 		DAC.closeStream();
- 		//delete DAC;
- 		//스트림을 닫아야하는데 닫는 순간 에러가 난다....
- 		//추후 수정
- 	}
+	if (!HasAuthority() && isMyComputer())
+	{
+		DAC.stopStream();
+		while (!DAC.isStreamOpen())
+			DAC.closeStream();
+		//delete DAC;
+		//스트림을 닫아야하는데 닫는 순간 에러가 난다....
+		//추후 수정
+	}
 }
 
 void ASwat::Minimap()
@@ -602,7 +602,7 @@ void ASwat::DropItem_Implementation(FName ItemName)
 
 
 	APickups* Ammo = GetWorld()->SpawnActor<APickups>(End, FRotator(0, 0, 0));
-	
+
 	if (ItemName == FName("Ammo"))
 	{
 		Ammo->DefaultItemName = FName("Ammo");
@@ -997,7 +997,7 @@ void ASwat::UnAimGun()
 		isAiming = false;
 	}
 }
-void ASwat::DropWeaponServer_Implementation(const FString &WeaponName , FVector End)
+void ASwat::DropWeaponServer_Implementation(const FString& WeaponName, FVector End)
 {
 	AWeaponBase* DroppedItem = GetWorld()->SpawnActor<AWeaponBase>(MyItemBlueprint, End, FRotator(0, 0, 0));
 	DroppedItem->SetupWeapon(FName(WeaponName));
@@ -1030,7 +1030,7 @@ void ASwat::Interact()
 					FString tempWeaponName = hasWeaponName;
 
 					PickAndDrop(HitWeapon);
-					
+
 					FVector f(0.f, 0.f, 100.f);
 					End += f;
 					//UE_LOG(LogTemp, Warning, TEXT("히트"));
@@ -1040,7 +1040,7 @@ void ASwat::Interact()
 					DropWeaponServer(tempWeaponName, End);
 
 
-					
+
 					DestroyWeaponServer(HitWeapon);
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick item");
 				}
@@ -1078,10 +1078,10 @@ void ASwat::Interact()
 			//UE_LOG(LogTemp, Warning, TEXT("HIT")); 
 			//UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
 			//UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
-  		   // 인벤토리에 추가하는 기능을 넣는다.
+		   // 인벤토리에 추가하는 기능을 넣는다.
 		   // UE_LOG(LogTemp, Warning, TEXT("히트"));
-	        // UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
-			
+			// UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
+
 		   // 이런식으로 아이템 사용가능.
 			DestroyItemServer(Pickup);
 		}
@@ -1092,6 +1092,48 @@ void ASwat::Interact()
 
 void ASwat::SetWeaponWhenSaveFileLoad()
 {
+
+	FString PString222 = FString("AR4");
+	auto findData = SwatWeaponDataTable->FindRow<FWeaponData>(FName(hasWeaponName), hasWeaponName, true);
+
+	auto rifleMesh = findData->WeaponMesh;
+
+	// 장착 무기 바꾸고...
+	ChangeWeaponMesh(rifleMesh);
+
+	maxFireRate = findData->FireRate;
+	attackPower = findData->AttackPower;
+	recoilPower = findData->RecoilPower;
+
+	if (hasWeaponName == "AR4")
+	{
+		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (hasWeaponName == "AK74")
+	{
+		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (hasWeaponName == "AK47")
+	{
+		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (hasWeaponName == "KAVAL")
+	{
+		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+		leftScopeMesh->SetVisibility(true);
+		scopeMesh->SetVisibility(true);
+	}
+
 	//mainWeapon->SetActorEnableCollision(false);
 
 
@@ -1192,11 +1234,11 @@ void ASwat::ChangeWeapon()
 		auto findData = SwatWeaponDataTable->FindRow<FWeaponData>(FName(hasWeaponName), hasWeaponName, true);
 		//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
 		// 메인 서브 무기 바꾸기.
-		
+
 		USkeletalMesh* rifleMesh = findData->WeaponMesh;
-		
+
 		ChangeWeaponMesh(rifleMesh);
-		
+
 		// 서브무기를 지금 들고있는 무기로
 		maxFireRate = findData->FireRate;
 		attackPower = findData->AttackPower;
@@ -1241,7 +1283,7 @@ void ASwat::ChangeWeapon()
 }
 void ASwat::ChangeWeaponReq_Implementation()
 {
-	
+
 }
 
 // Called every frame
@@ -1506,7 +1548,7 @@ void ASwat::HasKeyCardReq_Implementation(int KeyCard)
 {
 	hasKeyCard = KeyCard;
 	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, FString::FromInt(hasKeyCard));
-	
+
 }
 
 void ASwat::GunShellEjectionReq_Implementation(float _gunShellEjection)
@@ -1595,7 +1637,7 @@ void ASwat::PickAndDrop_Implementation(AWeaponBase* HitWeapon)
 {
 	HitWeapon->SetActorEnableCollision(false);
 
-	
+
 	//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
 	auto rifleMesh = HitWeapon->WeaponData->WeaponMesh;
 	// 현재 들고 있는 무기이름
