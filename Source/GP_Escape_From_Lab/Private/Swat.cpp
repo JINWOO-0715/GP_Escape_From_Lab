@@ -1006,6 +1006,23 @@ void ASwat::DestroyWeaponServer_Implementation(AWeaponBase* HitWeapon)
 {
 	HitWeapon->Destroy();
 }
+void ASwat::ChangeStateHasWeapon_Implementation()
+{
+	if (hasSubWeapon)
+	{
+		hasSubWeapon = false;
+	}
+	else if(!hasSubWeapon)
+	{
+		hasSubWeapon = true;
+	}	
+	
+	 if (hasSubWeaponName !="")
+	{
+		 hasSubWeaponName = "";
+	}
+}
+
 void ASwat::Interact()
 {
 
@@ -1038,9 +1055,6 @@ void ASwat::Interact()
 
 					//가지고 있던 무기를 버린다.
 					DropWeaponServer(tempWeaponName, End);
-
-
-
 					DestroyWeaponServer(HitWeapon);
 					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick item");
 				}
@@ -1244,6 +1258,8 @@ void ASwat::ChangeWeapon()
 		attackPower = findData->AttackPower;
 		recoilPower = findData->RecoilPower;
 
+
+		// 재오한테 hasWeaponName맞냐고 물어보기 
 		if (mainWeapon->WeaponData->WeaponName == "AR4")
 		{
 			weaponMesh->SetAnimInstanceClass(ar4AnimBP);
