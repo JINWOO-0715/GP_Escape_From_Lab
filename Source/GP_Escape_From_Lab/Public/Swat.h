@@ -83,7 +83,7 @@ protected:
 		class AWeaponBase* mainWeapon = nullptr;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-		class AWeaponBase* SubWeapon;
+		class AWeaponBase* SubWeapon = nullptr;;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineTrace* LineTraceComp;
