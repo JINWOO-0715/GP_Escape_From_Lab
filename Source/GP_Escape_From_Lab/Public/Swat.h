@@ -370,6 +370,9 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void DestroyWeaponServer(AWeaponBase* HitWeapon);
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ChangeStateHasWeapon();
+
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void HasKeyCardReq(int KeyCard);
 
