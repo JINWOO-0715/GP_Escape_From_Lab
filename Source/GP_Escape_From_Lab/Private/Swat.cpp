@@ -223,7 +223,7 @@ ASwat::ASwat()
 
 		leftWeaponMesh->SetVisibility(true);
 	}
-	rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
+	static auto rifleMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4")).Object;
 
 	if (rifleMesh)
@@ -370,6 +370,16 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, recoilValue);
 	DOREPLIFETIME(ASwat, gunShellEjection);
 	DOREPLIFETIME(ASwat, initGrenadeSpawnRot);
+	DOREPLIFETIME(ASwat, hasSubWeapon);
+	DOREPLIFETIME(ASwat, mainWeapon);
+	DOREPLIFETIME(ASwat, SubWeapon);
+	DOREPLIFETIME(ASwat, hasWeaponName);
+	DOREPLIFETIME(ASwat, hasSubWeaponName);
+	DOREPLIFETIME(ASwat, scopeMesh);
+	DOREPLIFETIME(ASwat, leftScopeMesh);
+	DOREPLIFETIME(ASwat, attackPower);
+	DOREPLIFETIME(ASwat, maxFireRate);
+	DOREPLIFETIME(ASwat, recoilValue);
 	
 }
 void ASwat::BeginPlay()
@@ -1013,21 +1023,10 @@ void ASwat::Interact()
 
 				if (hasSubWeapon)
 				{
-					mainWeapon = HitWeapon;
-					mainWeapon->SetActorEnableCollision(false);
-
-
-
-					//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
-					rifleMesh = mainWeapon->WeaponData->WeaponMesh;
-					// 현재 들고 있는 무기이름
 					FString tempWeaponName = hasWeaponName;
-					// 무기이름을 히트무기로 바꿈
-					hasWeaponName = mainWeapon->WeaponData->WeaponName;
 
-					// 장착 무기 바꾸고...
-					weaponMesh->SetSkeletalMesh(rifleMesh);
-					leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+					PickAndDrop(HitWeapon);
+					
 					FVector f(0.f, 0.f, 100.f);
 					End += f;
 					//UE_LOG(LogTemp, Warning, TEXT("히트"));
@@ -1037,56 +1036,16 @@ void ASwat::Interact()
 					DropWeaponServer(tempWeaponName, End);
 
 
-					maxFireRate = mainWeapon->WeaponData->FireRate;
-					attackPower = mainWeapon->WeaponData->AttackPower;
-					recoilPower = mainWeapon->WeaponData->RecoilPower;
-
-					if (mainWeapon->WeaponData->WeaponName == "AR4")
-					{
-						weaponMesh->SetAnimInstanceClass(ar4AnimBP);
-						leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
-						leftScopeMesh->SetVisibility(false);
-						scopeMesh->SetVisibility(false);
-					}
-					else if (mainWeapon->WeaponData->WeaponName == "AK74")
-					{
-						weaponMesh->SetAnimInstanceClass(ak74AnimBP);
-						leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
-						leftScopeMesh->SetVisibility(false);
-						scopeMesh->SetVisibility(false);
-					}
-					else if (mainWeapon->WeaponData->WeaponName == "AK47")
-					{
-						weaponMesh->SetAnimInstanceClass(ak47AnimBP);
-						leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
-						leftScopeMesh->SetVisibility(false);
-						scopeMesh->SetVisibility(false);
-					}
-					else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
-					{
-						weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-						leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-						leftScopeMesh->SetVisibility(true);
-						scopeMesh->SetVisibility(true);
-
-						//scopeActor->AttachToComponent(weaponMesh,
-							//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
-					}
+					
 					DestroyWeaponServer(HitWeapon);
-
-					// 내가 쓰는 무기를 바꾼다.
-					// 아래 줌 위치 적용하는거. 
-					//AR_AK47AimPos = Weapon->WeaponData->WeaponAimPos; 
-					//Weapon->SetupWeapon(FName("AR4"));
-
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick item");
 				}
 				else
 				{
-					SubWeapon = HitWeapon;
-					SubWeapon->SetActorEnableCollision(false);
-					hasSubWeaponName =SubWeapon->WeaponData->WeaponName;
-					hasSubWeapon = true;
+					PickSubWeapon(HitWeapon);
 					DestroyWeaponServer(HitWeapon);
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick sub item");
+
 				}
 
 			}
@@ -1124,53 +1083,53 @@ void ASwat::Interact()
 
 void ASwat::SetWeaponWhenSaveFileLoad()
 {
-	mainWeapon->SetActorEnableCollision(false);
+	//mainWeapon->SetActorEnableCollision(false);
 
 
 
-	//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
-	rifleMesh = mainWeapon->WeaponData->WeaponMesh;
-	// 현재 들고 있는 무기이름
-	FString tempWeaponName = hasWeaponName;
-	// 무기이름을 히트무기로 바꿈
-	hasWeaponName = mainWeapon->WeaponData->WeaponName;
+	////이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
+	//rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+	//// 현재 들고 있는 무기이름
+	//FString tempWeaponName = hasWeaponName;
+	//// 무기이름을 히트무기로 바꿈
+	//hasWeaponName = mainWeapon->WeaponData->WeaponName;
 
-	// 장착 무기 바꾸고...
-	weaponMesh->SetSkeletalMesh(rifleMesh);
-	leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+	//// 장착 무기 바꾸고...
+	//weaponMesh->SetSkeletalMesh(rifleMesh);
+	//leftWeaponMesh->SetSkeletalMesh(rifleMesh);
 
-	maxFireRate = mainWeapon->WeaponData->FireRate;
-	attackPower = mainWeapon->WeaponData->AttackPower;
-	recoilPower = mainWeapon->WeaponData->RecoilPower;
+	//maxFireRate = mainWeapon->WeaponData->FireRate;
+	//attackPower = mainWeapon->WeaponData->AttackPower;
+	//recoilPower = mainWeapon->WeaponData->RecoilPower;
 
-	if (mainWeapon->WeaponData->WeaponName == "AR4")
-	{
-		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
-		leftScopeMesh->SetVisibility(false);
-		scopeMesh->SetVisibility(false);
-	}
-	else if (mainWeapon->WeaponData->WeaponName == "AK74")
-	{
-		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
-		leftScopeMesh->SetVisibility(false);
-		scopeMesh->SetVisibility(false);
-	}
-	else if (mainWeapon->WeaponData->WeaponName == "AK47")
-	{
-		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
-		leftScopeMesh->SetVisibility(false);
-		scopeMesh->SetVisibility(false);
-	}
-	else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
-	{
-		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-		leftScopeMesh->SetVisibility(true);
-		scopeMesh->SetVisibility(true);
-	}
+	//if (mainWeapon->WeaponData->WeaponName == "AR4")
+	//{
+	//	weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+	//	leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+	//	leftScopeMesh->SetVisibility(false);
+	//	scopeMesh->SetVisibility(false);
+	//}
+	//else if (mainWeapon->WeaponData->WeaponName == "AK74")
+	//{
+	//	weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+	//	leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+	//	leftScopeMesh->SetVisibility(false);
+	//	scopeMesh->SetVisibility(false);
+	//}
+	//else if (mainWeapon->WeaponData->WeaponName == "AK47")
+	//{
+	//	weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+	//	leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+	//	leftScopeMesh->SetVisibility(false);
+	//	scopeMesh->SetVisibility(false);
+	//}
+	//else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
+	//{
+	//	weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+	//	leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+	//	leftScopeMesh->SetVisibility(true);
+	//	scopeMesh->SetVisibility(true);
+	//}
 
 }
 
@@ -1204,9 +1163,9 @@ void ASwat::TimelineProgress(float value)
 	RecoilReq(recoilValue);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(value));
 }
+
 void ASwat::ChangeWeapon()
 {
-
 	if (hasSubWeapon)
 	{
 		/*;
@@ -1216,40 +1175,23 @@ void ASwat::ChangeWeapon()
 		// sub= 서브 무기
 		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
 
-
+		auto temp = hasSubWeaponName;
+		hasSubWeaponName = hasWeaponName;
+		hasWeaponName = temp;
 
 		FString PString222 = FString("AR4");
-		auto asdaass = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
+		auto findData = SwatWeaponDataTable->FindRow<FWeaponData>(FName(hasWeaponName), hasWeaponName, true);
 		//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
 		// 메인 서브 무기 바꾸기.
-		auto temp = mainWeapon;
-		mainWeapon = SubWeapon;
-		SubWeapon = temp;
-
-		if (IsValid(mainWeapon->WeaponData->WeaponMesh))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "mainWeapon sucess");
-			rifleMesh = mainWeapon->WeaponData->WeaponMesh;
-		}
-		else
-		{
-			rifleMesh = asdaass->WeaponMesh;
-
-		}
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "mainWeapon sucess");
-		rifleMesh = mainWeapon->WeaponData->WeaponMesh;
-
-		// 지금 들고있는 무기를 서브무기로 
-		hasWeaponName = mainWeapon->WeaponData->WeaponName;
-		hasSubWeaponName = SubWeapon->WeaponData->WeaponName;
-		weaponMesh->SetSkeletalMesh(rifleMesh);
-		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
-
+		
+		USkeletalMesh* rifleMesh = findData->WeaponMesh;
+		
+		ChangeWeaponMesh(rifleMesh);
+		
 		// 서브무기를 지금 들고있는 무기로
-		maxFireRate = mainWeapon->WeaponData->FireRate;
-		attackPower = mainWeapon->WeaponData->AttackPower;
-		recoilPower = mainWeapon->WeaponData->RecoilPower;
+		maxFireRate = findData->FireRate;
+		attackPower = findData->AttackPower;
+		recoilPower = findData->RecoilPower;
 
 		if (mainWeapon->WeaponData->WeaponName == "AR4")
 		{
@@ -1287,6 +1229,10 @@ void ASwat::ChangeWeapon()
 	{
 		return;
 	}
+}
+void ASwat::ChangeWeaponReq_Implementation()
+{
+	
 }
 
 // Called every frame
@@ -1627,4 +1573,70 @@ void ASwat::PlayPhysicsSoundMulticastReq_Implementation(const ASwat* playerChara
 {
 	auto PC = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(PC, soundSourceLocation, sound);
+}
+
+void ASwat::PickSubWeapon_Implementation(AWeaponBase* HitWeapon)
+{
+	hasSubWeaponName = HitWeapon->WeaponData->WeaponName;
+	HitWeapon->SetActorEnableCollision(false);
+	hasSubWeapon = true;
+}
+
+void ASwat::PickAndDrop_Implementation(AWeaponBase* HitWeapon)
+{
+	HitWeapon->SetActorEnableCollision(false);
+
+	
+	//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
+	auto rifleMesh = HitWeapon->WeaponData->WeaponMesh;
+	// 현재 들고 있는 무기이름
+	hasWeaponName = HitWeapon->WeaponData->WeaponName;
+
+	maxFireRate = HitWeapon->WeaponData->FireRate;
+	attackPower = HitWeapon->WeaponData->AttackPower;
+	recoilPower = HitWeapon->WeaponData->RecoilPower;
+
+	if (hasWeaponName == "AR4")
+	{
+		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (hasWeaponName == "AK74")
+	{
+		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (hasWeaponName == "AK47")
+	{
+		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (hasWeaponName == "KAVAL")
+	{
+		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+		leftScopeMesh->SetVisibility(true);
+		scopeMesh->SetVisibility(true);
+
+		//scopeActor->AttachToComponent(weaponMesh,
+			//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+	}
+	ChangeWeaponMesh(rifleMesh);
+}
+
+void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
+{
+	if (!HasAuthority())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "change weapon mesh");
+		// 장착 무기 바꾸고...
+		weaponMesh->SetSkeletalMesh(rifleMesh);
+		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+	}
 }

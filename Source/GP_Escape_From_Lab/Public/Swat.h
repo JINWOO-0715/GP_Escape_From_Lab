@@ -63,8 +63,6 @@ protected:
 
 	void Inventory();
 	void Minimap();
-	void ChangeWeapon();
-
 	void UseAmmo();
 	void UseMedkit();
 
@@ -75,15 +73,15 @@ protected:
 
 
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 		bool hasSubWeapon = false;
 
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 		class AWeaponBase* mainWeapon = nullptr;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-		class AWeaponBase* SubWeapon = nullptr;;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
+		class AWeaponBase* SubWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class ULineTrace* LineTraceComp;
@@ -206,9 +204,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		UAnimMontage* reloadMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	UStaticMeshComponent* scopeMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	UStaticMeshComponent* leftScopeMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -266,11 +264,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasSevenSaveAmmo = 300;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float attackPower = 30.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float recoilPower = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	float attackPower = 30.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	float maxFireRate = 0.1f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	float recoilPower = 2.0f;
 
 	// 가지고 있는 키카드수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -282,10 +281,10 @@ public:
 		bool Arrived = false;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		FString hasWeaponName = "AR4";
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		FString hasSubWeaponName = "";
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite ,Replicated)
@@ -298,7 +297,6 @@ private:
 	const int maxStamina = 100;
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
-	float maxFireRate = 0.1f;
 	float curFireRate = maxFireRate;
 
 
@@ -309,9 +307,9 @@ private:
 	//FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
 	//FVector AK74AimPos{ -60, 0.0, 7.0 };
 	//FVector VSSAimPos{ -72, 0.0, 5.0 };
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* rifleMesh = nullptr;
+//public:
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	USkeletalMesh* rifleMesh = nullptr;
 
 public:
 	UFUNCTION(Server,Unreliable ,BlueprintCallable)
@@ -382,7 +380,19 @@ public:
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void PlayPhysicsSoundMulticastReq(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
 
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void ChangeWeaponReq();
+	UFUNCTION(BlueprintCallable)
+	void ChangeWeapon();
 
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void PickSubWeapon(AWeaponBase* HitWeapon);
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void PickAndDrop(AWeaponBase* HitWeapon);
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void ChangeWeaponMesh(USkeletalMesh* rifleMesh);
 private:
 	bool isMyComputer();
 
