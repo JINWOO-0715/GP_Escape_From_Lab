@@ -35,4 +35,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasKeyCard = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int currentStage = 1;
 };
