@@ -24,6 +24,8 @@ struct FWeaponData : public FTableRowBase
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class USkeletalMesh* WeaponMesh;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		class UStaticMesh* WeaponStaticMesh;
 	//무기 에임 포스
 	//UPROPERTY(EditAnyWhere)
 		//FVector WeaponAimPos;
@@ -84,6 +86,10 @@ public:
 	//무기 메시
 	UPROPERTY(EditAnyWhere)
 		class USkeletalMeshComponent* MeshComp;
+	//무기 메시
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		class UStaticMeshComponent* StaticMeshComp;
+
 	// 디폴트 무기.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		FName DefaultWeaponName;

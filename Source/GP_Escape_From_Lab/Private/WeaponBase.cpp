@@ -10,8 +10,9 @@ AWeaponBase::AWeaponBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
-	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
-	RootComponent = MeshComp;
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("SkeletalMeshComponent");
+	//StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("SkeletalMeshComponent");
+	RootComponent = StaticMeshComp;
 	bReplicates = true;
 	DefaultWeaponName = FName("AR4");
 
@@ -78,9 +79,15 @@ void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 		{
 			if (WeaponData)
 			{
-				WeaponName = FName("AR4");
 			
-				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+				WeaponName = FName("AR4");
+				StaticMeshComp->SetStaticMesh(WeaponData->WeaponStaticMesh);
+
+				StaticMeshComp->SetSimulatePhysics(true);
+				StaticMeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+				StaticMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+				StaticMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Overlap);
+				StaticMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 			}
 		}
 		else
@@ -89,7 +96,13 @@ void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 			{
 			
 			
-				MeshComp->SetSkeletalMesh(WeaponData->WeaponMesh);
+				StaticMeshComp->SetStaticMesh(WeaponData->WeaponStaticMesh);
+				StaticMeshComp->SetSimulatePhysics(true);
+				StaticMeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+				StaticMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+				StaticMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Overlap);
+				StaticMeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
 			}
 		}
 	
