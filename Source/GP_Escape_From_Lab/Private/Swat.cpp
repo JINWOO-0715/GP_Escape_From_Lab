@@ -1121,6 +1121,59 @@ void ASwat::Interact()
 	}
 
 }
+
+void ASwat::SetWeaponWhenSaveFileLoad()
+{
+	mainWeapon->SetActorEnableCollision(false);
+
+
+
+	//이런식으로 가져다가 사용하면 된다. 라이플 마꾸고
+	rifleMesh = mainWeapon->WeaponData->WeaponMesh;
+	// 현재 들고 있는 무기이름
+	FString tempWeaponName = hasWeaponName;
+	// 무기이름을 히트무기로 바꿈
+	hasWeaponName = mainWeapon->WeaponData->WeaponName;
+
+	// 장착 무기 바꾸고...
+	weaponMesh->SetSkeletalMesh(rifleMesh);
+	leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+
+	maxFireRate = mainWeapon->WeaponData->FireRate;
+	attackPower = mainWeapon->WeaponData->AttackPower;
+	recoilPower = mainWeapon->WeaponData->RecoilPower;
+
+	if (mainWeapon->WeaponData->WeaponName == "AR4")
+	{
+		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (mainWeapon->WeaponData->WeaponName == "AK74")
+	{
+		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (mainWeapon->WeaponData->WeaponName == "AK47")
+	{
+		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+		leftScopeMesh->SetVisibility(false);
+		scopeMesh->SetVisibility(false);
+	}
+	else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
+	{
+		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+		leftScopeMesh->SetVisibility(true);
+		scopeMesh->SetVisibility(true);
+	}
+
+}
+
 void ASwat::DestroyItemServer_Implementation(APickups* item)
 {
 	item->Destroy();

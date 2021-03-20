@@ -17,11 +17,11 @@ struct FWeaponData : public FTableRowBase
 		
 
 	// 무기 이름
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		FString WeaponName;
 
 	//무기 스켈레탈 메쉬
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class USkeletalMesh* WeaponMesh;
 
 	//무기 에임 포스
@@ -29,20 +29,20 @@ struct FWeaponData : public FTableRowBase
 		//FVector WeaponAimPos;
 	
 	// 맥스 저장가능 탄약수  30/100 100발
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		int32 WeaponSaveMagazine;
 
 	//발사 가능 탄약수 30/100   30발
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		int32 WeaponMagazine;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float FireRate;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float RecoilPower;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AttackPower;
 	// 혹시 발사 애니메이션이 있으면...
 	//UPROPERTY(EditAnyWhere)

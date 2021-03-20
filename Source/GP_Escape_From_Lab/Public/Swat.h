@@ -82,7 +82,7 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class AWeaponBase* mainWeapon = nullptr;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class AWeaponBase* SubWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -138,6 +138,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		AZombie* KnifeAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponWhenSaveFileLoad();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -290,7 +293,6 @@ public:
 		0.0f, 0.0f, 0.0f
 	};
 
-
 private:
 	bool isMapOpen = false;
 	const int maxStamina = 100;
@@ -307,8 +309,8 @@ private:
 	//FVector AR_AK47AimPos{ -72, 0.0, 7.3 };
 	//FVector AK74AimPos{ -60, 0.0, 7.0 };
 	//FVector VSSAimPos{ -72, 0.0, 5.0 };
-
-	UPROPERTY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* rifleMesh = nullptr;
 
 public:
@@ -379,6 +381,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void PlayPhysicsSoundMulticastReq(const ASwat* playerCharacter, FVector soundSourceLocation, USoundBase* sound);
+
 
 private:
 	bool isMyComputer();
