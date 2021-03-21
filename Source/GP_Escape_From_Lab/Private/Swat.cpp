@@ -1023,21 +1023,21 @@ void ASwat::ChangeStateHasWeapon_Implementation()
 	}
 }
 
-void ASwat::Interact()
+void ASwat::Interact(AActor* m_Actor)
 {
 
 	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
-	// 머리부터 카메라 방향 2m까지 직선쏘기
+	//// 머리부터 카메라 방향 2m까지 직선쏘기
 
 	FVector End = Start + cameraComp->GetForwardVector() * 200.0f;
 
-	AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
+	//AActor* Actor = LineTraceComp->LineTraceSingle(Start, End, true);
 
-	if (Actor)
+	if (m_Actor)
 	{
 
 		//충돌이 무기라면
-		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(Actor))
+		if (AWeaponBase* HitWeapon = Cast<AWeaponBase>(m_Actor))
 		{
 			if (!isReloading)
 			{
@@ -1072,7 +1072,7 @@ void ASwat::Interact()
 		}
 
 		// 충돌이 아이템이라면.
-		if (APickups* Pickup = Cast<APickups>(Actor))
+		if (APickups* Pickup = Cast<APickups>(m_Actor))
 		{
 
 			if (Pickup->ItemData->ItemName == "Medkit")
@@ -1405,7 +1405,7 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("SwitchWeapon", IE_Released, this, &ASwat::ChangeWeapon);
 
 	// 무기 줍는 기 누르면.
-	PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
+	//PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
 	// 인벤토리 누르면	
 	PlayerInputComponent->BindAction("Inventory", IE_Released, this, &ASwat::Inventory);
 	// 힐팩키 누르면
