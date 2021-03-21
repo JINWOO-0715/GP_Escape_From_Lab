@@ -171,7 +171,7 @@ void ABullet::Tick(float DeltaTime)
 
 			FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
 			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
+			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
 			
 			//UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
 			ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
@@ -296,13 +296,13 @@ void ABullet::PlayParticleReq_Implementation(bool isBloodParticle, const FVector
 	else
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, particleSpawnPos);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Particle Multicast Called");
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Particle Multicast Called");
 	}
 }
 void ABullet::ServerPlayParticleReq_Implementation(bool isBloodParticle, const FVector& particleSpawnPos)
 {
 	PlayParticleReq(isBloodParticle, particleSpawnPos);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Call Multicast Function");
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Call Multicast Function");
 }
 
 void ABullet::SpawnBloodDecalReq_Implementation(bool isFloorBlood, UPrimitiveComponent* component, const FVector& location, const FRotator& rotation)

@@ -540,7 +540,7 @@ void ASwat::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAct
 		if (hitzombie)
 		{
 			// 움직이게 하자
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "HIT ZOMBIE");
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "HIT ZOMBIE");
 			//auto c = hitzombie->GetCharacterMovement();
 			//AZombieAIController* AICon = Cast<AZombieAIController>(hitzombie->GetController());
 			//UBlackboardComponent* BlackboardComp = AICon->GetBlackboardComp();
@@ -651,7 +651,7 @@ AZombie* ASwat::KnifeAttack()
 		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
 		//zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "Knife Point Damage");
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "Knife Point Damage");
 
 		UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(this, soundPlayLoc, knifeBodyImpactSound);
 	}
@@ -722,7 +722,7 @@ void ASwat::EndReloading()
 
 void ASwat::SpawnGrenade()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Grenade will be spawned");
+//	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, "Grenade will be spawned");
 }
 
 void ASwat::MoveForward(float value)
@@ -1056,13 +1056,13 @@ void ASwat::Interact(AActor* m_Actor)
 					//가지고 있던 무기를 버린다.
 					DropWeaponServer(tempWeaponName, End);
 					DestroyWeaponServer(HitWeapon);
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick item");
+				//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick item");
 				}
 				else
 				{
 					PickSubWeapon(HitWeapon);
 					DestroyWeaponServer(HitWeapon);
-					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick sub item");
+				//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick sub item");
 
 				}
 
@@ -1086,7 +1086,7 @@ void ASwat::Interact(AActor* m_Actor)
 			}
 			if (Pickup->ItemData->ItemName == "SevenAmmo")
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(hasSevenSaveAmmo));
+			//	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(hasSevenSaveAmmo));
 				hasSevenSaveAmmo += 30;
 			}
 			//UE_LOG(LogTemp, Warning, TEXT("HIT")); 
@@ -1606,7 +1606,7 @@ void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotat
 	grenade->ServerSetInitGrenadeImpactReq(initgrenadeImpact);
 
 	grenade->ServerAddImpactReq(initgrenadeImpact, initGrenadeSpawnRot);
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, initGrenadeSpawnRot.ToString());
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, initGrenadeSpawnRot.ToString());
 	//grenade->initGrenadeImpact = initgrenadeImpact;
 	grenade->SetOwner(this);
 }
@@ -1701,7 +1701,7 @@ void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
 {
 	if (!HasAuthority())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "change weapon mesh");
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "change weapon mesh");
 		// 장착 무기 바꾸고...
 		weaponMesh->SetSkeletalMesh(rifleMesh);
 		leftWeaponMesh->SetSkeletalMesh(rifleMesh);

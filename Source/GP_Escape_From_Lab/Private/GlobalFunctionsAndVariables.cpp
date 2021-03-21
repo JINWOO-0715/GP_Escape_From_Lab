@@ -343,7 +343,7 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 			if (AICon)
 			{
 				AICon->SetSoundCaught(startTrace);
-				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is valid");
+				//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is valid");
 			}
 			//
 
