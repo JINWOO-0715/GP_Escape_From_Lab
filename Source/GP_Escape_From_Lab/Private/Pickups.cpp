@@ -51,6 +51,7 @@ void APickups::SetupItemFromDT_Implementation (FName ItemName)
 		//float d = 0.0f;
 		if (ItemName == "")
 		{
+			DefaultItemName = FName("Ammo");
 			ItemName= FName("Ammo");
 			static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
 			ItemData = ItemDataTable->FindRow<FItemData>(ItemName, PString, true);
@@ -70,6 +71,7 @@ void APickups::SetupItemFromDT_Implementation (FName ItemName)
 
 		else
 		{
+			DefaultItemName = ItemName;
 			static const FString PString = FString("AR4"); // ContextString가 뭔지 모르겠음.
 			ItemData = ItemDataTable->FindRow<FItemData>(ItemName, PString, true);
 
