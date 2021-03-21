@@ -119,7 +119,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		USkeletalMeshComponent* GetWeaponMeshComponent() { return weaponMesh; }
 	UFUNCTION(BlueprintCallable)
-		void Interact();
+		void Interact(AActor* m_Actor);
 
 	UFUNCTION(Server,Reliable,BlueprintCallable)
 		void DestroyItemServer(APickups* item);
@@ -270,6 +270,12 @@ public:
 	float maxFireRate = 0.1f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float recoilPower = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool collisionWeapon = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite )
+		bool collisionItemon = false;
+
 
 	// 가지고 있는 키카드수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
