@@ -26,6 +26,9 @@ struct FWeaponData : public FTableRowBase
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class UStaticMesh* WeaponStaticMesh;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		class UStaticMesh* RedOutlineMesh;
 	//무기 에임 포스
 	//UPROPERTY(EditAnyWhere)
 		//FVector WeaponAimPos;
@@ -80,7 +83,7 @@ public:
 		void OnlyClientSetupWeapon(FName WeaponName);
 
 	//밖에서 넣을 데이터 테이블.
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class UDataTable* WeaponDataTable;
 
 	//무기 메시

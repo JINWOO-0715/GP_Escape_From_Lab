@@ -79,8 +79,10 @@ void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 		{
 			if (WeaponData)
 			{
-			
+
 				WeaponName = FName("AR4");
+				DefaultWeaponName = WeaponName;
+
 				StaticMeshComp->SetStaticMesh(WeaponData->WeaponStaticMesh);
 
 				StaticMeshComp->SetSimulatePhysics(true);
@@ -95,7 +97,8 @@ void AWeaponBase::SetupWeapon_Implementation(FName WeaponName)
 			if (WeaponData)
 			{
 			
-			
+				DefaultWeaponName = WeaponName;
+
 				StaticMeshComp->SetStaticMesh(WeaponData->WeaponStaticMesh);
 				StaticMeshComp->SetSimulatePhysics(true);
 				StaticMeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
