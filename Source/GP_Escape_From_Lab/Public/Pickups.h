@@ -17,13 +17,16 @@ struct FItemData : public FTableRowBase
 
 
 		// 아이템 이름
-		UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		FString ItemName;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class UStaticMesh* ItemMesh;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		class UStaticMesh* RedOutlineItemMesh;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		class USkeletalMesh* ItemSKMesh;
 
 };
