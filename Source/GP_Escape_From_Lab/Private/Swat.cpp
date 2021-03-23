@@ -283,10 +283,14 @@ ASwat::ASwat()
 
 	LineTraceComp = CreateDefaultSubobject<ULineTrace>("LineTraceComp");
 	ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint(TEXT("/Game/Movable/WeaponBP/BP_WeaponBase.BP_WeaponBase_C"));
+	ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint2(TEXT("/Game/Movable/WeaponBP/BP_Item.BP_Item_C"));
 	if (ItemBlueprint.Object) {
 		MyItemBlueprint = (UClass*)ItemBlueprint.Object;
 	}
 
+	if (ItemBlueprint2.Object) {
+		MyItemBlueprint2 = (UClass*)ItemBlueprint2.Object;
+	}
 
 	ConstructorHelpers::FObjectFinder<UDataTable> ItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 	ConstructorHelpers::FObjectFinder<UDataTable> SwatWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
@@ -600,8 +604,8 @@ void ASwat::DropItem_Implementation(FName ItemName)
 
 	FVector End = Start + cameraComp->GetForwardVector() * 200.0f;
 
-
-	APickups* Ammo = GetWorld()->SpawnActor<APickups>(End, FRotator(0, 0, 0));
+	
+	APickups* Ammo = GetWorld()->SpawnActor<APickups>(MyItemBlueprint2,End, FRotator(0, 0, 0));
 
 	if (ItemName == FName("Ammo"))
 	{

@@ -70,7 +70,7 @@ protected:
 
 	//¡¶¿€
 	TSubclassOf<class AWeaponBase> MyItemBlueprint;
-
+	TSubclassOf<class APickups> MyItemBlueprint2;
 
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
