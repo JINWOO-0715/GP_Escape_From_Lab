@@ -121,6 +121,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Interact(AActor* m_Actor);
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+		void AddKeyCardCountServer();
+
 	UFUNCTION(Server,Reliable,BlueprintCallable)
 		void DestroyItemServer(APickups* item);
 

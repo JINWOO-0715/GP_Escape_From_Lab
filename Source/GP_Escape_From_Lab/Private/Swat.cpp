@@ -1093,6 +1093,15 @@ void ASwat::Interact(AActor* m_Actor)
 			//	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(hasSevenSaveAmmo));
 				hasSevenSaveAmmo += 30;
 			}
+			if (Pickup->ItemData->ItemName == "KeyCard")
+			{
+
+					// 서버에 추가한다 키 카드수를.
+					AddKeyCardCountServer();
+	
+				//	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, FString::SanitizeFloat(hasSevenSaveAmmo));
+				
+			}
 			//UE_LOG(LogTemp, Warning, TEXT("HIT")); 
 			//UE_LOG(LogTemp, Warning, TEXT("Med : %d "), hasMedkit);
 			//UE_LOG(LogTemp, Warning, TEXT("ammo :  %d"), hasAmmo);
@@ -1200,6 +1209,13 @@ void ASwat::SetWeaponWhenSaveFileLoad()
 	//	scopeMesh->SetVisibility(true);
 	//}
 
+}
+
+void ASwat::AddKeyCardCountServer_Implementation()
+{
+	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
+	GameMode->hasKeyCard += 1;
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, "suecess haskey");
 }
 
 void ASwat::DestroyItemServer_Implementation(APickups* item)
