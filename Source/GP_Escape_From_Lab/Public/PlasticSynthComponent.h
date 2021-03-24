@@ -7,10 +7,10 @@
 #include "DSP/Osc.h"
 #include "maximilian.h"
 #include <random>
-#include "MySynthComponent.generated.h"
+#include "PlasticSynthComponent.generated.h"
 
 // ========================================================================
-// UMySynthComponent
+// UPlasticSynthComponent
 // Synth component class which implements USynthComponent
 // This is a simple hello-world type example which generates a sine-wave
 // tone using a DSP oscillator class and implements a single function to set
@@ -20,7 +20,7 @@
 // ========================================================================
 
 UCLASS(ClassGroup = Synth, meta = (BlueprintSpawnableComponent))
-class GP_ESCAPE_FROM_LAB_API UMySynthComponent : public USynthComponent
+class GP_ESCAPE_FROM_LAB_API UPlasticSynthComponent : public USynthComponent
 {
 	GENERATED_BODY()
 	
@@ -33,6 +33,7 @@ class GP_ESCAPE_FROM_LAB_API UMySynthComponent : public USynthComponent
 	// Sets the oscillator's frequency
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
+
 public:
 	static const int MODES_NUMBER;
 	static const float SHORTEST_FREQ;
@@ -45,10 +46,10 @@ public:
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	bool isPlayOnce;
-	float fixedGain[20];
-	maxiOsc originOsc[20];
-	maxiOsc fixedOsc[20];
+	float fixedGain[60];
+	maxiOsc originOsc[60];
+	maxiOsc fixedOsc[60];
 	maxiSample sourceSound;
-	maxiEnv modesEnv[20];
+	maxiEnv modesEnv[60];
 	maxiEnv originEnv;
 };

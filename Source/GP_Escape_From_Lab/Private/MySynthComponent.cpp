@@ -43,15 +43,7 @@ bool UMySynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
-	bool isSuccess = sourceSound.load(filePath);
-	if (isSuccess)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load Success");
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load failed");
-	}
+	sourceSound.load(filePath);
 
 	originEnv.setAttack(1.0f);
 	originEnv.setDecay(1.0f);
@@ -75,21 +67,7 @@ bool UMySynthComponent::Init(int32& SampleRate)
 		}
 	}
 
-// Initialize the DSP objects
-// 	Osc.Init(SampleRate);
-// 	Osc.SetFrequency(440.0f);
-// 	Osc.Start();
-	for (int i = 0; i < 20; ++i)
-	{
-		Osc[i].Init(44100);
-		Osc[i].SetFrequency(walkModesData[i][0]);
-		Osc[i].Start();
-		OscFixed[i].Init(44100);
-		OscFixed[i].SetFrequency(walkModesData[i][0]);
-		OscFixed[i].Start();
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(SampleRate));
- 	isPlayOnce = true;
+	isPlayOnce = true;
 	return true;
 	
 }
@@ -107,7 +85,6 @@ int32 UMySynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 				modesEnv[i].trigger = 1.0f;
 			}
 			isPlayOnce = false;
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "envelope on");
 		}
 		else
 		{
@@ -124,20 +101,17 @@ int32 UMySynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 		{
 			decayVolume[i] = modesEnv[i].adsr(1, modesEnv[i].trigger);
 			out += (originOsc[i].sinewave(walkModesData[i][0]) * walkModesData[i][1]) * decayVolume[i];
-			//out += (Osc[i].Generate() * walkModesData[i][1]) * decayVolume[i];
 		}
 
-		//이게 없으면 소리가 안남.
-		sourceSoundValue *= originEnv.adsr(1, originEnv.trigger);//originEnv.adsr(1, originEnv.trigger);
+		sourceSoundValue *= originEnv.adsr(1, originEnv.trigger);
 
 		auto residual = sourceSoundValue - out;
 		auto fixedOut = 0.0f;
 		for (int i = 0; i < MODES_NUMBER; ++i)
 		{
 			fixedOut += (fixedOsc[i].sinewave(walkModesData[i][0]) * fixedGain[i]) * decayVolume[i];
-			//fixedOut += (OscFixed[i].Generate() * fixedGain[i]) * decayVolume[i];
 		}
-		//여기까지가 play 부분
+		
 		OutAudio[Sample] = (fixedOut + residual)*2.0f;
 
 	}
@@ -150,10 +124,6 @@ void UMySynthComponent::SetFrequency(const float InFrequencyHz)
 	// Use this protected base class method to push a lambda function which will safely execute in the audio render thread.
 	SynthCommand([this, InFrequencyHz]()
 		{
-			//Osc.SetFrequency(InFrequencyHz);
-			//Osc.Update();
-			//OscMix.SetFrequency(InFrequencyHz + 50.0f);
-			//OscMix.Update();
 
 		});
 }
