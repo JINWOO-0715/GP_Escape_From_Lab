@@ -8,7 +8,7 @@ public class GP_Escape_From_Lab : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","UMG", "AIModule","AIModule" , "GameplayTasks", "PhysicsCore" ,});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","UMG", "AIModule","AIModule" , "GameplayTasks", "PhysicsCore" , "AudioMixer", "SignalProcessing" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

@@ -7,7 +7,6 @@
 #include "Components/TimelineComponent.h"
 #include "WeaponBase.h"
 #include "Engine/DataTable.h"
-#include "SynthesizedSound.h"
 #include <vector>
 #include <sstream>
 
@@ -407,14 +406,6 @@ public:
 	void ChangeWeaponMesh(USkeletalMesh* rifleMesh);
 private:
 	bool isMyComputer();
-
-private:
-	//MyRtAudio* DAC;
-	//std::vector<float> data;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	void playSynthesizedSound(WhichSound whichSound);
 };
 //조준기능 트랜스폼 벨류
 //auto activate off
