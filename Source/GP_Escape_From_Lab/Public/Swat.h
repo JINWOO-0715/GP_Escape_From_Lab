@@ -9,7 +9,7 @@
 #include "Engine/DataTable.h"
 #include <vector>
 #include <sstream>
-
+#include "MySynthComponent.h"
 #include "Swat.generated.h"
 
 class UCameraComponent;
@@ -406,6 +406,19 @@ public:
 	void ChangeWeaponMesh(USkeletalMesh* rifleMesh);
 private:
 	bool isMyComputer();
+
+public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UMySynthComponent* walkSoundSynthComp;
+	UFUNCTION(BlueprintCallable)
+	void playWalkSynthSound();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool canWalkSoundPlay=true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float curWalkSoundCoolTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float maxWalkSoundCoolTime=0.2f;
+
 };
 //조준기능 트랜스폼 벨류
 //auto activate off

@@ -289,6 +289,9 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> Clearadd(TEXT("/Game/Movable/UI/BP_ClearWidget"));
 	ClearWidget = Clearadd.Class;
 
+
+	walkSoundSynthComp = CreateDefaultSubobject<UMySynthComponent>(TEXT("walkSyntheSoundComp"));
+
 }// Called when the game starts or when spawned
 
 void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1288,6 +1291,16 @@ void ASwat::Tick(float DeltaTime)
 
 	auto muzzleTrans = weaponMesh->GetSocketTransform("Muzzle");
 	spotComp->SetWorldTransform(muzzleTrans);
+
+	if (!canWalkSoundPlay)
+	{
+		curWalkSoundCoolTime -= DeltaTime;
+		if (curWalkSoundCoolTime < 0.0f)
+		{
+			walkSoundSynthComp->Stop();
+			canWalkSoundPlay = true;
+		}
+	}
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -1613,5 +1626,16 @@ void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
 		// 장착 무기 바꾸고...
 		weaponMesh->SetSkeletalMesh(rifleMesh);
 		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+	}
+}
+
+void ASwat::playWalkSynthSound()
+{
+	if (isMyComputer())
+	{
+		walkSoundSynthComp->Start();
+		canWalkSoundPlay = false;
+		curWalkSoundCoolTime = maxWalkSoundCoolTime;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "WalSound Call!");
 	}
 }
