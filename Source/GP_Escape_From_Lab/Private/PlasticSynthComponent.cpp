@@ -70,10 +70,10 @@ float plasticModesData[60][2] =
 std::random_device UPlasticSynthComponent::rd;
 std::default_random_engine UPlasticSynthComponent::dre(rd());
 std::uniform_real_distribution<float> UPlasticSynthComponent::urd(-1.0f, 1.0f);
-uniform_real_distribution<float> urdFixed(1.0f, 10.0f);
+uniform_real_distribution<float> urdFixed(3.0f, 10.0f);
 const int UPlasticSynthComponent::MODES_NUMBER = 60;
 const float UPlasticSynthComponent::SHORTEST_FREQ = 180.340576;
-const float UPlasticSynthComponent::BASE_RELEASE = 70.0f;
+const float UPlasticSynthComponent::BASE_RELEASE = 300.0f;
 
 bool UPlasticSynthComponent::Init(int32& SampleRate)
 {
@@ -94,26 +94,26 @@ bool UPlasticSynthComponent::Init(int32& SampleRate)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load failed");
 	}
 
-	originEnv.setAttack(100.0f);
-	originEnv.setDecay(70.0f);
-	originEnv.setSustain(50.0f);
-	originEnv.setRelease(BASE_RELEASE);
+	originEnv.setAttack(1.0f);
+	originEnv.setDecay(1.0f);
+	originEnv.setSustain(1.0f);
+	originEnv.setRelease(BASE_RELEASE*3);
 
 	for (int i = 0; i < MODES_NUMBER; ++i)
 	{
-		modesEnv[i].setAttack(150.0f);
-		modesEnv[i].setDecay(180.0f);
-		modesEnv[i].setSustain(100.0f);
+		modesEnv[i].setAttack(1.0f);
+		modesEnv[i].setDecay(1.0f);
+		modesEnv[i].setSustain(1.0f);
 		modesEnv[i].setRelease(BASE_RELEASE / (plasticModesData[i][0] / SHORTEST_FREQ));
 
-		if (UPlasticSynthComponent::urd(UPlasticSynthComponent::dre) > 0.0f)
-		{
-			fixedGain[i] = plasticModesData[i][1] / urdFixed(UPlasticSynthComponent::dre);
-		}
-		else
-		{
+		//if (UPlasticSynthComponent::urd(UPlasticSynthComponent::dre) > 0.0f)
+		//{
+			//fixedGain[i] = plasticModesData[i][1] / urdFixed(UPlasticSynthComponent::dre);
+		//}
+		//else
+		//{
 			fixedGain[i] = plasticModesData[i][1] * urdFixed(UPlasticSynthComponent::dre);
-		}
+		//}
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(SampleRate));
@@ -154,6 +154,7 @@ int32 UPlasticSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			out += (originOsc[i].sinewave(plasticModesData[i][0]) * plasticModesData[i][1]) * decayVolume[i];
 		}
 
+		sourceSoundValue *= originEnv.adsr(1, originEnv.trigger);
 		
 		auto residual = sourceSoundValue - out;
 		auto fixedOut = 0.0f;
