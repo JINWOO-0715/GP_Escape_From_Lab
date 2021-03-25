@@ -107,8 +107,7 @@ void AZombie::MyReceiveRadialDamageAndImpact(float damage, FVector impulseDir, A
 	if (hp <= 0)
 	{
 		/*GetMesh()->SetSimulatePhysics(true);
-		GetMesh()->AddImpulse(impulseDir * 100000.0f);
-		
+		GetMesh()->AddImpulse(impulseDir * 100000.0f);		
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);*/
 	}
 }
