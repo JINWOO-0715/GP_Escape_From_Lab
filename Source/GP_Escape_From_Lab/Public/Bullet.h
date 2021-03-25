@@ -11,6 +11,8 @@ class UStaticMeshComponent;
 class UProjectileMovementComponent;
 class UParticleSystem;
 class AZombie;
+class UPlasticSynthComponent;
+class USteelSynthComponent;
 
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ABullet : public AActor
@@ -43,7 +45,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AActor> bulletHoleBP = nullptr;
-
+	
+	UPROPERTY()
+	UPlasticSynthComponent* plasticSoundComp;
+	UPROPERTY()
+	USteelSynthComponent* steelSoundComp;
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void PlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
@@ -63,5 +69,6 @@ private:
 	FVector befPos{ 0.0f,0.0f,0.0f };
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
+	bool isAlive = true;
 	const float bulletSpeed = 20000.0f;
 };

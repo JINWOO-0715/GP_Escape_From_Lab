@@ -20,6 +20,8 @@
 #include "Swat.h"
 #include "Zombie.h"
 #include "GlobalFunctionsAndVariables.h"
+#include "SteelSynthComponent.h"
+#include "PlasticSynthComponent.h"
 #include "Net/UnrealNetwork.h"
 
 //UParticleSystem* wallHitParticle = nullptr;
@@ -116,6 +118,8 @@ ABullet::ABullet()
 		floorBloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/bloodFloor_Mat.bloodFloor_Mat")).Object;
 	}*/
 
+	plasticSoundComp = CreateDefaultSubobject<UPlasticSynthComponent>(TEXT("PlasticSynthSoundComp"));
+	steelSoundComp = CreateDefaultSubobject<USteelSynthComponent>(TEXT("SteelSynthSoundComp"));
 }
 
 void ABullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -153,7 +157,7 @@ void ABullet::Tick(float DeltaTime)
 	auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	collisionParams.AddIgnoredActor(playerPawn);
 	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
+	if (isAlive && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
 		collisionParams))
 	{
 		AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
@@ -229,6 +233,7 @@ void ABullet::Tick(float DeltaTime)
 		}
 		else
 		{
+			isAlive = false;
 			//if (!HasAuthority())
 			ServerPlayParticleReq(false, hitResult.ImpactPoint);
 			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "Call Server Function");
@@ -243,14 +248,14 @@ void ABullet::Tick(float DeltaTime)
 			//GetWorld()->SpawnActor<AActor>(bulletHoleBP, spawnLocation, rotator);
 			ServerSpawnBulletHoleDecalReq(spawnLocation, rotator);
 
-			//EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
+			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
 			//
 			//
 			//
 
 			//
-			//switch (surfaceType)
-			//{
+			switch (surfaceType)
+			{
 			//case SurfaceType1: //concrete
 			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+hitResult.ImpactNormal*30.0f, concreteImpactSound);
 			//	break;
@@ -260,23 +265,25 @@ void ABullet::Tick(float DeltaTime)
 			//case SurfaceType3: //ceramic
 			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
 			//	break;
-			//case SurfaceType4: //steel
-			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
-			//	break;
-			//case SurfaceType5: //plastic
-			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
-			//	break;
-			//case SurfaceType6: //soft
-			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-			//	break;
-			//case SurfaceType7: //glass
-			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
-			//	break;
-			//default: //else
-			//	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-			//	break;
-			//}
-			Destroy();
+			case SurfaceType4: //steel
+				steelSoundComp->Start();
+				break;
+			case SurfaceType5: //plastic
+				plasticSoundComp->Start();
+				break;
+			case SurfaceType6: //soft
+				/*UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);*/
+				break;
+			case SurfaceType7: //glass
+				/*UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);*/
+				break;
+			default: //else
+				/*UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);*/
+				break;
+			}
+			projMovComp->SetVelocityInLocalSpace(FVector(0.0f, 0.0f, 0.0f));
+			SetLifeSpan(0.5f);
+			//Destroy();
 
 		}
 	}
