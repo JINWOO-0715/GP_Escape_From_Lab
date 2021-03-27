@@ -279,8 +279,8 @@ ASwat::ASwat()
 	InventoryWidget = add.Class;
 	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/UI/BP_InGameWidget"));
 	InGameWidget = ingameadd.Class;
-	ConstructorHelpers::FClassFinder<UUserWidget> Minimapadd(TEXT("/Game/Movable/UI/BP_MinimapWidget"));
-	MinimapWidget = Minimapadd.Class;
+	//ConstructorHelpers::FClassFinder<UUserWidget> Minimapadd(TEXT("/Game/Movable/UI/BP_MinimapWidget"));
+	//MinimapWidget = Minimapadd.Class;
 	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
 	HeatedUIWidget = HeatedUiAdd.Class;
 
@@ -334,7 +334,7 @@ void ASwat::BeginPlay()
 	{
 		MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
 		InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
-		MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
+		//MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 		ClearUI = CreateWidget<UUserWidget>(PlayerController, ClearWidget);
 
@@ -408,24 +408,24 @@ void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 }
 
-void ASwat::Minimap()
-{
-	if (!HasAuthority() && GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0))//only the player calling this function can view the map.
-	{
-		if (!isMapOpen)
-		{
-			MinimapUI->AddToViewport();
-			isMapOpen = true;
-		}
-		else
-		{
-			MinimapUI->RemoveFromParent();
-			isMapOpen = false;
-		}
-	}
-
-
-}
+//void ASwat::Minimap()
+//{
+//	if (!HasAuthority() && GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0))//only the player calling this function can view the map.
+//	{
+//		if (!isMapOpen)
+//		{
+//			MinimapUI->AddToViewport();
+//			isMapOpen = true;
+//		}
+//		else
+//		{
+//			MinimapUI->RemoveFromParent();
+//			isMapOpen = false;
+//		}
+//	}
+//
+//
+//}
 void ASwat::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
@@ -1332,7 +1332,7 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	// ÈúÆÑÅ° ´©¸£¸é
 	PlayerInputComponent->BindAction("UseMedkit", IE_Released, this, &ASwat::UseMedkit);
 	// ¹Ì´Ï¸ÊÅ° ´©¸£¸é
-	PlayerInputComponent->BindAction("Minimap", IE_Released, this, &ASwat::Minimap);
+	//PlayerInputComponent->BindAction("Minimap", IE_Released, this, &ASwat::Minimap);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASwat::MoveForward);

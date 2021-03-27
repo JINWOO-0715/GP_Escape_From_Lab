@@ -61,7 +61,7 @@ protected:
 	void UnAimGun();
 
 	void Inventory();
-	void Minimap();
+	//void Minimap();
 	void UseAmmo();
 	void UseMedkit();
 
@@ -220,8 +220,8 @@ public:
 	TSubclassOf<class UUserWidget> InGameWidget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> HeatedUIWidget;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UUserWidget> MinimapWidget;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TSubclassOf<class UUserWidget> MinimapWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> Mission1Widget;
@@ -235,8 +235,8 @@ public:
 	UUserWidget* InGameUI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* HeatedUI;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UUserWidget* MinimapUI;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//UUserWidget* MinimapUI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* Mission1UI;
