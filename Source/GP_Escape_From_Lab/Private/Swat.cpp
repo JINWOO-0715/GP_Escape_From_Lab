@@ -1144,64 +1144,7 @@ void ASwat::ChangeWeapon()
 {
 	if (hasSubWeapon)
 	{
-		/*;
-		mainWeapon = odowi;*/
-
-		// Weapon= 지금들고있는거
-		// sub= 서브 무기
-		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
-
-		auto temp = hasSubWeaponName;
-		hasSubWeaponName = hasWeaponName;
-		hasWeaponName = temp;
-
-		FString PString222 = FString("AR4");
-		auto findData = SwatWeaponDataTable->FindRow<FWeaponData>(FName(hasWeaponName), hasWeaponName, true);
-		//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
-		// 메인 서브 무기 바꾸기.
-
-		USkeletalMesh* rifleMesh = findData->WeaponMesh;
-
-		ChangeWeaponMesh(rifleMesh);
-
-		// 서브무기를 지금 들고있는 무기로
-		maxFireRate = findData->FireRate;
-		attackPower = findData->AttackPower;
-		recoilPower = findData->RecoilPower;
-
-
-		// 재오한테 hasWeaponName맞냐고 물어보기 
-		if (mainWeapon->WeaponData->WeaponName == "AR4")
-		{
-			weaponMesh->SetAnimInstanceClass(ar4AnimBP);
-			leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
-			leftScopeMesh->SetVisibility(false);
-			scopeMesh->SetVisibility(false);
-		}
-		else if (mainWeapon->WeaponData->WeaponName == "AK74")
-		{
-			weaponMesh->SetAnimInstanceClass(ak74AnimBP);
-			leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
-			leftScopeMesh->SetVisibility(false);
-			scopeMesh->SetVisibility(false);
-		}
-		else if (mainWeapon->WeaponData->WeaponName == "AK47")
-		{
-			weaponMesh->SetAnimInstanceClass(ak47AnimBP);
-			leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
-			leftScopeMesh->SetVisibility(false);
-			scopeMesh->SetVisibility(false);
-		}
-		else if (mainWeapon->WeaponData->WeaponName == "KAVAL")
-		{
-			weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-			leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-			leftScopeMesh->SetVisibility(true);
-			scopeMesh->SetVisibility(true);
-
-			//scopeActor->AttachToComponent(weaponMesh,
-				//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
-		}
+		ChangeWeaponReq();
 	}
 	else
 	{
@@ -1210,7 +1153,69 @@ void ASwat::ChangeWeapon()
 }
 void ASwat::ChangeWeaponReq_Implementation()
 {
+	ChangeWeaponMulticast();
+}
 
+void ASwat::ChangeWeaponMulticast_Implementation()
+{
+	/*;
+		mainWeapon = odowi;*/
+
+		// Weapon= 지금들고있는거
+		// sub= 서브 무기
+		//hasSubWeaponName = Weapon->WeaponData->WeaponName;
+
+	auto temp = hasSubWeaponName;
+	hasSubWeaponName = hasWeaponName;
+	hasWeaponName = temp;
+
+	FString PString222 = FString("AR4");
+	auto findData = SwatWeaponDataTable->FindRow<FWeaponData>(FName(hasWeaponName), hasWeaponName, true);
+	//mainWeapon->WeaponData = SwatWeaponDataTable->FindRow<FWeaponData>(FName("AR4"), PString222, true);
+	// 메인 서브 무기 바꾸기.
+
+	USkeletalMesh* rifleMesh = findData->WeaponMesh;
+
+	ChangeWeaponMesh(rifleMesh);
+
+	// 서브무기를 지금 들고있는 무기로
+	maxFireRate = findData->FireRate;
+	attackPower = findData->AttackPower;
+	recoilPower = findData->RecoilPower;
+
+
+	 //재오한테 hasWeaponName맞냐고 물어보기 
+ 	if (hasWeaponName == "AR4")
+ 	{
+ 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+ 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+ 		leftScopeMesh->SetVisibility(false);
+ 		scopeMesh->SetVisibility(false);
+ 	}
+ 	else if (hasWeaponName == "AK74")
+ 	{
+ 		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+ 		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+ 		leftScopeMesh->SetVisibility(false);
+ 		scopeMesh->SetVisibility(false);
+ 	}
+ 	else if (hasWeaponName == "AK47")
+ 	{
+ 		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+ 		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+ 		leftScopeMesh->SetVisibility(false);
+ 		scopeMesh->SetVisibility(false);
+ 	}
+ 	else if (hasWeaponName == "KAVAL")
+ 	{
+ 		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+ 		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+ 		leftScopeMesh->SetVisibility(true);
+ 		scopeMesh->SetVisibility(true);
+ 
+ 		//scopeActor->AttachToComponent(weaponMesh,
+ 			//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+ 	}
 }
 
 // Called every frame

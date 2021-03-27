@@ -393,6 +393,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void ChangeWeaponReq();
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void ChangeWeaponMulticast();
 	UFUNCTION(BlueprintCallable)
 	void ChangeWeapon();
 
