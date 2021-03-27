@@ -330,6 +330,10 @@ void ASwat::BeginPlay()
 	Super::BeginPlay();
 
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+
+	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
+	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
+	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 	if (!HasAuthority())
 	{
 		MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
@@ -385,9 +389,7 @@ void ASwat::BeginPlay()
 		scopeMesh->AttachToComponent(weaponMesh,
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("Scope"));
 
-		sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
-		sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
-		sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
+		
 
 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
@@ -1183,39 +1185,37 @@ void ASwat::ChangeWeaponMulticast_Implementation()
 	attackPower = findData->AttackPower;
 	recoilPower = findData->RecoilPower;
 
-
-	 //재오한테 hasWeaponName맞냐고 물어보기 
- 	if (hasWeaponName == "AR4")
- 	{
- 		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
- 		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
- 		leftScopeMesh->SetVisibility(false);
- 		scopeMesh->SetVisibility(false);
- 	}
- 	else if (hasWeaponName == "AK74")
- 	{
- 		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
- 		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
- 		leftScopeMesh->SetVisibility(false);
- 		scopeMesh->SetVisibility(false);
- 	}
- 	else if (hasWeaponName == "AK47")
- 	{
- 		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
- 		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
- 		leftScopeMesh->SetVisibility(false);
- 		scopeMesh->SetVisibility(false);
- 	}
- 	else if (hasWeaponName == "KAVAL")
- 	{
- 		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
- 		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
- 		leftScopeMesh->SetVisibility(true);
- 		scopeMesh->SetVisibility(true);
+ 	//if (hasWeaponName == "AR4")
+ 	//{
+ 	//	weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+ 	//	leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+ 	//	leftScopeMesh->SetVisibility(false);
+ 	//	scopeMesh->SetVisibility(false);
+ 	//}
+ 	//else if (hasWeaponName == "AK74")
+ 	//{
+ 	//	weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+ 	//	leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+ 	//	leftScopeMesh->SetVisibility(false);
+ 	//	scopeMesh->SetVisibility(false);
+ 	//}
+ 	//else if (hasWeaponName == "AK47")
+ 	//{
+ 	//	weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+ 	//	leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+ 	//	leftScopeMesh->SetVisibility(false);
+ 	//	scopeMesh->SetVisibility(false);
+ 	//}
+ 	//else if (hasWeaponName == "KAVAL")
+ 	//{
+ 	//	weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+ 	//	leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+ 	//	leftScopeMesh->SetVisibility(true);
+ 	//	scopeMesh->SetVisibility(true);
  
- 		//scopeActor->AttachToComponent(weaponMesh,
- 			//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
- 	}
+ 	//	//scopeActor->AttachToComponent(weaponMesh,
+ 	//		//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+ 	//}
 }
 
 // Called every frame
@@ -1272,21 +1272,21 @@ void ASwat::Tick(float DeltaTime)
 	{
 		leftWeaponMesh->SetVisibility(false);
 		weaponMesh->SetVisibility(true);
-		if (hasWeaponName == "KAVAL")
-		{
-			leftScopeMesh->SetVisibility(false);
-			scopeMesh->SetVisibility(true);
-		}
+// 		if (hasWeaponName == "KAVAL")
+// 		{
+// 			leftScopeMesh->SetVisibility(false);
+// 			scopeMesh->SetVisibility(true);
+// 		}
 	}
 	else
 	{
 		leftWeaponMesh->SetVisibility(true);
 		weaponMesh->SetVisibility(false);
-		if (hasWeaponName == "KAVAL")
-		{
-			leftScopeMesh->SetVisibility(true);
-			scopeMesh->SetVisibility(false);
-		}
+// 		if (hasWeaponName == "KAVAL")
+// 		{
+// 			leftScopeMesh->SetVisibility(true);
+// 			scopeMesh->SetVisibility(false);
+// 		}
 	}
 
 	GunHandReq(isAiming, isThrowing, isStabbing, isReloading);
@@ -1577,6 +1577,11 @@ void ASwat::PickSubWeapon_Implementation(AWeaponBase* HitWeapon)
 
 void ASwat::PickAndDrop_Implementation(AWeaponBase* HitWeapon)
 {
+	PickAndDropMulticast(HitWeapon);
+}
+
+void ASwat::PickAndDropMulticast_Implementation(AWeaponBase* HitWeapon)
+{
 	HitWeapon->SetActorEnableCollision(false);
 
 
@@ -1589,48 +1594,47 @@ void ASwat::PickAndDrop_Implementation(AWeaponBase* HitWeapon)
 	attackPower = HitWeapon->WeaponData->AttackPower;
 	recoilPower = HitWeapon->WeaponData->RecoilPower;
 
-	if (hasWeaponName == "AR4")
-	{
-		weaponMesh->SetAnimInstanceClass(ar4AnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
-		leftScopeMesh->SetVisibility(false);
-		scopeMesh->SetVisibility(false);
-	}
-	else if (hasWeaponName == "AK74")
-	{
-		weaponMesh->SetAnimInstanceClass(ak74AnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
-		leftScopeMesh->SetVisibility(false);
-		scopeMesh->SetVisibility(false);
-	}
-	else if (hasWeaponName == "AK47")
-	{
-		weaponMesh->SetAnimInstanceClass(ak47AnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
-		leftScopeMesh->SetVisibility(false);
-		scopeMesh->SetVisibility(false);
-	}
-	else if (hasWeaponName == "KAVAL")
-	{
-		weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-		leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
-		leftScopeMesh->SetVisibility(true);
-		scopeMesh->SetVisibility(true);
-
-		//scopeActor->AttachToComponent(weaponMesh,
-			//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
-	}
 	ChangeWeaponMesh(rifleMesh);
 }
-
 void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
 {
 	if (!HasAuthority())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "change weapon mesh");
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "change weapon mesh");
 		// 장착 무기 바꾸고...
 		weaponMesh->SetSkeletalMesh(rifleMesh);
 		leftWeaponMesh->SetSkeletalMesh(rifleMesh);
+		if (hasWeaponName == "AR4")
+		{
+			weaponMesh->SetAnimInstanceClass(ar4AnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(ar4AnimBP);
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(false);
+		}
+		else if (hasWeaponName == "AK74")
+		{
+			weaponMesh->SetAnimInstanceClass(ak74AnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(ak74AnimBP);
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(false);
+		}
+		else if (hasWeaponName == "AK47")
+		{
+			weaponMesh->SetAnimInstanceClass(ak47AnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(ak47AnimBP);
+			leftScopeMesh->SetVisibility(false);
+			scopeMesh->SetVisibility(false);
+		}
+		else if (hasWeaponName == "KAVAL")
+		{
+			weaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+			leftWeaponMesh->SetAnimInstanceClass(KAVALAnimBP);
+			leftScopeMesh->SetVisibility(true);
+			scopeMesh->SetVisibility(true);
+
+			//scopeActor->AttachToComponent(weaponMesh,
+				//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
+		}
 	}
 }
 

@@ -261,7 +261,7 @@ public:
 
 	// 가지고있는 탄창수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int hasSevenAmmo = 0;
+		int hasSevenAmmo = 30;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasSevenSaveAmmo = 0;
@@ -403,6 +403,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void PickAndDrop(AWeaponBase* HitWeapon);
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void PickAndDropMulticast(AWeaponBase* HitWeapon);
 
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
 	void ChangeWeaponMesh(USkeletalMesh* rifleMesh);
