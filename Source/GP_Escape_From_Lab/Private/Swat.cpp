@@ -66,7 +66,6 @@ USkeletalMesh* SKMesh = nullptr;
 ASwat::ASwat()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SetReplicates(true);
 
 	if (!ar4AnimBP)
 	{
@@ -328,7 +327,8 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if(HasAuthority())
+		SetReplicates(true);
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 
 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
@@ -1296,8 +1296,8 @@ void ASwat::Tick(float DeltaTime)
 
 	auto muzzleTransform = weaponMesh->GetSocketTransform("Muzzle");
 	auto muzzleTranslation = muzzleTransform.GetTranslation();
-	muzzleTranslation.X -= 20.0f;
-
+	auto muzzleForwardVec = UKismetMathLibrary::GetForwardVector(FRotator(muzzleTransform.GetRotation()));
+	muzzleTranslation += muzzleForwardVec * 20.0f;
 	FTransform lightTrans(muzzleTransform.GetRotation(), muzzleTranslation, muzzleTransform.GetScale3D());
 	spotComp->SetWorldTransform(lightTrans);//muzzleTransform);
 

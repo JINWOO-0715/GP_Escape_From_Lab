@@ -25,7 +25,7 @@ AGrenade::AGrenade()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;	
-	SetReplicates(true);
+	
 
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphere collision comp"));
 	if (IsValid(sphereComp))
@@ -66,7 +66,9 @@ AGrenade::AGrenade()
 void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (HasAuthority())
+		SetReplicates(true);
+
 }
 
 void AGrenade::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
