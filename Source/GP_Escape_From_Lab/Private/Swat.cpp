@@ -1511,14 +1511,16 @@ void ASwat::SpawnBullet_Implementation(const FVector& startPos, const FVector& l
 
 void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotator& rotation)
 {
-	auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
-	auto muzzleRotVec = weaponMesh->GetSocketRotation("Muzzle").Vector();
-	muzzleRotVec.Normalize();
+	//auto lineBegPos = weaponMesh->GetSocketLocation("Muzzle");
+	FVector Start = GetMesh()->GetBoneLocation(FName("head"));
+	//// 머리부터 카메라 방향 2m까지 직선쏘기
+
+	FVector End = Start + cameraComp->GetForwardVector() * 200.0f;
 	FHitResult hitResult;
 	FCollisionQueryParams collisionParams;
 	collisionParams.bTraceComplex = false;
 	collisionParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, lineBegPos, lineBegPos + muzzleRotVec * 150.0f, ECollisionChannel::ECC_Camera, collisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, Start, End, ECollisionChannel::ECC_Camera, collisionParams))
 	{
 		auto isSwat = Cast<ASwat>(hitResult.GetActor());
 		auto isZombie = Cast<AZombie>(hitResult.GetActor());
@@ -1526,6 +1528,7 @@ void ASwat::SpawnGrenadeReq_Implementation(const FVector& location, const FRotat
 			initgrenadeImpact = 250.0f;
 		else
 			initgrenadeImpact = 500.0f;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "collide trace");
 	}
 	else
 	{
