@@ -1294,8 +1294,12 @@ void ASwat::Tick(float DeltaTime)
 	auto targetTrans = weaponMesh->GetSocketTransform("IronSight");
 	aimCamera->SetWorldTransform(FTransform(targetTrans.GetRotation(), targetTrans.GetLocation(), FVector(0.001f, 0.001f, 0.001f)));
 
-	auto muzzleTrans = weaponMesh->GetSocketTransform("Muzzle");
-	spotComp->SetWorldTransform(muzzleTrans);
+	auto muzzleTransform = weaponMesh->GetSocketTransform("Muzzle");
+	auto muzzleTranslation = muzzleTransform.GetTranslation();
+	muzzleTranslation.X -= 20.0f;
+
+	FTransform lightTrans(muzzleTransform.GetRotation(), muzzleTranslation, muzzleTransform.GetScale3D());
+	spotComp->SetWorldTransform(lightTrans);//muzzleTransform);
 
 	if (!canWalkSoundPlay)
 	{
