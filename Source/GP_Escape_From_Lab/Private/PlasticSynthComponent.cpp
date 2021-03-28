@@ -163,7 +163,7 @@ int32 UPlasticSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			fixedOut += (fixedOsc[i].sinewave(plasticModesData[i][0]) * fixedGain[i]) * decayVolume[i];
 		}
 		
-		OutAudio[Sample] = (fixedOut + residual) * 2.0f;
+		OutAudio[Sample] = (fixedOut + residual) * 0.15f;
 
 	}
 

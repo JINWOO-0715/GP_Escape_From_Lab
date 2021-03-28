@@ -114,7 +114,7 @@ int32 USteelSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			fixedOut += (fixedOsc[i].sinewave(steelModesData[i][0]) * fixedGain[i]) * decayVolume[i];
 		}
 
-		OutAudio[Sample] = (residual+fixedOut) * 2.0f;
+		OutAudio[Sample] = (residual+fixedOut) * 0.3f;
 	}
 
 	return NumSamples;

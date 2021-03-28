@@ -23,6 +23,7 @@
 #include "SteelSynthComponent.h"
 #include "PlasticSynthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Sound/SoundAttenuation.h"
 
 //UParticleSystem* wallHitParticle = nullptr;
 //UParticleSystem* zombieHitParticle = nullptr;
@@ -119,6 +120,10 @@ ABullet::ABullet()
 
 	plasticSoundComp = CreateDefaultSubobject<UPlasticSynthComponent>(TEXT("PlasticSynthSoundComp"));
 	steelSoundComp = CreateDefaultSubobject<USteelSynthComponent>(TEXT("SteelSynthSoundComp"));
+
+	plasticSoundComp->bOverrideAttenuation = true;
+	steelSoundComp->bOverrideAttenuation = true;
+
 }
 
 void ABullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
