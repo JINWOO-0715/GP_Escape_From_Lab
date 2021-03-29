@@ -66,6 +66,7 @@ USkeletalMesh* SKMesh = nullptr;
 ASwat::ASwat()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates(true);
 
 	if (!ar4AnimBP)
 	{
@@ -327,8 +328,6 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void ASwat::BeginPlay()
 {
 	Super::BeginPlay();
-	if(HasAuthority())
-		SetReplicates(true);
 	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 
 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());

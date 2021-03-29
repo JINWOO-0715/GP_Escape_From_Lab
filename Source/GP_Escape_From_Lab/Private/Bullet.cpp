@@ -46,7 +46,7 @@ ABullet::ABullet()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	SetReplicates(true);
 	
 	boxCollision = CreateDefaultSubobject<UBoxComponent>("boxComp");
 	if (IsValid(boxCollision))
@@ -137,8 +137,6 @@ void ABullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	if (HasAuthority())
-		SetReplicates(true);
 
 	this->SetLifeSpan(3.0f);
 }

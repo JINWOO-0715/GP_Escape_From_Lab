@@ -23,7 +23,7 @@ AZombie::AZombie()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+	SetReplicates(true);
 
 	//if (!zombieMesh)
 		//zombieMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("/Game/NonMovable/Zombie/SKMesh/Male/Ch10_nonPBR.Ch10_nonPBR")).Object;
@@ -60,8 +60,6 @@ void AZombie::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 void AZombie::BeginPlay()
 {
 	Super::BeginPlay();
-	if (HasAuthority())
-		SetReplicates(true);
 
 
 	if (PawnSensingComp)
