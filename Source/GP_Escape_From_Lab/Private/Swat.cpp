@@ -323,6 +323,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, attackPower);
 	DOREPLIFETIME(ASwat, maxFireRate);
 	DOREPLIFETIME(ASwat, recoilValue);
+	DOREPLIFETIME(ASwat, hasGrenade);
 
 }
 void ASwat::BeginPlay()
@@ -738,7 +739,7 @@ void ASwat::ThrowGrenade()
 	{
 		if (!IsOpenMain)
 		{
-			if(hasGrenade > 0)
+			if(hasGrenade > 0 && !HasAuthority() && isMyComputer())
 				isAiming = false;
 				isStabbing = false;
 				UnAimGun();

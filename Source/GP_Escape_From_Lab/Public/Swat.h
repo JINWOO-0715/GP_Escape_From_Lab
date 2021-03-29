@@ -267,7 +267,7 @@ public:
 		int hasSevenSaveAmmo = 0;
 
 	// 가지고있는 수류탄수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		int hasGrenade = 5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
