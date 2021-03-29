@@ -266,6 +266,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasSevenSaveAmmo = 0;
 
+	// 가지고있는 수류탄수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int hasGrenade = 5;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float attackPower = 30.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)

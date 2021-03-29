@@ -739,20 +739,22 @@ void ASwat::ThrowGrenade()
 	{
 		if (!IsOpenMain)
 		{
-			isAiming = false;
-			isStabbing = false;
-			UnAimGun();
-			isCanFire = false;
-			isThrowing = true;
-			animInstance->Montage_Play(throwMontage);
+			if(hasGrenade > 0)
+				isAiming = false;
+				isStabbing = false;
+				UnAimGun();
+				isCanFire = false;
+				isThrowing = true;
+				animInstance->Montage_Play(throwMontage);
 
-			weaponMesh->SetVisibility(false);
-			initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
-			initGrenadeSpawnRot.Normalize();
+				weaponMesh->SetVisibility(false);
+				initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
+				initGrenadeSpawnRot.Normalize();
 
-			SetInitGrenadeSpawnRotReq(initGrenadeSpawnRot);
+				SetInitGrenadeSpawnRotReq(initGrenadeSpawnRot);
 
-			MontagePlayReq(MONTAGE_TYPE::GRENADE);
+				MontagePlayReq(MONTAGE_TYPE::GRENADE);
+				hasGrenade -= 1;
 		}
 	}
 }
