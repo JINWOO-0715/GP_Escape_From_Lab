@@ -23,7 +23,7 @@ AZombie::AZombie()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	SetReplicates(true);
+	//SetReplicates(true);
 
 	//if (!zombieMesh)
 		//zombieMesh = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("/Game/NonMovable/Zombie/SKMesh/Male/Ch10_nonPBR.Ch10_nonPBR")).Object;
@@ -54,6 +54,7 @@ void AZombie::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 	DOREPLIFETIME(AZombie, hp);
 	DOREPLIFETIME(AZombie, speed);
+	DOREPLIFETIME(AZombie, isScreamTime);
 }
 
 // Called when the game starts or when spawned
@@ -139,14 +140,18 @@ void AZombie::SetupZombie(FName ZombieName)
 void AZombie::OnPlayerCaught(APawn* pawn)
 {
 
+	
 	AZombieAIController* tempController = Cast<AZombieAIController>(GetController());
 
 	if (tempController)
 	{
-		//
-		tempController->SetPlayerCaught(pawn);
 
-
+		if (!(tempController->BlackboardComp->GetValueAsObject(FName("Target"))))
+		{
+			tempController->SetPlayerCaught(pawn);
+			isScreamTime = true;
+		}
+		
 		
 	}
 }

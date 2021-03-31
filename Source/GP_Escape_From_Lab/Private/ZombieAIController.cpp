@@ -81,6 +81,7 @@ void AZombieAIController::SetPlayerCaught(APawn* apawn)
 	{
 		// 플레이어 키로 변경 설정함 
 		BlackboardComp->SetValueAsObject(PlayerKey, apawn);
+		
 	}
 	
 }
@@ -97,32 +98,6 @@ void AZombieAIController::OnPossess(APawn* apawn)
 		if (AIZomibe->BehaviorTree->BlackboardAsset)
 		{// 블랙보드를 초기화한다.
 			BlackboardComp->InitializeBlackboard(*(AIZomibe->BehaviorTree->BlackboardAsset));
-		}
-		// 랜덤하게.
-		AIZomibe->WayNum = FMath::RandRange(0, 3);
-
-
-		if (AIZomibe->WayNum == 0)
-		{
-
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPoint::StaticClass(), PatrolPoints);
-
-		}
-		// 패트롤 포인트 채우기
-		if (AIZomibe->WayNum == 1)
-		{
-
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPointPath2::StaticClass(), PatrolPoints);
-		}
-		if (AIZomibe->WayNum == 2)
-		{
-
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPointPath3::StaticClass(), PatrolPoints);
-		}
-		if (AIZomibe->WayNum == 3)
-		{
-
-			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAIPatrolPointPath4::StaticClass(), PatrolPoints);
 		}
 
 		// BehaviorTree 시작
