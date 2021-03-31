@@ -119,7 +119,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	float attackPower;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	bool isScreamTime;
 
 	bool isHearingSound = false;

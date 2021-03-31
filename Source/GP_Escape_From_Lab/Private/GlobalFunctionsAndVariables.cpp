@@ -335,13 +335,14 @@ void UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(const ASwat* playe
 		soundDir = (soundSourceLocation - ZombieLocation);
 		soundDir.Normalize();
 		// 일단 60으로 잡아봄
-		if (finaldB > 60.f)
+		if (finaldB > 80.f)
 		{
 			
 			mZombie->isHearingSound = true;
 			AZombieAIController* AICon = Cast<AZombieAIController>(mZombie->GetController());
 			if (AICon)
 			{
+				
 				AICon->SetSoundCaught(startTrace);
 				//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, "AI Controller is valid");
 			}
