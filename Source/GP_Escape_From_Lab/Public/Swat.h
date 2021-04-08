@@ -21,6 +21,7 @@ class UStaticMesh;
 class USkeletalMesh;
 class USceneCaptureComponent2D;
 class APickups;
+class UMatineeCameraShake;
 
 UENUM()
 enum class MONTAGE_TYPE
@@ -228,6 +229,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> ClearWidget;
 	
+	//카메라 셰이크
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UMatineeCameraShake> CameraShake;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* MainMenu;

@@ -692,6 +692,7 @@ void ASwat::DashOff()
 
 void ASwat::GunFireOn()
 {
+	
 	// 메뉴가 없어야하고
 	if (!IsOpenMain)
 	{
@@ -1261,7 +1262,7 @@ void ASwat::Tick(float DeltaTime)
 		{
 			gunShellEjection = -7.0f;
 			animInstance->Montage_Play(fireMontage);
-
+			GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.0f);
 			FireMontagePlayReq();
 		}
 
