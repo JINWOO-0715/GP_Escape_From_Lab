@@ -735,13 +735,15 @@ void ASwat::GunFireOff()
 
 void ASwat::ThrowGrenade()
 {
-	auto animInstance = GetMesh()->GetAnimInstance();
-	if (animInstance && !isThrowing && isCanFire)
+	if (hasGrenade > 0)
 	{
-		if (!IsOpenMain)
+		auto animInstance = GetMesh()->GetAnimInstance();
+		if (animInstance && !isThrowing && isCanFire)
 		{
-			if(hasGrenade > 0 && !HasAuthority() && isMyComputer())
-				isAiming = false;
+			if (!IsOpenMain)
+			{
+				if (!HasAuthority() && isMyComputer())
+					isAiming = false;
 				isStabbing = false;
 				UnAimGun();
 				isCanFire = false;
@@ -756,6 +758,7 @@ void ASwat::ThrowGrenade()
 
 				MontagePlayReq(MONTAGE_TYPE::GRENADE);
 				hasGrenade -= 1;
+			}
 		}
 	}
 }

@@ -9,7 +9,7 @@ UMyMatineeCameraShake::UMyMatineeCameraShake()
 	OscillationBlendInTime = 0.05f;
 	OscillationBlendOutTime = 0.05f;
 
-	RotOscillation.Pitch.Amplitude = 15.0f;
+	RotOscillation.Pitch.Amplitude = 10.0f;
 	RotOscillation.Pitch.Frequency = 1.0f;
 	RotOscillation.Pitch.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 }
