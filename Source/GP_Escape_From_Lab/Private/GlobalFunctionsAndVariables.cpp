@@ -38,6 +38,9 @@ USoundBase* steelImpactSound = nullptr;
 USoundBase* plasticImpactSound = nullptr;
 USoundBase* softImpactSound = nullptr;
 USoundBase* glassImpactSound = nullptr;
+USoundBase* reloadSound1 = nullptr;
+USoundBase* reloadSound2 = nullptr;
+USoundBase* reloadSound3 = nullptr;
 
 UMaterialInterface* bloodDecal = nullptr;
 UMaterialInterface* floorBloodDecal = nullptr;
@@ -116,6 +119,13 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 	if (!knifeMetalImpactSound)
 		knifeMetalImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/knife_Imact_Metal_Cue")).Object;
 	
+	if (!reloadSound1)
+		reloadSound1 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/reload1.reload1")).Object;
+	if (!reloadSound2)
+		reloadSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/reload2.reload2")).Object;
+	if (!reloadSound3)
+		reloadSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/reload3.reload3")).Object;
+
 	if (!bloodDecal)
 	{
 		bloodDecal = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Game/Movable/Decal/blood_Mat")).Object;

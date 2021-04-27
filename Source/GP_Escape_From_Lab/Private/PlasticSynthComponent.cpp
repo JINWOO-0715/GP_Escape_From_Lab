@@ -79,7 +79,7 @@ bool UPlasticSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
 	FString tempProjectContentPath = FPaths::ProjectContentDir();
-	FString fileFullPath = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*tempProjectContentPath);
+	FString fileFullPath = FPaths::ConvertRelativePathToFull(tempProjectContentPath);
 	FString findWavName = "Bullet_Plastic_Impact.wav";
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
@@ -92,6 +92,7 @@ bool UPlasticSynthComponent::Init(int32& SampleRate)
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load failed");
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, fileFullPath);
 	}
 
 	originEnv.setAttack(1.0f);

@@ -43,6 +43,10 @@ extern USoundBase* plasticImpactSound;
 extern USoundBase* softImpactSound;
 extern USoundBase* glassImpactSound;
 
+extern USoundBase* reloadSound1;
+extern USoundBase* reloadSound2;
+extern USoundBase* reloadSound3;
+
 extern UMaterialInterface* bloodDecal;
 extern UMaterialInterface* floorBloodDecal;
 

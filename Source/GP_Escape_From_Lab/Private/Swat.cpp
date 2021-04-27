@@ -38,7 +38,7 @@
 #include "Misc/Paths.h"
 #include "Net/UnrealNetwork.h"
 
-
+#include <random>
 
 //캐릭터 클래스는 상속시 캡슐, 캐릭터 무브먼트, 스켈레탈 메쉬를 상속받는다.
 //직접 접근은 허용되지 않으며 Get 메소드를 통해 접근할 수 있다.
@@ -46,8 +46,9 @@
 // Sets default values
 
 //
-
-
+std::random_device randomDv;
+std::default_random_engine randomSoundChooseEngine(randomDv());
+std::uniform_real_distribution<float> randomSoundChooseMachine;
 
 class UDataTable* SwatItemDataTable;
 class UDataTable* SwatWeaponDataTable;
@@ -829,7 +830,13 @@ void ASwat::ReloadGun()
 					hasFiveAmmo += hasFiveSaveAmmo;
 					hasFiveSaveAmmo = 0;
 				}
-
+				float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine); 
+				if(whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
+					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
+				else if(whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
+					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
+				else
+					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
 
 			}
 			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74" || hasWeaponName == "AK47"))
@@ -868,7 +875,13 @@ void ASwat::ReloadGun()
 					hasSevenSaveAmmo = 0;
 				}
 
-
+				float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
+				if (whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
+					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
+				else if (whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
+					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
+				else
+					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
 			}
 
 
