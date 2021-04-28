@@ -143,6 +143,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponWhenSaveFileLoad();
 
+	UFUNCTION(BlueprintCallable)
+	void PlayZombieKilledScript();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* coneMeshComp = nullptr;
@@ -197,6 +200,8 @@ public:
 		bool isLightOn = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isGunFire = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool canPlayingScript = true;
 	
 	UPROPERTY(BlueprintReadOnly)
 		UAnimMontage* fireMontage;
@@ -314,7 +319,8 @@ private:
 	const float runSpeed = 1200.0f;
 	const float walkSpeed = 500.0f;
 	float curFireRate = maxFireRate;
-
+	float maxScriptCoolTime = 3.0f;
+	float curScriptCoolTime = 3.0f;
 
 	const FVector initCameraPos{ -68, 0, 16.5 };
 

@@ -47,6 +47,15 @@ extern USoundBase* reloadSound1;
 extern USoundBase* reloadSound2;
 extern USoundBase* reloadSound3;
 
+extern USoundBase* getWeaponSound1;
+extern USoundBase* getWeaponSound2;
+extern USoundBase* getWeaponSound3;
+
+extern USoundBase* zombieKilledSound1;
+extern USoundBase* zombieKilledSound2;
+extern USoundBase* zombieKilledSound3;
+extern USoundBase* zombieKilledSound4;
+
 extern UMaterialInterface* bloodDecal;
 extern UMaterialInterface* floorBloodDecal;
 

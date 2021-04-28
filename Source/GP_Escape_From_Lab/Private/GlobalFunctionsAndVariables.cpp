@@ -41,6 +41,13 @@ USoundBase* glassImpactSound = nullptr;
 USoundBase* reloadSound1 = nullptr;
 USoundBase* reloadSound2 = nullptr;
 USoundBase* reloadSound3 = nullptr;
+USoundBase* getWeaponSound1 = nullptr;
+USoundBase* getWeaponSound2 = nullptr;
+USoundBase* getWeaponSound3 = nullptr;
+USoundBase* zombieKilledSound1 = nullptr;
+USoundBase* zombieKilledSound2 = nullptr;
+USoundBase* zombieKilledSound3 = nullptr;
+USoundBase* zombieKilledSound4 = nullptr;
 
 UMaterialInterface* bloodDecal = nullptr;
 UMaterialInterface* floorBloodDecal = nullptr;
@@ -125,6 +132,22 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 		reloadSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/reload2.reload2")).Object;
 	if (!reloadSound3)
 		reloadSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/reload3.reload3")).Object;
+
+	if (!getWeaponSound1)
+		getWeaponSound1 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/realWeapon.realWeapon")).Object;
+	if (!getWeaponSound2)
+		getWeaponSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/noMoreMrBloodyNG.noMoreMrBloodyNG")).Object;
+	if (!getWeaponSound3)
+		getWeaponSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/goinToGetSerious.goinToGetSerious")).Object;
+	
+	if (!zombieKilledSound1)
+		zombieKilledSound1 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/letGoYouBastard.letGoYouBastard")).Object;
+	if (!zombieKilledSound2)
+		zombieKilledSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/noBloodyWay.noBloodyWay")).Object;
+	if (!zombieKilledSound3)
+		zombieKilledSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/thatHurt.thatHurt")).Object;
+	if (!zombieKilledSound4)
+		zombieKilledSound4 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/thatsNasty.thatsNasty")).Object;
 
 	if (!bloodDecal)
 	{

@@ -10,9 +10,10 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Swat.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Math/Vector.h"
 
 #include "Net/UnrealNetwork.h"
 
@@ -180,4 +181,37 @@ void AZombie::TurnOnRagdoll_Implementation(bool isExplosionDeath, const FVector&
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 	GetMesh()->SetAnimInstanceClass(nullptr);
+
+	if (!HasAuthority())
+	{
+		auto world = this->GetWorld();
+
+		for (const auto& swat : TObjectRange<ASwat>())
+		{
+			if (swat->GetOwner() == UGameplayStatics::GetPlayerController(world, 0))
+			{
+				auto zomLoc = this->GetActorLocation();
+				auto swatLoc = swat->GetActorLocation();
+				auto dirVec = (zomLoc - swatLoc);
+				dirVec.Normalize();
+				auto result = FVector::DotProduct(swat->GetActorForwardVector(), dirVec);
+				//스왓의 forward Vector와 스왓과 좀비의 벡터를
+				//내적을 해서 양수이면 좀비가 보인다! 음수이면 안 보인다!
+				if (result >= 0.0f) //좀비가 swat의 시야범위에 있다면...
+				{
+					FHitResult hitResult;
+					FCollisionQueryParams params;
+					params.bReturnPhysicalMaterial = true;
+					params.AddIgnoredActor(this);
+					params.AddIgnoredActor(swat);
+					if (!world->LineTraceSingleByChannel(hitResult, this->GetActorLocation(), swat->GetActorLocation(), ECollisionChannel::ECC_Camera, params))
+					{
+						swat->PlayZombieKilledScript();
+						//swat의 플레이사운드 호출!
+					}
+					//좀비가 플레이어의 시야범위에있는데 도중에 어떤 물체가 그 사이를 가로막는다면 안보이는 것!
+				}
+			}
+		}
+	}
 }

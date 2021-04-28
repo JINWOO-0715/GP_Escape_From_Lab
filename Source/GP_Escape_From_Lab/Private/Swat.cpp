@@ -830,14 +830,18 @@ void ASwat::ReloadGun()
 					hasFiveAmmo += hasFiveSaveAmmo;
 					hasFiveSaveAmmo = 0;
 				}
-				float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine); 
-				if(whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
-					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
-				else if(whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
-					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
-				else
-					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
-
+				if (canPlayingScript)
+				{
+					float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
+					if (whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
+					else if (whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
+					else
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
+					canPlayingScript = false;
+					curScriptCoolTime = maxScriptCoolTime;
+				}
 			}
 			else if ((hasSevenAmmo < 30 && hasSevenSaveAmmo > 0) && (hasWeaponName == "AK74" || hasWeaponName == "AK47"))
 			{
@@ -875,13 +879,18 @@ void ASwat::ReloadGun()
 					hasSevenSaveAmmo = 0;
 				}
 
-				float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
-				if (whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
-					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
-				else if (whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
-					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
-				else
-					UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
+				if (canPlayingScript)
+				{
+					float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
+					if (whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
+					else if (whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
+					else
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
+					canPlayingScript = false;
+					curScriptCoolTime = maxScriptCoolTime;
+				}
 			}
 
 
@@ -980,6 +989,18 @@ void ASwat::Interact(AActor* m_Actor)
 					DestroyWeaponServer(HitWeapon);
 				//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "pick sub item");
 
+				}
+				if (canPlayingScript)
+				{
+					float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
+					if (whichSoundToPlay > 0.2 && whichSoundToPlay < 0.4)
+						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound1);
+					else if (whichSoundToPlay > 0.4 && whichSoundToPlay < 0.6)
+						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound2);
+					else if (whichSoundToPlay > 0.6 && whichSoundToPlay < 0.8)
+						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound3);
+					canPlayingScript = false;
+					curScriptCoolTime = maxScriptCoolTime;
 				}
 
 			}
@@ -1121,6 +1142,24 @@ void ASwat::SetWeaponWhenSaveFileLoad()
 	//	scopeMesh->SetVisibility(true);
 	//}
 
+}
+
+void ASwat::PlayZombieKilledScript()
+{
+	if (canPlayingScript)
+	{
+		float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
+		if (whichSoundToPlay > 0.2 && whichSoundToPlay < 0.35)
+			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound1);
+		else if (whichSoundToPlay > 0.35 && whichSoundToPlay < 0.5)
+			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound2);
+		else if (whichSoundToPlay > 0.5 && whichSoundToPlay < 0.65)
+			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound3);
+		else if (whichSoundToPlay > 0.65 && whichSoundToPlay < 0.8)
+			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound4);
+		canPlayingScript = false;
+		curScriptCoolTime = maxScriptCoolTime;
+	}
 }
 
 void ASwat::AddKeyCardCountServer_Implementation()
@@ -1328,6 +1367,13 @@ void ASwat::Tick(float DeltaTime)
 			walkSoundSynthComp->Stop();
 			canWalkSoundPlay = true;
 		}
+	}
+
+	if (!canPlayingScript)
+	{
+		curScriptCoolTime -= DeltaTime;
+		if (curScriptCoolTime <= 0.0f)
+			canPlayingScript = true;
 	}
 }
 // Called to bind functionality to input
