@@ -146,6 +146,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayZombieKilledScript();
 
+	UFUNCTION(BlueprintCallable)
+	void PlayAgonySound();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* coneMeshComp = nullptr;

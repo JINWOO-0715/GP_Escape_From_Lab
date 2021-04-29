@@ -1162,6 +1162,17 @@ void ASwat::PlayZombieKilledScript()
 	}
 }
 
+void ASwat::PlayAgonySound()
+{
+	if (canPlayingScript)
+	{
+		UGameplayStatics::PlaySound2D(this->GetWorld(), playerAgonySound);
+		
+		canPlayingScript = false;
+		curScriptCoolTime = maxScriptCoolTime;
+	}
+}
+
 void ASwat::AddKeyCardCountServer_Implementation()
 {
 	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
