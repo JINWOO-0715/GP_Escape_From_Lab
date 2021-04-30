@@ -16,11 +16,11 @@ AWeaponBase::AWeaponBase()
 	bReplicates = true;
 	DefaultWeaponName = FName("AR4");
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> tempWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
-	if (tempWeaponData.Succeeded())
+	//static ConstructorHelpers::FObjectFinder<UDataTable> tempWeaponData(TEXT("/Game/Movable/WeaponBP/DT_WeaponDataTable"));
+	/*if (tempWeaponData.Succeeded())
 	{
 		WeaponDataTable = tempWeaponData.Object;
-	}
+	}*/
 	
 
 }
