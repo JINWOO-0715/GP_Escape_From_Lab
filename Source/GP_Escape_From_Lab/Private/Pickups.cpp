@@ -18,12 +18,12 @@ APickups::APickups()
 	//bReplicates가 서버에 반영해주는거
 	bReplicates = true;
 	DefaultItemName = FName("Ammo");
-	static ConstructorHelpers::FObjectFinder<UDataTable> tempItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
+	//static ConstructorHelpers::FObjectFinder<UDataTable> tempItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 
-	if (tempItemData.Succeeded())
-	{
-		ItemDataTable = tempItemData.Object;
-	}
+	//if (tempItemData.Succeeded())
+	//{
+	//	ItemDataTable = tempItemData.Object;
+	//}
 
 }
 
