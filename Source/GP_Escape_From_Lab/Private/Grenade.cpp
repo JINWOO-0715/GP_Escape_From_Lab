@@ -26,13 +26,14 @@ AGrenade::AGrenade()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;	
 	SetReplicates(true);
-
+	SetReplicateMovement(true);
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphere collision comp"));
 	if (IsValid(sphereComp))
 	{
 		sphereComp->SetSphereRadius(4.0f);
 		sphereComp->SetSimulatePhysics(true);
 		sphereComp->SetCollisionProfileName("EmptyShell");
+		sphereComp->SetIsReplicated(true);
 		RootComponent = sphereComp;
 	}
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("grenade mesh Comp"));
