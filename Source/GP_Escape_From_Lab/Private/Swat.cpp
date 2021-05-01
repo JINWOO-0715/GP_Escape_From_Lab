@@ -1341,21 +1341,21 @@ void ASwat::Tick(float DeltaTime)
 	{
 		leftWeaponMesh->SetVisibility(false);
 		weaponMesh->SetVisibility(true);
-// 		if (hasWeaponName == "KAVAL")
-// 		{
-// 			leftScopeMesh->SetVisibility(false);
-// 			scopeMesh->SetVisibility(true);
-// 		}
+ 		if (hasWeaponName == "KAVAL")
+ 		{
+ 			leftScopeMesh->SetVisibility(false);
+ 			scopeMesh->SetVisibility(true);
+ 		}
 	}
 	else
 	{
 		leftWeaponMesh->SetVisibility(true);
 		weaponMesh->SetVisibility(false);
-// 		if (hasWeaponName == "KAVAL")
-// 		{
-// 			leftScopeMesh->SetVisibility(true);
-// 			scopeMesh->SetVisibility(false);
-// 		}
+ 		if (hasWeaponName == "KAVAL")
+ 		{
+ 			leftScopeMesh->SetVisibility(true);
+ 			scopeMesh->SetVisibility(false);
+ 		}
 	}
 
 	GunHandReq(isAiming, isThrowing, isStabbing, isReloading);
