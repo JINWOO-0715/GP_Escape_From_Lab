@@ -168,7 +168,7 @@ void AZombie::SetZombieHPReq_Implementation(bool isExplosionDeath, float _hp, co
 
 void AZombie::TurnOnRagdoll_Implementation(bool isExplosionDeath, const FVector& impulseDir)
 {
-	if (isExplosionDeath)
+	if (isExplosionDeath && !GetMesh()->IsSimulatingPhysics())
 	{
 		GetMesh()->SetSimulatePhysics(true);
 		GetMesh()->AddImpulse(impulseDir * 100000.0f);
@@ -181,7 +181,8 @@ void AZombie::TurnOnRagdoll_Implementation(bool isExplosionDeath, const FVector&
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 	GetMesh()->SetAnimInstanceClass(nullptr);
-
+	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	if (!HasAuthority())
 	{
 		auto world = this->GetWorld();
