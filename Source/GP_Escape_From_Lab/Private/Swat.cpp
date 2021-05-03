@@ -601,7 +601,9 @@ void ASwat::EndStabbing()
 
 void ASwat::EndThrowing()
 {
-	isThrowing = false;
+	curThrowCoolTime = maxThrowCoolTime;
+	isThrowCoolTime = true;
+	//isThrowing = false;
 	isCanFire = true;
 	weaponMesh->SetVisibility(true);
 }
@@ -1385,6 +1387,16 @@ void ASwat::Tick(float DeltaTime)
 		curScriptCoolTime -= DeltaTime;
 		if (curScriptCoolTime <= 0.0f)
 			canPlayingScript = true;
+	}
+
+	if (isThrowCoolTime)
+	{
+		curThrowCoolTime -= DeltaTime;
+		if (curThrowCoolTime < 0.0f)
+		{
+			isThrowing = false;
+			isThrowCoolTime = false;
+		}
 	}
 }
 // Called to bind functionality to input
