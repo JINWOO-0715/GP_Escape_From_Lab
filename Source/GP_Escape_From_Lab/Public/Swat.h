@@ -282,7 +282,7 @@ public:
 		int hasGrenade = 5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	float attackPower = 30.0f;
+	float attackPower = 50.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float maxFireRate = 0.1f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)

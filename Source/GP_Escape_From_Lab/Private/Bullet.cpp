@@ -145,80 +145,70 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (isFirstCall)
+	if (HasAuthority())
 	{
-		curPos = this->GetActorLocation();
-		befPos = startPos;
-		isFirstCall = false;
-	}
-	curPos = this->GetActorLocation();
-	FHitResult hitResult;
-	FVector startTrace = befPos;
-	FVector endTrace = curPos;
-	FCollisionQueryParams collisionParams;
-	collisionParams.bTraceComplex = false;
-	collisionParams.bReturnPhysicalMaterial = true;
-	collisionParams.AddIgnoredActor(this);
-	auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	collisionParams.AddIgnoredActor(playerPawn);
-	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
-	if (isAlive && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
-		collisionParams))
-	{
-		AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
-		if (hitZombie)
+		if (isFirstCall)
 		{
-			ServerPlayParticleReq(true, hitResult.ImpactPoint);
-			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
-			//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
-			hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-			//만약에 데미지를 준 주체가 총알을 쏜 장본인이라면 좀비에게 데미지를 준다.
-
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
-			//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
-			//사운드 멀티캐스트에서 플레이해주어야함
-
-			FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
-			
-			//UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-			ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
-
-
-			auto bulletHitLoc = hitResult.ImpactPoint;
-			collisionParams.AddIgnoredActor(hitZombie);
-			GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f, 0.0f, -1000.0f), ECollisionChannel::ECC_Camera,
-				collisionParams);
-			auto floorBloodPos = hitResult.ImpactPoint;
-			auto floorBloodComp = hitResult.Component.Get();
-			RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-			//좀비의 현재 위치 바닥에 피를 뿌린다.
-			//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-			ServerSpawnBloodDecalReq(true, floorBloodComp, floorBloodPos, RandomDecalRotation);
-
-
-			//그리고 총알 반대 방향으로 피를 더 뿌린다.
-			if (hitZombie->hp > 0.0f)
+			curPos = this->GetActorLocation();
+			befPos = startPos;
+			isFirstCall = false;
+		}
+		curPos = this->GetActorLocation();
+		FHitResult hitResult;
+		FVector startTrace = befPos;
+		FVector endTrace = curPos;
+		FCollisionQueryParams collisionParams;
+		collisionParams.bTraceComplex = false;
+		collisionParams.bReturnPhysicalMaterial = true;
+		collisionParams.AddIgnoredActor(this);
+		auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		collisionParams.AddIgnoredActor(playerPawn);
+		collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
+		if (isAlive && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
+			collisionParams))
+		{
+			AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
+			if (hitZombie)
 			{
-				FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
+				ServerPlayParticleReq(true, hitResult.ImpactPoint);
+				//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
+				//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
+				hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				//만약에 데미지를 준 주체가 총알을 쏜 장본인이라면 좀비에게 데미지를 준다.
 
-				GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
+				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
+				//사운드 멀티캐스트에서 플레이해주어야함
+
+				FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+				//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
+
+				//UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+				ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+
+
+				auto bulletHitLoc = hitResult.ImpactPoint;
+				collisionParams.AddIgnoredActor(hitZombie);
+				GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f, 0.0f, -1000.0f), ECollisionChannel::ECC_Camera,
 					collisionParams);
+				auto floorBloodPos = hitResult.ImpactPoint;
+				auto floorBloodComp = hitResult.Component.Get();
+				RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+				//좀비의 현재 위치 바닥에 피를 뿌린다.
+				//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+				ServerSpawnBloodDecalReq(true, floorBloodComp, floorBloodPos, RandomDecalRotation);
 
-				if (hitResult.GetActor())
+
+				//그리고 총알 반대 방향으로 피를 더 뿌린다.
+				if (hitZombie->hp > 0.0f)
 				{
-					RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-					RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-					//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
-						//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-					ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
-				}
-				else
-				{
-					GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc + addPos, bulletHitLoc + addPos + FVector{ 0.0f,0.0f,-1000.0f }, ECollisionChannel::ECC_Camera,
+					FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
+
+					GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
 						collisionParams);
+
 					if (hitResult.GetActor())
 					{
 						RandomDecalRotation = hitResult.ImpactNormal.Rotation();
@@ -228,75 +218,88 @@ void ABullet::Tick(float DeltaTime)
 						ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
 					}
 					else
-						//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
-							//floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-						ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+					{
+						GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc + addPos, bulletHitLoc + addPos + FVector{ 0.0f,0.0f,-1000.0f }, ECollisionChannel::ECC_Camera,
+							collisionParams);
+						if (hitResult.GetActor())
+						{
+							RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+							RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+							//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
+								//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+							ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+						}
+						else
+							//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
+								//floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+							ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+					}
 				}
-			}
-			Destroy();
+				Destroy();
 
+			}
+			else
+			{
+				isAlive = false;
+				//if (!HasAuthority())
+				ServerPlayParticleReq(false, hitResult.ImpactPoint);
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "Call Server Function");
+				//좀비 이외의 액터에 플레이어에 설정한 대미지를 적용
+				auto HittedActor = hitResult.GetActor();
+				UGameplayStatics::ApplyDamage(HittedActor, playerPawn->attackPower, nullptr, this, nullptr);
+
+				//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
+
+				FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
+				FVector  spawnLocation = hitResult.Location;
+				//GetWorld()->SpawnActor<AActor>(bulletHoleBP, spawnLocation, rotator);
+				ServerSpawnBulletHoleDecalReq(spawnLocation, rotator);
+
+				EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
+				//
+				//
+				//
+
+				//
+				switch (surfaceType)
+				{
+				case SurfaceType1: //concrete
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+					break;
+				case SurfaceType2: //wood
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+					break;
+				case SurfaceType3: //ceramic
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
+					break;
+				case SurfaceType4: //steel
+					steelSoundComp->Start();
+					break;
+				case SurfaceType5: //plastic
+					plasticSoundComp->Start();
+					break;
+				case SurfaceType6: //soft
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+					break;
+				case SurfaceType7: //glass
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
+					break;
+				default: //else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+					break;
+				}
+				projMovComp->SetVelocityInLocalSpace(FVector(0.0f, 0.0f, 0.0f));
+				SetLifeSpan(0.5f);
+				//Destroy();
+
+			}
 		}
 		else
 		{
-			isAlive = false;
-			//if (!HasAuthority())
-			ServerPlayParticleReq(false, hitResult.ImpactPoint);
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "Call Server Function");
-			//좀비 이외의 액터에 플레이어에 설정한 대미지를 적용
-			auto HittedActor = hitResult.GetActor();
-			UGameplayStatics::ApplyDamage(HittedActor, playerPawn->attackPower, nullptr, this, nullptr);
-
-			//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
-
-			FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
-			FVector  spawnLocation = hitResult.Location;
-			//GetWorld()->SpawnActor<AActor>(bulletHoleBP, spawnLocation, rotator);
-			ServerSpawnBulletHoleDecalReq(spawnLocation, rotator);
-
-			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
-			//
-			//
-			//
-
-			//
-			switch (surfaceType)
-			{
-			case SurfaceType1: //concrete
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+hitResult.ImpactNormal*30.0f, concreteImpactSound);
-				break;
-			case SurfaceType2: //wood
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, woodImpactSound);
-				break;
-			case SurfaceType3: //ceramic
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint+ hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
-				break;
-			case SurfaceType4: //steel
-				steelSoundComp->Start();
-				break;
-			case SurfaceType5: //plastic
-				plasticSoundComp->Start();
-				break;
-			case SurfaceType6: //soft
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-				break;
-			case SurfaceType7: //glass
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
-				break;
-			default: //else
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-				break;
-			}
-			projMovComp->SetVelocityInLocalSpace(FVector(0.0f, 0.0f, 0.0f));
-			SetLifeSpan(0.5f);
-			//Destroy();
-
+			DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Green, true);
 		}
+		befPos = curPos;
 	}
-	else
-	{
-		DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Green, true);
-	}
-	befPos = curPos;
 }
 
 void ABullet::PlayParticleReq_Implementation(bool isBloodParticle, const FVector& particleSpawnPos)
