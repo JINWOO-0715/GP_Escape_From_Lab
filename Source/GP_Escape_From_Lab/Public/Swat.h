@@ -320,7 +320,7 @@ private:
 	bool isThrowCoolTime = false;
 	const float maxThrowCoolTime = 0.1f;
 	const int maxStamina = 100;
-	const float runSpeed = 1200.0f;
+	const float runSpeed = 900.0f;
 	const float walkSpeed = 500.0f;
 	float curFireRate = maxFireRate;
 	float maxScriptCoolTime = 3.0f;
