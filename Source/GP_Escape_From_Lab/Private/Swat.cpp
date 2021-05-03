@@ -836,11 +836,11 @@ void ASwat::ReloadGun()
 				{
 					float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
 					if (whichSoundToPlay > 0.0 && whichSoundToPlay < 0.33)
-						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation());
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound1, this->GetActorLocation(), 0.7f);
 					else if (whichSoundToPlay > 0.33 && whichSoundToPlay < 0.66)
-						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation());
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound2, this->GetActorLocation(), 0.7f);
 					else
-						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation());
+						UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), reloadSound3, this->GetActorLocation(), 0.7f);
 					canPlayingScript = false;
 					curScriptCoolTime = maxScriptCoolTime;
 				}
@@ -996,11 +996,11 @@ void ASwat::Interact(AActor* m_Actor)
 				{
 					float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
 					if (whichSoundToPlay > 0.2 && whichSoundToPlay < 0.4)
-						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound1);
+						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound1, 0.7);
 					else if (whichSoundToPlay > 0.4 && whichSoundToPlay < 0.6)
-						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound2);
+						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound2, 0.7);
 					else if (whichSoundToPlay > 0.6 && whichSoundToPlay < 0.8)
-						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound3);
+						UGameplayStatics::PlaySound2D(this->GetWorld(), getWeaponSound3, 0.7);
 					canPlayingScript = false;
 					curScriptCoolTime = maxScriptCoolTime;
 				}
@@ -1151,16 +1151,18 @@ void ASwat::PlayZombieKilledScript()
 	if (canPlayingScript)
 	{
 		float whichSoundToPlay = randomSoundChooseMachine(randomSoundChooseEngine);
-		if (whichSoundToPlay > 0.2 && whichSoundToPlay < 0.35)
-			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound1);
-		else if (whichSoundToPlay > 0.35 && whichSoundToPlay < 0.5)
-			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound2);
-		else if (whichSoundToPlay > 0.5 && whichSoundToPlay < 0.65)
-			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound3);
-		else if (whichSoundToPlay > 0.65 && whichSoundToPlay < 0.8)
-			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound4);
-		canPlayingScript = false;
-		curScriptCoolTime = maxScriptCoolTime;
+		if (whichSoundToPlay > 0.2 && whichSoundToPlay < 0.25)
+		{
+			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound1, 0.7f);
+			canPlayingScript = false;
+			curScriptCoolTime = maxScriptCoolTime;
+		}
+		else if (whichSoundToPlay > 0.5 && whichSoundToPlay < 0.55)
+		{
+			UGameplayStatics::PlaySound2D(this->GetWorld(), zombieKilledSound2, 0.7f);
+			canPlayingScript = false;
+			curScriptCoolTime = maxScriptCoolTime;
+		}
 	}
 }
 

@@ -53,8 +53,6 @@ extern USoundBase* getWeaponSound3;
 
 extern USoundBase* zombieKilledSound1;
 extern USoundBase* zombieKilledSound2;
-extern USoundBase* zombieKilledSound3;
-extern USoundBase* zombieKilledSound4;
 
 extern USoundBase* playerAgonySound;
 

@@ -46,8 +46,6 @@ USoundBase* getWeaponSound2 = nullptr;
 USoundBase* getWeaponSound3 = nullptr;
 USoundBase* zombieKilledSound1 = nullptr;
 USoundBase* zombieKilledSound2 = nullptr;
-USoundBase* zombieKilledSound3 = nullptr;
-USoundBase* zombieKilledSound4 = nullptr;
 USoundBase* playerAgonySound = nullptr;
 
 UMaterialInterface* bloodDecal = nullptr;
@@ -139,16 +137,14 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 	if (!getWeaponSound2)
 		getWeaponSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/noMoreMrBloodyNG.noMoreMrBloodyNG")).Object;
 	if (!getWeaponSound3)
-		getWeaponSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/goinToGetSerious.goinToGetSerious")).Object;
+		getWeaponSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/bloodyShooter.bloodyShooter")).Object;
 	
 	if (!zombieKilledSound1)
 		zombieKilledSound1 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/letGoYouBastard.letGoYouBastard")).Object;
 	if (!zombieKilledSound2)
-		zombieKilledSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/noBloodyWay.noBloodyWay")).Object;
-	if (!zombieKilledSound3)
-		zombieKilledSound3 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/thatHurt.thatHurt")).Object;
-	if (!zombieKilledSound4)
-		zombieKilledSound4 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/thatsNasty.thatsNasty")).Object;
+		zombieKilledSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/noChanceFel.noChanceFel")).Object;
+		
+		
 	if (!playerAgonySound)
 		playerAgonySound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/hurt.hurt")).Object;
 
