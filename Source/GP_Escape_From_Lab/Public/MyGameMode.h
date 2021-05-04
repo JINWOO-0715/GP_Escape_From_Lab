@@ -37,4 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int currentStage = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int deathZombie = 0;
+
+
 };
