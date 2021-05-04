@@ -92,7 +92,7 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void TurnOnRagdoll(bool isExplosionDeath, const FVector& impulseDir);
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 		FName DefaultZombieName;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
