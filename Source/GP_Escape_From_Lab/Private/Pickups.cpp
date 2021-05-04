@@ -4,6 +4,7 @@
 #include "Pickups.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Swat.h"
 #include "Net/UnrealNetwork.h"
@@ -17,7 +18,7 @@ APickups::APickups()
 	RootComponent = MeshComp;
 	//bReplicates가 서버에 반영해주는거
 	bReplicates = true;
-	DefaultItemName = FName("Ammo");
+	DefaultItemName = FName("KeyCard");
 	//static ConstructorHelpers::FObjectFinder<UDataTable> tempItemData(TEXT("/Game/Movable/WeaponBP/DT_ItemDataTable"));
 
 	//if (tempItemData.Succeeded())

@@ -9,7 +9,6 @@
 
 #include "Pickups.generated.h"
 
-
 USTRUCT(BlueprintType)
 struct FItemData : public FTableRowBase
 {
@@ -59,7 +58,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* MeshComp;
-
 
 	//가져올 데이터 테이블 행1 데이터테이블에서 이름으로 가져옴!!!
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
