@@ -151,6 +151,7 @@ void AZombie::OnPlayerCaught(APawn* pawn)
 
 		if (!(tempController->BlackboardComp->GetValueAsObject(FName("Target"))))
 		{
+			swatPawn = pawn;
 			tempController->SetPlayerCaught(pawn);
 			isScreamTime = true;
 		}

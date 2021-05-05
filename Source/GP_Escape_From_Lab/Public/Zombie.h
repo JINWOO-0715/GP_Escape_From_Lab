@@ -122,6 +122,10 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	bool isScreamTime;
 
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	APawn* swatPawn;
+
 	bool isHearingSound = false;
 
 private:
