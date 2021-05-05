@@ -53,6 +53,7 @@ public:
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void PlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
+	
 	UFUNCTION(Server, Reliable)
 	void ServerPlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
 	UFUNCTION(NetMulticast, Reliable)
