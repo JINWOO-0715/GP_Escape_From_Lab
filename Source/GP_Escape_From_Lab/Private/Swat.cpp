@@ -1004,7 +1004,7 @@ void ASwat::Interact(AActor* m_Actor)
 					canPlayingScript = false;
 					curScriptCoolTime = maxScriptCoolTime;
 				}
-
+				UGameplayStatics::PlaySound2D(this->GetWorld(), itemPickSound);
 			}
 
 
@@ -1043,7 +1043,7 @@ void ASwat::Interact(AActor* m_Actor)
 		   // 인벤토리에 추가하는 기능을 넣는다.
 		   // UE_LOG(LogTemp, Warning, TEXT("히트"));
 			// UE_LOG(LogTemp, Warning, TEXT("히트 : %s"), *Pickup->ItemData->ItemName);
-
+			UGameplayStatics::PlaySound2D(this->GetWorld(), itemPickSound);
 		   // 이런식으로 아이템 사용가능.
 			DestroyItemServer(Pickup);
 		}

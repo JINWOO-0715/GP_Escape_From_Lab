@@ -56,6 +56,8 @@ extern USoundBase* zombieKilledSound2;
 
 extern USoundBase* playerAgonySound;
 
+extern USoundBase* itemPickSound;
+
 extern UMaterialInterface* bloodDecal;
 extern UMaterialInterface* floorBloodDecal;
 

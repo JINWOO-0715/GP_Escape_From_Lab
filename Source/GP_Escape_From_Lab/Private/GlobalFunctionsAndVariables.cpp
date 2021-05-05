@@ -47,7 +47,7 @@ USoundBase* getWeaponSound3 = nullptr;
 USoundBase* zombieKilledSound1 = nullptr;
 USoundBase* zombieKilledSound2 = nullptr;
 USoundBase* playerAgonySound = nullptr;
-
+USoundBase* itemPickSound = nullptr;
 UMaterialInterface* bloodDecal = nullptr;
 UMaterialInterface* floorBloodDecal = nullptr;
 
@@ -147,6 +147,9 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 		
 	if (!playerAgonySound)
 		playerAgonySound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/hurt.hurt")).Object;
+
+	if (!itemPickSound)
+		itemPickSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/pickItem.pickItem")).Object;
 
 	if (!bloodDecal)
 	{
