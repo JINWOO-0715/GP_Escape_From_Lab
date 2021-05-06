@@ -30,7 +30,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool is_heated;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool isZombieManagerTimerTick;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int hasKeyCard = 0;
