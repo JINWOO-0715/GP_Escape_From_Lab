@@ -273,7 +273,7 @@ ASwat::ASwat()
 	// 	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
 	// 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 
-	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
+	ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
 
 	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/UI/BP_InventoryWidget"));
