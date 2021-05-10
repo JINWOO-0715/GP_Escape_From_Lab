@@ -45,10 +45,10 @@ public:
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
 	bool isPlayOnce;
-	float fixedGain[60];
-	maxiOsc originOsc[60];
-	maxiOsc fixedOsc[60];
+	float fixedGain[120];
+	maxiOsc originOsc[120];
+	maxiOsc fixedOsc[120];
 	maxiSample sourceSound;
-	maxiEnv modesEnv[60];
+	maxiEnv modesEnv[120];
 	maxiEnv originEnv;
 };
