@@ -278,14 +278,14 @@ bool UWoodSynthComponent::Init(int32& SampleRate)
 	originEnv.setAttack(15.0f);
 	originEnv.setDecay(35.0f);
 	originEnv.setSustain(200.0f);
-	originEnv.setRelease(BASE_RELEASE);
+	originEnv.setRelease(BASE_RELEASE * 1.5f);
 
 	for (int i = 0; i < MODES_NUMBER; ++i)
 	{
 		modesEnv[i].setAttack(15.0f);
 		modesEnv[i].setDecay(35.0f);
 		modesEnv[i].setSustain(100.0f);
-		modesEnv[i].setRelease(BASE_RELEASE / (woodModesData[i][0] / SHORTEST_FREQ));
+		modesEnv[i].setRelease(BASE_RELEASE / (woodModesData[i][0] / SHORTEST_FREQ) / 1.5f);
 
 		if (urd(dre) >= 0.0f)
 		{
