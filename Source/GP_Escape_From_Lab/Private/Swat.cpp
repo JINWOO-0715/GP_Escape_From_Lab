@@ -295,6 +295,8 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> QuitMenuadd(TEXT("/Game/Movable/UI/QuitMenuWidget"));
 	QuitMenuWidget = QuitMenuadd.Class;
 
+	ConstructorHelpers::FClassFinder<UUserWidget> Hintadd(TEXT("/Game/Movable/UI/HintWidget"));
+	HintWidget = Hintadd.Class;
 
 
 	walkSoundSynthComp = CreateDefaultSubobject<UMySynthComponent>(TEXT("walkSyntheSoundComp"));
@@ -332,6 +334,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, recoilValue);
 	DOREPLIFETIME(ASwat, hasGrenade);
 	DOREPLIFETIME(ASwat, chageAnimint);
+	DOREPLIFETIME(ASwat, hasKeyCard);
 }
 void ASwat::BeginPlay()
 {
@@ -349,6 +352,7 @@ void ASwat::BeginPlay()
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 		ClearUI = CreateWidget<UUserWidget>(PlayerController, ClearWidget);
 		QuitMenuUI = CreateWidget<UUserWidget>(PlayerController, QuitMenuWidget);
+		HintUI = CreateWidget<UUserWidget>(PlayerController, HintWidget);
 
 		InGameUI->AddToViewport();
 
@@ -525,6 +529,23 @@ void ASwat::QuitMenu()
 
 }
 
+void ASwat::Hint()
+{
+	if (isMyComputer())
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(this->hasKeyCard));
+		if (hasKeyCard >= 2 && !isHintOpen)
+		{
+			HintUI->AddToViewport();
+			isHintOpen = true;
+		}
+		else if (hasKeyCard >= 2 && isHintOpen)
+		{
+			HintUI->RemoveFromParent();
+			isHintOpen = false;
+		}
+	}
+}
 
 void ASwat::DropItem_Implementation(FName ItemName)
 {
@@ -1217,7 +1238,10 @@ void ASwat::PlayAgonySound()
 void ASwat::AddKeyCardCountServer_Implementation()
 {
 	AMyGameMode* GameMode = (AMyGameMode*)GetWorld()->GetAuthGameMode();
-	GameMode->hasKeyCard += 1;
+	if (GameMode->hasKeyCard < 2)
+	{
+		GameMode->hasKeyCard += 1;
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, "suecess haskey");
 }
 
@@ -1468,6 +1492,11 @@ void ASwat::Tick(float DeltaTime)
 			isThrowCoolTime = false;
 		}
 	}
+	if (HasAuthority())
+	{
+		auto gamemode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
+		GetHasKeyCardReq(gamemode->hasKeyCard);
+	}
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -1492,6 +1521,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &ASwat::UnAimGun);
 	PlayerInputComponent->BindAction("SwitchWeapon", IE_Released, this, &ASwat::ChangeWeapon);
 	PlayerInputComponent->BindAction("ESC", IE_Pressed, this, &ASwat::QuitMenu);
+	PlayerInputComponent->BindAction("Hint", IE_Pressed, this, &ASwat::Hint);
+
 
 	// 무기 줍는 기 누르면.
 	//PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
@@ -1652,10 +1683,9 @@ void ASwat::RecoilReq_Implementation(float recoil)
 	recoilValue = recoil;
 }
 
-void ASwat::HasKeyCardReq_Implementation(int KeyCard)
+void ASwat::GetHasKeyCardReq_Implementation(int keycard)
 {
-	hasKeyCard = KeyCard;
-	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Cyan, FString::FromInt(hasKeyCard));
+	this->hasKeyCard = keycard;
 
 }
 

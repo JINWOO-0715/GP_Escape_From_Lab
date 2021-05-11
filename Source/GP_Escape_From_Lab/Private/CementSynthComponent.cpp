@@ -143,17 +143,9 @@ bool UCementSynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
-	bool isSuccess = sourceSound.load(filePath);
-	if (isSuccess)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load Success");
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load failed");
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, fileFullPath);
-	}
 
+	sourceSound.load(filePath);
+	
 	originEnv.setAttack(10.0f);
 	originEnv.setDecay(10.0f);
 	originEnv.setSustain(80.0f);

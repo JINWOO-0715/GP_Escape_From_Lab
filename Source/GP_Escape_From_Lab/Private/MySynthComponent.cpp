@@ -33,7 +33,7 @@ std::uniform_real_distribution<float> UMySynthComponent::urd(-1.0f,1.0f);
 const int UMySynthComponent::MODES_NUMBER = 20;
 const float UMySynthComponent::SHORTEST_FREQ = 94.20776f;
 const float UMySynthComponent::BASE_RELEASE = 70.0f;
-
+maxiSample UMySynthComponent::sourceSound;
 bool UMySynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -43,8 +43,10 @@ bool UMySynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
-	sourceSound.load(filePath);
-
+	if (!sourceSound.isReady())
+		UMySynthComponent::sourceSound.load(filePath);
+	else
+		UMySynthComponent::sourceSound.reset();
 	originEnv.setAttack(1.0f);
 	originEnv.setDecay(1.0f);
 	originEnv.setSustain(1.0f);
