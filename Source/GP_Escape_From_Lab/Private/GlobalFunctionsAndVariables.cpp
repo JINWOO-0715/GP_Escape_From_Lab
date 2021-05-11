@@ -115,9 +115,10 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 	if (!ceramicImpactSound)
 		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_impact_ceramic_Cue")).Object;
 	if (!steelImpactSound)
-		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Steel_Cue")).Object;
+		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/steel_Cue.steel_Cue")).Object;
 	if (!plasticImpactSound)
-		plasticImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Plastic_Cue")).Object;
+		plasticImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/Bullet_Plastic_Impact_Cue.Bullet_Plastic_Impact_Cue")).Object;
 	if (!softImpactSound)
 		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue")).Object;
 	if (!glassImpactSound)
