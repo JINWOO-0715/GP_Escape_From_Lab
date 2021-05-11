@@ -288,6 +288,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float recoilPower = 2.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int chageAnimint = 0;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool collisionWeapon = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite )
@@ -326,6 +329,8 @@ private:
 	float maxScriptCoolTime = 3.0f;
 	float curScriptCoolTime = 3.0f;
 	float curThrowCoolTime = 0.1f;
+
+	
 
 	const FVector initCameraPos{ -68, 0, 16.5 };
 
@@ -416,6 +421,16 @@ public:
 	void ChangeWeaponMulticast();
 	UFUNCTION(BlueprintCallable)
 	void ChangeWeapon();
+
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeAnim();
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void ChangeAnimReq();
+
+	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
+	void ChangeAnimMulticast();
 
 	UFUNCTION(BlueprintCallable, Reliable, Server)
 	void PickSubWeapon(AWeaponBase* HitWeapon);
