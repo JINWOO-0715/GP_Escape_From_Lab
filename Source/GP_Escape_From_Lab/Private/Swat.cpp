@@ -1809,11 +1809,9 @@ void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
 
 void ASwat::playWalkSynthSound()
 {
-	if (isMyComputer())
-	{
-		walkSoundSynthComp->Start();
-		canWalkSoundPlay = false;
-		curWalkSoundCoolTime = maxWalkSoundCoolTime;
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "WalSound Call!");
-	}
+	walkSoundSynthComp->Start();
+	canWalkSoundPlay = false;
+	curWalkSoundCoolTime = maxWalkSoundCoolTime;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "WalkSound Call!");
+
 }
