@@ -13,7 +13,8 @@ class UParticleSystem;
 class AZombie;
 class UPlasticSynthComponent;
 class USteelSynthComponent;
-
+class UCementSynthComponent;
+class UWoodSynthComponent;
 UCLASS()
 class GP_ESCAPE_FROM_LAB_API ABullet : public AActor
 {
@@ -50,6 +51,11 @@ public:
 	UPlasticSynthComponent* plasticSoundComp;
 	UPROPERTY()
 	USteelSynthComponent* steelSoundComp;
+	UPROPERTY()
+	UCementSynthComponent* cementSoundComp;
+	UPROPERTY()
+	UWoodSynthComponent* woodSoundComp;
+
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void PlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
