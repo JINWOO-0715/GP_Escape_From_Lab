@@ -62,6 +62,7 @@ UClass* ak47AnimBP = nullptr;
 UClass* ak74AnimBP = nullptr;
 UClass* KAVALAnimBP = nullptr;
 UClass* AnimBP = nullptr;
+UClass* NoRigAnimBP = nullptr;
 USkeletalMesh* SKMesh = nullptr;
 
 ASwat::ASwat()
@@ -101,7 +102,8 @@ ASwat::ASwat()
 
 	AnimBP = ConstructorHelpers::FObjectFinder<UClass>
 		(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/AnimBP_player.AnimBP_player_C")).Object;
-
+	NoRigAnimBP = ConstructorHelpers::FObjectFinder<UClass>
+		(TEXT("/Game/Movable/AnimationBP/PlayerCharacter/noRigAnimBP_Player.noRigAnimBP_Player_C")).Object;
 
 
 	cameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
@@ -325,7 +327,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, maxFireRate);
 	DOREPLIFETIME(ASwat, recoilValue);
 	DOREPLIFETIME(ASwat, hasGrenade);
-
+	DOREPLIFETIME(ASwat, chageAnimint);
 }
 void ASwat::BeginPlay()
 {
@@ -752,7 +754,7 @@ void ASwat::ThrowGrenade()
 				isCanFire = false;
 				isThrowing = true;
 				animInstance->Montage_Play(throwMontage);
-
+				
 				weaponMesh->SetVisibility(false);
 				initGrenadeSpawnRot = weaponMesh->GetSocketRotation("IronSight").Vector();
 				initGrenadeSpawnRot.Normalize();
@@ -1226,9 +1228,40 @@ void ASwat::ChangeWeapon()
 		return;
 	}
 }
+
 void ASwat::ChangeWeaponReq_Implementation()
 {
 	ChangeWeaponMulticast();
+}
+void ASwat::ChangeAnim()
+{
+
+		ChangeAnimReq();
+	
+
+	
+
+
+}
+
+
+void ASwat::ChangeAnimReq_Implementation()
+{
+	//GetMesh()->SetAnimInstanceClass(NoRigAnimBP);
+	ChangeAnimMulticast();
+}
+
+void ASwat::ChangeAnimMulticast_Implementation()
+{
+	chageAnimint++;
+	if (chageAnimint % 2 == 0)
+	{
+	GetMesh()->SetAnimInstanceClass(NoRigAnimBP);
+	}
+	else
+	{
+		GetMesh()->SetAnimInstanceClass(AnimBP);
+	}
 }
 
 void ASwat::ChangeWeaponMulticast_Implementation()
@@ -1430,6 +1463,9 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Inventory", IE_Released, this, &ASwat::Inventory);
 	// 힐팩키 누르면
 	PlayerInputComponent->BindAction("UseMedkit", IE_Released, this, &ASwat::UseMedkit);
+
+	// 데모시연을위한 릭 설정
+	PlayerInputComponent->BindAction("ShowRig", IE_Released, this, &ASwat::ChangeAnim);
 	// 미니맵키 누르면
 	//PlayerInputComponent->BindAction("Minimap", IE_Released, this, &ASwat::Minimap);
 
