@@ -22,6 +22,8 @@
 #include "GlobalFunctionsAndVariables.h"
 #include "SteelSynthComponent.h"
 #include "PlasticSynthComponent.h"
+#include "CementSynthComponent.h"
+#include "WoodSynthComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/SoundAttenuation.h"
 
@@ -120,9 +122,13 @@ ABullet::ABullet()
 
 	plasticSoundComp = CreateDefaultSubobject<UPlasticSynthComponent>(TEXT("PlasticSynthSoundComp"));
 	steelSoundComp = CreateDefaultSubobject<USteelSynthComponent>(TEXT("SteelSynthSoundComp"));
+	cementSoundComp = CreateDefaultSubobject<UCementSynthComponent>(TEXT("CementSynthComp"));
+	woodSoundComp = CreateDefaultSubobject<UWoodSynthComponent>(TEXT("WoodSynthComp"));
 
 	plasticSoundComp->bOverrideAttenuation = true;
 	steelSoundComp->bOverrideAttenuation = true;
+	cementSoundComp->bOverrideAttenuation = true;
+	woodSoundComp->bOverrideAttenuation = true;
 
 }
 
@@ -264,10 +270,12 @@ void ABullet::Tick(float DeltaTime)
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+				cementSoundComp->Start();
+				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
 				break;
 			case SurfaceType2: //wood
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+				woodSoundComp->Start();
+				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
 				break;
 			case SurfaceType3: //ceramic
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
