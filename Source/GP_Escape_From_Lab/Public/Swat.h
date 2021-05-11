@@ -67,6 +67,7 @@ protected:
 	void UseMedkit();
 	
 	void QuitMenu();
+	void Hint();
 
 	virtual void AddControllerPitchInput(float Val);
 
@@ -239,6 +240,8 @@ public:
 	TSubclassOf<class UUserWidget> ClearWidget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> QuitMenuWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> HintWidget;
 
 	//카메라 셰이크
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -259,6 +262,8 @@ public:
 	UUserWidget* ClearUI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* QuitMenuUI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* HintUI;
 
 
 public:
@@ -309,7 +314,7 @@ public:
 
 
 	// 가지고 있는 키카드수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		int hasKeyCard = 0;
 	// 현재 스테이지 단계
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -331,6 +336,7 @@ public:
 
 private:
 	bool isMapOpen = false;
+	bool isHintOpen = false;
 	bool isThrowCoolTime = false;
 	const float maxThrowCoolTime = 0.1f;
 	const int maxStamina = 100;
@@ -417,7 +423,7 @@ public:
 	void ChangeStateHasWeapon();
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
-	void HasKeyCardReq(int KeyCard);
+	void GetHasKeyCardReq(int keycard);
 
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
