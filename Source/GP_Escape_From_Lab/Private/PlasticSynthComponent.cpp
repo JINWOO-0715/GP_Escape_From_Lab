@@ -74,7 +74,7 @@ uniform_real_distribution<float> urdFixed(3.0f, 10.0f);
 const int UPlasticSynthComponent::MODES_NUMBER = 60;
 const float UPlasticSynthComponent::SHORTEST_FREQ = 180.340576;
 const float UPlasticSynthComponent::BASE_RELEASE = 300.0f;
-
+maxiSample UPlasticSynthComponent::sourceSound;
 bool UPlasticSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -84,16 +84,11 @@ bool UPlasticSynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
-	bool isSuccess = sourceSound.load(filePath);
-	if (isSuccess)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load Success");
-	}
+
+	if (!sourceSound.isReady())
+		sourceSound.load(filePath);
 	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load failed");
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, fileFullPath);
-	}
+		sourceSound.reset();
 
 	originEnv.setAttack(1.0f);
 	originEnv.setDecay(1.0f);

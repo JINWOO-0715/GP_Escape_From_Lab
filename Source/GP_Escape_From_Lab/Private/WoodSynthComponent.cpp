@@ -254,7 +254,6 @@ const int UWoodSynthComponent::MODES_NUMBER = 239;
 const float UWoodSynthComponent::SHORTEST_FREQ = 56.524658;
 const float UWoodSynthComponent::BASE_RELEASE = 650.0f;
 
-
 bool UWoodSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -264,6 +263,7 @@ bool UWoodSynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
+
 	bool isSuccess = sourceSound.load(filePath);
 	if (isSuccess)
 	{

@@ -49,7 +49,7 @@ protected:
 	float fixedGain[20];
 	maxiOsc originOsc[20];
 	maxiOsc fixedOsc[20];
-	maxiSample sourceSound;
+	static maxiSample sourceSound;
 	maxiEnv modesEnv[20];
 	maxiEnv originEnv;
 };
