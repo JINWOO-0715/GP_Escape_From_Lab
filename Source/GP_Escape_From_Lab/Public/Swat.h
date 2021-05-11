@@ -288,6 +288,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		int hasGrenade = 50;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool WasHitted = false;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float attackPower = 50.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
