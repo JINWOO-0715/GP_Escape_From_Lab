@@ -65,6 +65,8 @@ protected:
 	//void Minimap();
 	void UseAmmo();
 	void UseMedkit();
+	
+	void QuitMenu();
 
 	virtual void AddControllerPitchInput(float Val);
 
@@ -87,7 +89,7 @@ protected:
 		class ULineTrace* LineTraceComp;
 
 	bool IsOpenMain = false;
-
+	bool IsOpenQuitMenu = false;
 	class USoundWave* EmptyGunShotSound;
 
 	
@@ -235,7 +237,9 @@ public:
 	TSubclassOf<class UUserWidget> Mission1Widget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> ClearWidget;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UUserWidget> QuitMenuWidget;
+
 	//카메라 셰이크
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UMatineeCameraShake> CameraShake;
@@ -253,6 +257,9 @@ public:
 	UUserWidget* Mission1UI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* ClearUI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* QuitMenuUI;
+
 
 public:
 	// 플레이어 hp

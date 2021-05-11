@@ -292,6 +292,10 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> Clearadd(TEXT("/Game/Movable/UI/BP_ClearWidget"));
 	ClearWidget = Clearadd.Class;
 
+	ConstructorHelpers::FClassFinder<UUserWidget> QuitMenuadd(TEXT("/Game/Movable/UI/QuitMenuWidget"));
+	QuitMenuWidget = QuitMenuadd.Class;
+
+
 
 	walkSoundSynthComp = CreateDefaultSubobject<UMySynthComponent>(TEXT("walkSyntheSoundComp"));
 
@@ -344,6 +348,7 @@ void ASwat::BeginPlay()
 		//MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
 		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
 		ClearUI = CreateWidget<UUserWidget>(PlayerController, ClearWidget);
+		QuitMenuUI = CreateWidget<UUserWidget>(PlayerController, QuitMenuWidget);
 
 		InGameUI->AddToViewport();
 
@@ -490,6 +495,36 @@ void ASwat::Inventory()
 	}
 
 }
+
+void ASwat::QuitMenu()
+{
+
+
+	APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+
+
+	if (!IsOpenQuitMenu)
+	{
+		PlayerController->bShowMouseCursor = true;
+		QuitMenuUI->AddToViewport();
+		IsOpenQuitMenu = true;
+		FInputModeUIOnly b;
+		PlayerController->SetInputMode(b);
+
+
+	}
+	else
+	{
+		PlayerController->bShowMouseCursor = false;
+
+		QuitMenuUI->RemoveFromParent();
+		IsOpenQuitMenu = false;
+		FInputModeGameOnly ui;
+		PlayerController->SetInputMode(ui);
+	}
+
+}
+
 
 void ASwat::DropItem_Implementation(FName ItemName)
 {
@@ -1456,6 +1491,7 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &ASwat::AimGun);
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &ASwat::UnAimGun);
 	PlayerInputComponent->BindAction("SwitchWeapon", IE_Released, this, &ASwat::ChangeWeapon);
+	PlayerInputComponent->BindAction("ESC", IE_Pressed, this, &ASwat::QuitMenu);
 
 	// 무기 줍는 기 누르면.
 	//PlayerInputComponent->BindAction("Interact", IE_Released, this, &ASwat::Interact);
