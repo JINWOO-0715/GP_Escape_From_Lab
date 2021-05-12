@@ -10,6 +10,7 @@
 #include <vector>
 #include <sstream>
 #include "MySynthComponent.h"
+#include "Puzzle.h"
 #include "Swat.generated.h"
 
 class UCameraComponent;
@@ -476,7 +477,6 @@ public:
 	float curWalkSoundCoolTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float maxWalkSoundCoolTime=0.2f;
-
 };
 //조준기능 트랜스폼 벨류
 //auto activate off

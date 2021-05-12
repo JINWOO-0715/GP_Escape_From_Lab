@@ -290,7 +290,7 @@ void ABullet::Tick(float DeltaTime)
 			auto temppuzle = Cast<APuzzle>(hitResult.GetActor());
 		
 
-			if (tempPlayer->hasKeyCard>=0)
+			if (tempPlayer->hasKeyCard>=2)
 			{
 				switch (surfaceType)
 				{
@@ -300,9 +300,7 @@ void ABullet::Tick(float DeltaTime)
 						cementSoundComp->Start();
 						if (temppuzle)
 						{
-							temppuzle->tryNumber += 1;
-							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
-							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+							//temppuzle->inputPassword[temppuzle->tryNumber++] = 3;
 						}
 						
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
@@ -317,9 +315,7 @@ void ABullet::Tick(float DeltaTime)
 						woodSoundComp->Start();
 						if (temppuzle)
 						{
-							temppuzle->tryNumber += 1;
-							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
-							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+							//temppuzle->inputPassword[temppuzle->tryNumber++] = 0;
 						}
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
 					}
@@ -336,9 +332,7 @@ void ABullet::Tick(float DeltaTime)
 							steelSoundComp->Start();
 							if (temppuzle)
 							{
-								temppuzle->tryNumber += 1;
-								GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
-								GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+								//temppuzle->inputPassword[temppuzle->tryNumber++] = 1;
 							}
 							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
 
@@ -353,9 +347,7 @@ void ABullet::Tick(float DeltaTime)
 						plasticSoundComp->Start();
 						if (temppuzle)
 						{
-							temppuzle->tryNumber += 1;
-							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
-							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+							//temppuzle->inputPassword[temppuzle->tryNumber++] = 2;
 						}
 					}
 					else

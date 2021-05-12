@@ -16,7 +16,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Components/SphereComponent.h"
-
+#include "EngineUtils.h"
 #include "Bullet.h"
 #include "Grenade.h"
 #include "PickUps.h"
