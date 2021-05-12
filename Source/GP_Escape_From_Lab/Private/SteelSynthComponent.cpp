@@ -34,7 +34,7 @@ std::uniform_real_distribution<float> steelRandomGain(1.0f, 10.0f);
 const int USteelSynthComponent::MODES_NUMBER = 20;
 const float USteelSynthComponent::SHORTEST_FREQ = 944.769287f;
 const float USteelSynthComponent::BASE_RELEASE = 400.0f;
-maxiSample USteelSynthComponent::sourceSound;
+
 bool USteelSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -44,10 +44,7 @@ bool USteelSynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
-	if (!sourceSound.isReady())
-		sourceSound.load(filePath);
-	else
-		sourceSound.reset();
+	sourceSound.load(filePath);
 	originEnv.setAttack(400.0f);
 	originEnv.setDecay(1.0f);
 	originEnv.setSustain(1.0f);

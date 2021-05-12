@@ -35,10 +35,22 @@ void APuzzle::BeginPlay()
 	Super::BeginPlay();
 	if (HasAuthority())
 	{
-		for (int i = 0; i < 6; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			randomSeq.Add(uid(dre));
 			inputPassword.Add(0);
+		}
+		for (int i = 1; i < 5; ++i)
+		{
+			if (randomSeq[i - 1] == randomSeq[i])
+			{
+				while (1)
+				{
+					randomSeq[i] = uid(dre);
+					if (randomSeq[i - 1] != randomSeq[i])
+						break;
+				}
+			}
 		}
 	}
 }
@@ -50,7 +62,7 @@ void APuzzle::Tick(float DeltaTime)
 	if (tryNumber > 5 && HasAuthority())
 	{
 		bool puzzleSolved = true;
-		for (int i = 0; i < 6; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			if (randomSeq[i] != inputPassword[i])
 				puzzleSolved = false;
@@ -64,7 +76,7 @@ void APuzzle::Tick(float DeltaTime)
 		}
 		else
 		{
-			for (int i = 0; i < 6; ++i)
+			for (int i = 0; i < 5; ++i)
 			{
 				inputPassword[i] = 0;
 			}
