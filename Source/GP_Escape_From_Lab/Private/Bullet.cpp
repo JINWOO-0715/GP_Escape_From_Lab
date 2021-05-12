@@ -26,6 +26,7 @@
 #include "CementSynthComponent.h"
 #include "WoodSynthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Puzzle.h"
 #include "Sound/SoundAttenuation.h"
 
 //UParticleSystem* wallHitParticle = nullptr;
@@ -271,7 +272,106 @@ void ABullet::Tick(float DeltaTime)
 			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
 			//
 			//
-			//
+			//  충돌처리는 클라에서 함
+			//if (키카드 2개라면 or 클리어 불리언이라면)
+			//{
+			//		맞은게 뭐냐에따라 스위치로 하고 숫자를올린다 액터의 숫자를올린다
+			//	
+			//		맞은게 입력버튼이라면
+			//		{
+			//		입력을 시키고 비교한다음 맞다면 스테이지 2로 넘어간다.
+			//		}
+			//}
+			// 서버에서 실행해서 게임모드를 가져옴.
+			
+			// 
+			auto tempPlayer = Cast<ASwat>(GetOwner());
+			
+			auto temppuzle = Cast<APuzzle>(hitResult.GetActor());
+		
+
+			if (tempPlayer->hasKeyCard>=0)
+			{
+				switch (surfaceType)
+				{
+				case SurfaceType1: //concrete
+					if (isSynthSoundOn)
+					{
+						cementSoundComp->Start();
+						if (temppuzle)
+						{
+							temppuzle->tryNumber += 1;
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+						}
+						
+						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+					}
+					else
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+					//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+					break;
+				case SurfaceType2: //wood
+					if (isSynthSoundOn)
+					{
+						woodSoundComp->Start();
+						if (temppuzle)
+						{
+							temppuzle->tryNumber += 1;
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+						}
+						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+					}
+					else
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+					//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+					break;
+				case SurfaceType3: //ceramic
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
+					break;
+				case SurfaceType4: //steel
+						if (isSynthSoundOn)
+						{
+							steelSoundComp->Start();
+							if (temppuzle)
+							{
+								temppuzle->tryNumber += 1;
+								GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
+								GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+							}
+							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+
+						}
+					else
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
+					break;
+				case SurfaceType5: //plastic
+					if (isSynthSoundOn)
+					{
+					//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+						plasticSoundComp->Start();
+						if (temppuzle)
+						{
+							temppuzle->tryNumber += 1;
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, "Good!!!");
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(temppuzle->tryNumber));
+						}
+					}
+					else
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
+					break;
+				case SurfaceType6: //soft
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+					break;
+				case SurfaceType7: //glass
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
+					break;
+				default: //else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+					break;
+				}
+			}
 
 			//
 			switch (surfaceType)
