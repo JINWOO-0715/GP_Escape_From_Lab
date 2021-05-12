@@ -290,7 +290,7 @@ void ABullet::Tick(float DeltaTime)
 			auto temppuzle = Cast<APuzzle>(hitResult.GetActor());
 		
 
-			if (tempPlayer->hasKeyCard>=2)
+			if (tempPlayer->hasKeyCard>=2 && HasAuthority())
 			{
 				switch (surfaceType)
 				{
@@ -300,10 +300,10 @@ void ABullet::Tick(float DeltaTime)
 						cementSoundComp->Start();
 						if (temppuzle)
 						{
-							//temppuzle->inputPassword[temppuzle->tryNumber++] = 3;
+							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+							temppuzle->inputPassword[temppuzle->tryNumber++] = 3;
 						}
 						
-						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
 					}
 					else
 						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
@@ -315,7 +315,7 @@ void ABullet::Tick(float DeltaTime)
 						woodSoundComp->Start();
 						if (temppuzle)
 						{
-							//temppuzle->inputPassword[temppuzle->tryNumber++] = 0;
+							temppuzle->inputPassword[temppuzle->tryNumber++] = 0;
 						}
 						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
 					}
@@ -332,7 +332,7 @@ void ABullet::Tick(float DeltaTime)
 							steelSoundComp->Start();
 							if (temppuzle)
 							{
-								//temppuzle->inputPassword[temppuzle->tryNumber++] = 1;
+								temppuzle->inputPassword[temppuzle->tryNumber++] = 1;
 							}
 							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
 
@@ -347,7 +347,7 @@ void ABullet::Tick(float DeltaTime)
 						plasticSoundComp->Start();
 						if (temppuzle)
 						{
-							//temppuzle->inputPassword[temppuzle->tryNumber++] = 2;
+							temppuzle->inputPassword[temppuzle->tryNumber++] = 2;
 						}
 					}
 					else

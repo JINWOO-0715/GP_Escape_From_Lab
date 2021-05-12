@@ -25,10 +25,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	//TArray<int> inputPassword;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	//int tryNumber; //몇 번째 시도 중?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	TArray<int> inputPassword;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int tryNumber; //몇 번째 시도 중?
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<int> randomSeq;

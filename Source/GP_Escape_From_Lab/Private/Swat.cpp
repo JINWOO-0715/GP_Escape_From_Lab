@@ -295,7 +295,7 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> QuitMenuadd(TEXT("/Game/Movable/UI/QuitMenuWidget"));
 	QuitMenuWidget = QuitMenuadd.Class;
 
-	ConstructorHelpers::FClassFinder<UUserWidget> Hintadd(TEXT("/Game/Movable/UI/HintWidget.HintWidget_C"));
+	ConstructorHelpers::FClassFinder<UUserWidget> Hintadd(TEXT("/Game/Movable/UI/HintWidget"));
 	HintWidget = Hintadd.Class;
 
 
@@ -540,16 +540,23 @@ void ASwat::Hint()
 {
 	if (isMyComputer())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::FromInt(this->hasKeyCard));
+		APlayerController* const PlayerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
 		if (hasKeyCard >= 2 && !isHintOpen)
 		{
 			HintUI->AddToViewport();
 			isHintOpen = true;
+			PlayerController->bShowMouseCursor = true;
+			FInputModeGameAndUI ui;
+			PlayerController->SetInputMode(ui);
+
 		}
 		else if (hasKeyCard >= 2 && isHintOpen)
 		{
 			HintUI->RemoveFromParent();
 			isHintOpen = false;
+			PlayerController->bShowMouseCursor = false;
+			FInputModeGameOnly ui;
+			PlayerController->SetInputMode(ui);
 		}
 	}
 }
