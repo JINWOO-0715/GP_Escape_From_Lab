@@ -56,6 +56,8 @@ public:
 	UPROPERTY()
 	UWoodSynthComponent* woodSoundComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	bool isSynthSoundOn;
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	void PlayParticleReq(bool isBloodParticle, const FVector& particleSpawnPos);
@@ -66,8 +68,10 @@ public:
 	void SpawnBloodDecalReq(bool isFloorBlood, UPrimitiveComponent* component, const FVector& location, const FRotator& rotation);
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBloodDecalReq(bool isFloorBlood, UPrimitiveComponent* component, const FVector& location, const FRotator& rotation);
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(Server, Reliable)
 	void SpawnBulletHoleDecalReq(const FVector& location, const FRotator& rotation);
+	UFUNCTION(NetMulticast, Reliable)
+	void SetSynthSoundOnOffReq();
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBulletHoleDecalReq(const FVector& location, const FRotator& rotation);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

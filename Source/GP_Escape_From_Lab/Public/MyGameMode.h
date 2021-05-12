@@ -42,5 +42,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int deathZombie = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool isSynthSoundOn = true;
 
 };

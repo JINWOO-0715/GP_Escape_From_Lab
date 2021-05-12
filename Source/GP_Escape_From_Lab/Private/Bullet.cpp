@@ -19,6 +19,7 @@
 #include "Engine/Blueprint.h"
 #include "Swat.h"
 #include "Zombie.h"
+#include "MyGameMode.h"
 #include "GlobalFunctionsAndVariables.h"
 #include "SteelSynthComponent.h"
 #include "PlasticSynthComponent.h"
@@ -137,6 +138,7 @@ void ABullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABullet, startPos);
+	DOREPLIFETIME(ABullet, isSynthSoundOn);
 }
 
 // Called when the game starts or when spawned
@@ -151,7 +153,12 @@ void ABullet::BeginPlay()
 void ABullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (HasAuthority())
+	{
+		auto gameMode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
+		this->isSynthSoundOn = gameMode->isSynthSoundOn;
+	}
+	SetSynthSoundOnOffReq();
 	if (isFirstCall)
 	{
 		curPos = this->GetActorLocation();
@@ -270,22 +277,33 @@ void ABullet::Tick(float DeltaTime)
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
-				cementSoundComp->Start();
+				if(isSynthSoundOn)
+					cementSoundComp->Start();
+				else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
 				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
 				break;
 			case SurfaceType2: //wood
-				woodSoundComp->Start();
+				if (isSynthSoundOn)
+					woodSoundComp->Start();
+				else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
 				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
 				break;
 			case SurfaceType3: //ceramic
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
 				break;
 			case SurfaceType4: //steel
-				GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "play Steel Sound");
-				steelSoundComp->Start();
+				if (isSynthSoundOn)
+					steelSoundComp->Start();
+				else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
 				break;
 			case SurfaceType5: //plastic
-				plasticSoundComp->Start();
+				if (isSynthSoundOn)
+					plasticSoundComp->Start();
+				else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
 				break;
 			case SurfaceType6: //soft
 				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
@@ -354,4 +372,9 @@ void ABullet::ServerSpawnBulletHoleDecalReq_Implementation(const FVector& locati
 void ABullet::ServerSpawnBloodDecalReq_Implementation(bool isFloorBlood, UPrimitiveComponent* component, const FVector& location, const FRotator& rotation)
 {
 	SpawnBloodDecalReq(isFloorBlood, component, location, rotation);
+}
+
+void ABullet::SetSynthSoundOnOffReq_Implementation()
+{
+	
 }
