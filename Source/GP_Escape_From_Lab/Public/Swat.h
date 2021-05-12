@@ -152,6 +152,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlayAgonySound();
+
+	UFUNCTION(BlueprintCallable)
+	void playHintSound();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* coneMeshComp = nullptr;
@@ -324,6 +327,8 @@ public:
 		int NowStage = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool Arrived = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool isHintSound = false;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)

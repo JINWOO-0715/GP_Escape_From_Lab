@@ -295,7 +295,7 @@ ASwat::ASwat()
 	ConstructorHelpers::FClassFinder<UUserWidget> QuitMenuadd(TEXT("/Game/Movable/UI/QuitMenuWidget"));
 	QuitMenuWidget = QuitMenuadd.Class;
 
-	ConstructorHelpers::FClassFinder<UUserWidget> Hintadd(TEXT("/Game/Movable/UI/HintWidget"));
+	ConstructorHelpers::FClassFinder<UUserWidget> Hintadd(TEXT("/Game/Movable/UI/HintWidget.HintWidget_C"));
 	HintWidget = Hintadd.Class;
 
 
@@ -422,7 +422,13 @@ void ASwat::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
 }
-
+void ASwat::playHintSound()
+{
+	if (!isHintSound)
+	{
+		isHintSound = true;
+	}
+}
 //void ASwat::Minimap()
 //{
 //	if (!HasAuthority() && GetOwner() == UGameplayStatics::GetPlayerController(GetWorld(), 0))//only the player calling this function can view the map.
