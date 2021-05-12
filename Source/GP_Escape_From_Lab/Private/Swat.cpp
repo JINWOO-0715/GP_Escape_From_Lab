@@ -335,6 +335,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, hasGrenade);
 	DOREPLIFETIME(ASwat, chageAnimint);
 	DOREPLIFETIME(ASwat, hasKeyCard);
+	DOREPLIFETIME(ASwat, isSynthOn);
 }
 void ASwat::BeginPlay()
 {
@@ -1495,6 +1496,7 @@ void ASwat::Tick(float DeltaTime)
 	if (HasAuthority())
 	{
 		auto gamemode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
+		this->isSynthOn = gamemode->isSynthSoundOn;
 		GetHasKeyCardReq(gamemode->hasKeyCard);
 	}
 }

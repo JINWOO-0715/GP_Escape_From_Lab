@@ -203,6 +203,8 @@ public:
 		bool isReloading = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool isLightOn = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		bool isSynthOn = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isGunFire = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

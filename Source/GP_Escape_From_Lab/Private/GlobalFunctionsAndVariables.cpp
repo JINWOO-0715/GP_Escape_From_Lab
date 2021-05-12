@@ -84,8 +84,8 @@ const FName KNIFE_METAL_STAB_SOUND = TEXT("knife_Imact_Metal_Cue");
 const FName CERAMIC_IMPACT_SOUND = TEXT("Bullet_impact_ceramic_Cue");
 const FName CONCRETE_IMPACT_SOUND = TEXT("Concrete_impact_bullet_Cue");
 const FName WOOD_IMPACT_SOUND = TEXT("Bullet_Impact_Wood_Cue");
-const FName STEEL_IMPACT_SOUND = TEXT("Bullet_Impact_Steel_Cue");
-const FName PLASTIC_IMPACT_SOUND = TEXT("Bullet_Impact_Plastic_Cue");
+const FName STEEL_IMPACT_SOUND = TEXT("steel_Cue");
+const FName PLASTIC_IMPACT_SOUND = TEXT("Bullet_Plastic_Impact_Cue");
 const FName	SOFT_IMPACT_SOUND = TEXT("Bullet_Impact_Soft_Cue");
 const FName GLASS_IMPACT_SOUND = TEXT("impact_glass_Cue");
 const FName LEFT_FOOT_SOUND = TEXT("Concrete_Left_Foot_Cue");
@@ -115,10 +115,9 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 	if (!ceramicImpactSound)
 		ceramicImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_impact_ceramic_Cue")).Object;
 	if (!steelImpactSound)
-		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/steel_Cue.steel_Cue")).Object;
+		steelImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/steel_Cue")).Object;
 	if (!plasticImpactSound)
-		plasticImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>
-		(TEXT("/Game/Movable/Sound/Bullet_Plastic_Impact_Cue.Bullet_Plastic_Impact_Cue")).Object;
+		plasticImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Plastic_Impact_Cue")).Object;
 	if (!softImpactSound)
 		softImpactSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Bullet_Impact_Soft_Cue")).Object;
 	if (!glassImpactSound)
