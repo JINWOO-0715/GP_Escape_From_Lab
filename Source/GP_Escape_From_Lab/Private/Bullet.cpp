@@ -369,15 +369,40 @@ void ABullet::Tick(float DeltaTime)
 			switch (surfaceType)
 			{
 			case SurfaceType1: //concrete
-				if(isSynthSoundOn)
+				if (isSynthSoundOn)
+				{
+					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
+
+					if (distance < 1500.0f)
+					{
+						cementSoundComp->multiplier = 1.0f - distance / 1500.0f;
+					}
+					else
+					{
+						cementSoundComp->multiplier = 0.0f;
+					}
 					cementSoundComp->Start();
+				}
 				else
 					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
 				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
 				break;
 			case SurfaceType2: //wood
 				if (isSynthSoundOn)
+				{
+					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
+
+					if (distance < 1500.0f)
+					{
+						woodSoundComp->multiplier = 1.0f - distance / 1500.0f;
+					}
+					else
+					{
+						woodSoundComp->multiplier = 0.0f;
+					}
+
 					woodSoundComp->Start();
+				}
 				else
 					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
 				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
@@ -387,13 +412,38 @@ void ABullet::Tick(float DeltaTime)
 				break;
 			case SurfaceType4: //steel
 				if (isSynthSoundOn)
+				{
+					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
+					
+					if (distance < 2500.0f)
+					{
+						steelSoundComp->multiplier = 1.0f - distance / 2500.0f;
+					}
+					else
+					{
+						steelSoundComp->multiplier = 0.0f;
+					}
 					steelSoundComp->Start();
+				}
 				else
 					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
 				break;
 			case SurfaceType5: //plastic
 				if (isSynthSoundOn)
+				{
+					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
+
+					if (distance < 2500.0f)
+					{
+						plasticSoundComp->multiplier = 1.0f - distance / 2500.0f;
+					}
+					else
+					{
+						plasticSoundComp->multiplier = 0.0f;
+					}
 					plasticSoundComp->Start();
+
+				}
 				else
 					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
 				break;

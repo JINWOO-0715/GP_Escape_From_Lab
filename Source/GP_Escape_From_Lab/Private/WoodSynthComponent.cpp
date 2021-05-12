@@ -347,7 +347,7 @@ int32 UWoodSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			fixedOut += (fixedOsc[i].sinewave(woodModesData[i][0]) * fixedGain[i]) * decayVolume[i];
 		}
 
-		OutAudio[Sample] = (fixedOut + residual);
+		OutAudio[Sample] = (fixedOut + residual) * multiplier;
 
 	}
 

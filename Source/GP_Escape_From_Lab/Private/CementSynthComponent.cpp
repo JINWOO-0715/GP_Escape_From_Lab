@@ -216,7 +216,7 @@ int32 UCementSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			fixedOut += (fixedOsc[i].sinewave(cementModesData[i][0]) * fixedGain[i]) * decayVolume[i];
 		}
 
-		OutAudio[Sample] = (fixedOut + residual) * 1.2f; //* 0.15f;
+		OutAudio[Sample] = (fixedOut + residual) * 1.2f * multiplier; //* 0.15f;
 
 		}
 

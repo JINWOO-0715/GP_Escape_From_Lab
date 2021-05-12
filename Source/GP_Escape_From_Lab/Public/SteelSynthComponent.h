@@ -41,6 +41,7 @@ public:
 	static std::random_device rd;
 	static std::default_random_engine dre;
 	static std::uniform_real_distribution<float> urd;
+	float multiplier = 1.0f;
 
 
 protected:

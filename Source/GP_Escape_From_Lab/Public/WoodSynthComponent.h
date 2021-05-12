@@ -44,7 +44,7 @@ public:
 	static std::default_random_engine dre;
 	static std::uniform_real_distribution<float> urd;
 	static std::uniform_real_distribution<float> urdFixed;
-
+	float multiplier = 1.0f;
 
 protected:
 	// A simple oscillator class. Can also generate Saw/Square/Tri/Noise.
