@@ -59,7 +59,7 @@ void APuzzle::BeginPlay()
 void APuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (tryNumber > 5 && HasAuthority())
+	if (tryNumber > 4 && HasAuthority())
 	{
 		bool puzzleSolved = true;
 		for (int i = 0; i < 5; ++i)
