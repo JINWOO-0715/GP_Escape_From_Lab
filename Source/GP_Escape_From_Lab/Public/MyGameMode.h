@@ -45,4 +45,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool isSynthSoundOn = true;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int passNumber;
 };
