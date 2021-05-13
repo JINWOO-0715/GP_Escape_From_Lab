@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Grenade.generated.h"
 
 class USphereComponent;
@@ -34,9 +35,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USphereComponent* sphereComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector StartPos;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* meshComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float initGrenadeImpact = 0.0f;
+	
 
 public:
 	UFUNCTION(Server, Reliable)
@@ -57,4 +61,7 @@ public:
 private:
 	const float reach = 700.0f * 700.0f;
 	float lifeTime = 3.0f;
+	FVector befPos{ 0.0f,0.0f,0.0f };
+	FVector curPos{ 0.0f,0.0f,0.0f };
+	bool isFirstCall = true;
 };
