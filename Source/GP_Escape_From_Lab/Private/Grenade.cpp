@@ -17,26 +17,29 @@
 #include "Zombie.h"
 #include "GlobalFunctionsAndVariables.h"
 #include "Sound/SoundBase.h"
+#include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 USoundBase* explosionSound = nullptr;
 UParticleSystem* explosionParticle = nullptr;
 // Sets default values
 AGrenade::AGrenade()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;	
-	SetReplicates(true);
-	SetReplicateMovement(true);
+
+	
+
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphere collision comp"));
 	if (IsValid(sphereComp))
 	{
 		sphereComp->SetSphereRadius(4.0f);
 		sphereComp->SetSimulatePhysics(true);
 		sphereComp->SetCollisionProfileName("EmptyShell");
+		//sphereComp->bEnablePhysicsOn
 		sphereComp->SetIsReplicated(true);
 		RootComponent = sphereComp;
 	}
+
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("grenade mesh Comp"));
+
 	if (IsValid(meshComp))
 	{
 		meshComp->SetupAttachment(RootComponent);
@@ -46,7 +49,7 @@ AGrenade::AGrenade()
 	{
 		meshComp->SetStaticMesh(grenade.Object);
 		meshComp->SetSimulatePhysics(false);
-		meshComp->SetCollisionProfileName("NoCollision");
+		meshComp->SetCollisionProfileName("EmptyShell");
 	}
 	//movementComp = CreateDefaultSubobject<UProjectileMovementComponent>("projectile movement comp");
 	//movementComp->InitialSpeed = 2000.0f;
@@ -61,12 +64,17 @@ AGrenade::AGrenade()
 	{
 		explosionSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/Explosion_Cue")).Object;
 	}
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
 void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();
+	StartPos = this->GetActorLocation();
 
 }
 
@@ -112,6 +120,48 @@ void AGrenade::Tick(float DeltaTime)
 	
 	lifeTime -= DeltaTime;
 
+
+	auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (isFirstCall)
+	{
+		curPos = this->GetActorLocation();
+		befPos = StartPos;
+		isFirstCall = false;
+	}
+	curPos = this->GetActorLocation();
+	FHitResult hitResult;
+	FCollisionQueryParams collisionParams;
+	FVector startTrace = befPos;
+	FVector endTrace = curPos;
+
+	collisionParams.bTraceComplex = false;
+	collisionParams.AddIgnoredActor(playerPawn);
+	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
+	DrawDebugLine(
+		GetWorld(),
+		startTrace,
+		endTrace,
+		FColor::Red,
+		false,
+		3.0f,
+		0,
+		5.0f);
+	
+	if (!HasAuthority() && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,	collisionParams))
+	{
+		FVector ReflectionVector = GetActorForwardVector() - 2 * (FVector::DotProduct(GetActorForwardVector(), hitResult.ImpactNormal)) * hitResult.ImpactNormal;
+		ReflectionVector.Normalize();
+		
+		FVector temp(0.0f, 0.0f, 400.0f);
+		sphereComp->AddImpulse(temp);
+		
+		//sphereComp->AddForce(ReflectionVector * 1000);
+		//sphereComp->SetEnableGravity(true);
+		//sphereComp->SetSimulatePhysics(false);
+		
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, ReflectionVector.ToString());
+	}
 	if (lifeTime < 0.0f	&& !HasAuthority()/*&& this->GetOwner() == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)*/)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
@@ -119,6 +169,7 @@ void AGrenade::Tick(float DeltaTime)
 		ServerSpawnExplosionParticle();
 		lifeTime = 100.0f;
 	}
+	befPos = curPos;
 }
 
 void AGrenade::ServerSpawnExplosionParticle_Implementation()
