@@ -114,7 +114,7 @@ int32 UMySynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			fixedOut += (fixedOsc[i].sinewave(walkModesData[i][0]) * fixedGain[i]) * decayVolume[i];
 		}
 		
-		OutAudio[Sample] = (fixedOut + residual)*2.0f;
+		OutAudio[Sample] = (fixedOut + residual) * 2.0f * multiplier;
 
 	}
 	

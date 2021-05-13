@@ -475,7 +475,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UMySynthComponent* walkSoundSynthComp;
 	UFUNCTION(BlueprintCallable)
-	void playWalkSynthSound();
+	void playWalkSynthSound(float multiplier);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool canWalkSoundPlay=true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

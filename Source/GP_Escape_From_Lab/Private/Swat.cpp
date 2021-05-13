@@ -1852,8 +1852,9 @@ void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
 	}
 }
 
-void ASwat::playWalkSynthSound()
+void ASwat::playWalkSynthSound(float multiplier)
 {
+	walkSoundSynthComp->multiplier = multiplier;
 	walkSoundSynthComp->Start();
 	canWalkSoundPlay = false;
 	curWalkSoundCoolTime = maxWalkSoundCoolTime;
