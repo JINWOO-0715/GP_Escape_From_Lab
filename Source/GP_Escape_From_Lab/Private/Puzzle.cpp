@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "MyGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 std::random_device APuzzle::rd;
 std::default_random_engine APuzzle::dre(rd());
 std::uniform_int_distribution<int> APuzzle::uid(0, 3);
@@ -18,6 +19,8 @@ APuzzle::APuzzle()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	wrongSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/wrong_Cue")).Object;
+	correctSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/correct_Cue")).Object;
 }
 
 void APuzzle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,6 +30,7 @@ void APuzzle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(APuzzle, inputPassword);
 	DOREPLIFETIME(APuzzle, tryNumber);
 	DOREPLIFETIME(APuzzle, randomSeq);
+	DOREPLIFETIME(APuzzle, isSolved);
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +77,7 @@ void APuzzle::Tick(float DeltaTime)
 			gameMode->canMoveToStage2 = true;
 			tryNumber = 0;
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Solve");
+			isSolved = true;
 		}
 		else
 		{
@@ -82,6 +87,18 @@ void APuzzle::Tick(float DeltaTime)
 			}
 			tryNumber = 0;
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Fail");
+			isSolved = false;
+		}
+	}
+	if (tryNumber > 4 && !HasAuthority())
+	{
+		if (isSolved)
+		{
+			UGameplayStatics::PlaySound2D(this, correctSound, 15.0f);
+		}
+		else
+		{
+			UGameplayStatics::PlaySound2D(this, wrongSound, 15.0f);
 		}
 	}
 }
