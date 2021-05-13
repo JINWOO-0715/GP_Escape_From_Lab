@@ -29,14 +29,17 @@ public:
 	TArray<int> inputPassword;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int tryNumber; //몇 번째 시도 중?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	bool isSolved;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	//bool isSolved;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TArray<int> randomSeq;
 
 	USoundBase* correctSound;
 	USoundBase* wrongSound;
+public:
+	UFUNCTION(NetMulticast, Reliable)
+	void playAnswerSound(bool isSuccess);
 private:
 	static std::random_device rd;
 	static std::default_random_engine dre;

@@ -30,7 +30,7 @@ void APuzzle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(APuzzle, inputPassword);
 	DOREPLIFETIME(APuzzle, tryNumber);
 	DOREPLIFETIME(APuzzle, randomSeq);
-	DOREPLIFETIME(APuzzle, isSolved);
+	//DOREPLIFETIME(APuzzle, isSolved);
 }
 
 // Called when the game starts or when spawned
@@ -77,7 +77,7 @@ void APuzzle::Tick(float DeltaTime)
 			gameMode->canMoveToStage2 = true;
 			tryNumber = 0;
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Solve");
-			isSolved = true;
+			//isSolved = true;
 		}
 		else
 		{
@@ -87,12 +87,28 @@ void APuzzle::Tick(float DeltaTime)
 			}
 			tryNumber = 0;
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Fail");
-			isSolved = false;
+			//isSolved = false;
 		}
+		playAnswerSound(puzzleSolved);
 	}
-	if (tryNumber > 4 && !HasAuthority())
+// 	if (tryNumber > 4 && !HasAuthority())
+// 	{
+// 		if (isSolved)
+// 		{
+// 			UGameplayStatics::PlaySound2D(this, correctSound, 15.0f);
+// 		}
+// 		else
+// 		{
+// 			UGameplayStatics::PlaySound2D(this, wrongSound, 15.0f);
+// 		}
+// 	}
+}
+
+void APuzzle::playAnswerSound_Implementation(bool isSuccess)
+{
+	if (!HasAuthority())
 	{
-		if (isSolved)
+		if (isSuccess)
 		{
 			UGameplayStatics::PlaySound2D(this, correctSound, 15.0f);
 		}
@@ -102,4 +118,3 @@ void APuzzle::Tick(float DeltaTime)
 		}
 	}
 }
-
