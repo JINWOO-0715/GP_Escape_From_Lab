@@ -1525,8 +1525,8 @@ void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("checkS", IE_Released, this, &ASwat::CheckReleasedWS);
 	PlayerInputComponent->BindAction("checkA", IE_Released, this, &ASwat::CheckReleasedAD);
 	PlayerInputComponent->BindAction("checkD", IE_Released, this, &ASwat::CheckReleasedAD);
-	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASwat::DashOn);
-	PlayerInputComponent->BindAction("Dash", IE_Released, this, &ASwat::DashOff);
+	//PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASwat::DashOn);
+	//PlayerInputComponent->BindAction("Dash", IE_Released, this, &ASwat::DashOff);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASwat::GunFireOn);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASwat::GunFireOff);
 	PlayerInputComponent->BindAction("Knife", IE_Pressed, this, &ASwat::StabKnife);
