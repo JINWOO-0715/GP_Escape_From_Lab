@@ -27,6 +27,7 @@
 #include "WoodSynthComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Puzzle.h"
+#include "SkeletalMeshAdapter.h"
 #include "Sound/SoundAttenuation.h"
 
 //UParticleSystem* wallHitParticle = nullptr;
@@ -181,7 +182,7 @@ void ABullet::Tick(float DeltaTime)
 		collisionParams))
 	{
 		AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
-		if (hitZombie)
+		if (hitZombie && hitZombie->DefaultZombieName != "Security")
 		{
 			ServerPlayParticleReq(true, hitResult.ImpactPoint);
 			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
@@ -250,6 +251,91 @@ void ABullet::Tick(float DeltaTime)
 				}
 			}
 			Destroy();
+
+		}
+		else if (hitZombie && hitZombie->DefaultZombieName == "Security")
+		{
+			
+			if (hitZombie->GetMesh()->GetMaterialIndex("M_Metal_Burnished_Steel")) {
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "security steel attacked");
+				if (isSynthSoundOn)
+				{
+					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
+
+					if (distance < 1500.0f)
+					{
+						steelSoundComp->multiplier = 1.0f - distance / 1500.0f;
+					}
+					else
+					{
+						steelSoundComp->multiplier = 0.0f;
+					}
+					steelSoundComp->Start();
+				}
+				else
+					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
+				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+			//
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "security no steel attacked");
+				ServerPlayParticleReq(true, hitResult.ImpactPoint);
+				if (HasAuthority())
+					hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+				FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+
+				ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+
+
+				auto bulletHitLoc = hitResult.ImpactPoint;
+				collisionParams.AddIgnoredActor(hitZombie);
+				GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f, 0.0f, -1000.0f), ECollisionChannel::ECC_Camera,
+					collisionParams);
+				auto floorBloodPos = hitResult.ImpactPoint;
+				auto floorBloodComp = hitResult.Component.Get();
+				RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+				//좀비의 현재 위치 바닥에 피를 뿌린다.
+				//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+				ServerSpawnBloodDecalReq(true, floorBloodComp, floorBloodPos, RandomDecalRotation);
+				if (hitZombie->hp > 0.0f)
+				{
+					FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
+
+					GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
+						collisionParams);
+
+					if (hitResult.GetActor())
+					{
+						RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+						RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+						//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
+							//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+						ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+					}
+					else
+					{
+						GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc + addPos, bulletHitLoc + addPos + FVector{ 0.0f,0.0f,-1000.0f }, ECollisionChannel::ECC_Camera,
+							collisionParams);
+						if (hitResult.GetActor())
+						{
+							RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+							RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+							//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
+								//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+							ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+						}
+						else
+							//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
+								//floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+							ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+					}
+				}
+				Destroy();
+			}
 
 		}
 		else
