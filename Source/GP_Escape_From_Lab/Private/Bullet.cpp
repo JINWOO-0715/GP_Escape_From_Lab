@@ -255,9 +255,8 @@ void ABullet::Tick(float DeltaTime)
 		}
 		else if (hitZombie && hitZombie->DefaultZombieName == "Security")
 		{
-			
-			if (hitZombie->GetMesh()->GetMaterialIndex("M_Metal_Burnished_Steel")) {
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "security steel attacked");
+			if (hitZombie->GetMesh()->GetMaterial(0) && hitResult.BoneName != "head") {
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, b);
 				if (isSynthSoundOn)
 				{
 					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
@@ -277,7 +276,7 @@ void ABullet::Tick(float DeltaTime)
 				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
 			//
 			}
-			else
+			else if(hitResult.BoneName == "head")
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "security no steel attacked");
 				ServerPlayParticleReq(true, hitResult.ImpactPoint);
