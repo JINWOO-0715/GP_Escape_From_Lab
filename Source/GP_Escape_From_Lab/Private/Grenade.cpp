@@ -49,7 +49,7 @@ AGrenade::AGrenade()
 	{
 		meshComp->SetStaticMesh(grenade.Object);
 		meshComp->SetSimulatePhysics(false);
-		meshComp->SetCollisionProfileName("EmptyShell");
+		meshComp->SetCollisionProfileName("NoCollision");
 	}
 	//movementComp = CreateDefaultSubobject<UProjectileMovementComponent>("projectile movement comp");
 	//movementComp->InitialSpeed = 2000.0f;
@@ -126,10 +126,11 @@ void AGrenade::Tick(float DeltaTime)
 	if (isFirstCall)
 	{
 		curPos = this->GetActorLocation();
-		befPos = StartPos;
+		befPos = curPos;
 		isFirstCall = false;
 	}
-	curPos = this->GetActorLocation();
+	else
+		curPos = this->GetActorLocation();
 	FHitResult hitResult;
 	FCollisionQueryParams collisionParams;
 	FVector startTrace = befPos;
@@ -137,6 +138,7 @@ void AGrenade::Tick(float DeltaTime)
 
 	collisionParams.bTraceComplex = false;
 	collisionParams.AddIgnoredActor(playerPawn);
+	collisionParams.AddIgnoredActor(this);
 	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
 	DrawDebugLine(
 		GetWorld(),
@@ -148,19 +150,19 @@ void AGrenade::Tick(float DeltaTime)
 		0,
 		5.0f);
 	
-	if (!HasAuthority() && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,	collisionParams))
+	if (HasAuthority() && collisionCount < MaxCollisionCount && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,	collisionParams))
 	{
 		FVector ReflectionVector = GetActorForwardVector() - 2 * (FVector::DotProduct(GetActorForwardVector(), hitResult.ImpactNormal)) * hitResult.ImpactNormal;
 		ReflectionVector.Normalize();
+
+		SetActorLocation(hitResult.ImpactPoint);
 		
-		FVector temp(0.0f, 0.0f, 400.0f);
-		sphereComp->AddImpulse(temp);
+		//sphereComp->AddImpulse
+		//(ReflectionVector * 100.0f/((MaxCollisionCount-collisionCount)/MaxCollisionCount));
 		
-		//sphereComp->AddForce(ReflectionVector * 1000);
-		//sphereComp->SetEnableGravity(true);
-		//sphereComp->SetSimulatePhysics(false);
 		
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, ReflectionVector.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Line Trace Call");
+		++collisionCount;
 	}
 	if (lifeTime < 0.0f	&& !HasAuthority()/*&& this->GetOwner() == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)*/)
 	{

@@ -64,4 +64,6 @@ private:
 	FVector befPos{ 0.0f,0.0f,0.0f };
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
+	int collisionCount = 0;
+	const int MaxCollisionCount = 3;
 };
