@@ -27,7 +27,7 @@
 #include "WoodSynthComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Puzzle.h"
-#include "SkeletalMeshAdapter.h"
+
 #include "Sound/SoundAttenuation.h"
 
 //UParticleSystem* wallHitParticle = nullptr;
