@@ -159,133 +159,46 @@ void ABullet::Tick(float DeltaTime)
 	{
 		auto gameMode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
 		this->isSynthSoundOn = gameMode->isSynthSoundOn;
-	}
-	SetSynthSoundOnOffReq();
-	if (isFirstCall)
-	{
-		curPos = this->GetActorLocation();
-		befPos = startPos;
-		isFirstCall = false;
-	}
-	curPos = this->GetActorLocation();
-	FHitResult hitResult;
-	FVector startTrace = befPos;
-	FVector endTrace = curPos;
-	FCollisionQueryParams collisionParams;
-	collisionParams.bTraceComplex = false;
-	collisionParams.bReturnPhysicalMaterial = true;
-	collisionParams.AddIgnoredActor(this);
-	auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	collisionParams.AddIgnoredActor(playerPawn);
-	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
-	if (isAlive && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
-		collisionParams))
-	{
-		AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
-		if (hitZombie && hitZombie->DefaultZombieName != "Security")
+
+		if (isFirstCall)
 		{
-			ServerPlayParticleReq(true, hitResult.ImpactPoint);
-			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
-			//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
-			if(HasAuthority())
-				hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-			//만약에 데미지를 준 주체가 총알을 쏜 장본인이라면 좀비에게 데미지를 준다.
-
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
-			//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
-			//사운드 멀티캐스트에서 플레이해주어야함
-
-			FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-			//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
-
-			//UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-			ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
-
-
-			auto bulletHitLoc = hitResult.ImpactPoint;
-			collisionParams.AddIgnoredActor(hitZombie);
-			GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f, 0.0f, -1000.0f), ECollisionChannel::ECC_Camera,
-				collisionParams);
-			auto floorBloodPos = hitResult.ImpactPoint;
-			auto floorBloodComp = hitResult.Component.Get();
-			RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-			RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-			//좀비의 현재 위치 바닥에 피를 뿌린다.
-			//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-			ServerSpawnBloodDecalReq(true, floorBloodComp, floorBloodPos, RandomDecalRotation);
-
-
-			//그리고 총알 반대 방향으로 피를 더 뿌린다.
-			if (hitZombie->hp > 0.0f)
-			{
-				FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
-
-				GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
-					collisionParams);
-
-				if (hitResult.GetActor())
-				{
-					RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-					RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-					//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
-						//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-					ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
-				}
-				else
-				{
-					GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc + addPos, bulletHitLoc + addPos + FVector{ 0.0f,0.0f,-1000.0f }, ECollisionChannel::ECC_Camera,
-						collisionParams);
-					if (hitResult.GetActor())
-					{
-						RandomDecalRotation = hitResult.ImpactNormal.Rotation();
-						RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-						//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
-							//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-						ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
-					}
-					else
-						//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
-							//floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
-						ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
-				}
-			}
-			Destroy();
-
+			curPos = this->GetActorLocation();
+			befPos = startPos;
+			isFirstCall = false;
 		}
-		else if (hitZombie && hitZombie->DefaultZombieName == "Security")
+		curPos = this->GetActorLocation();
+		FHitResult hitResult;
+		FVector startTrace = befPos;
+		FVector endTrace = curPos;
+		FCollisionQueryParams collisionParams;
+		collisionParams.bTraceComplex = false;
+		collisionParams.bReturnPhysicalMaterial = true;
+		collisionParams.AddIgnoredActor(this);
+		auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		collisionParams.AddIgnoredActor(playerPawn);
+		collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
+		if (isAlive && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,
+			collisionParams))
 		{
-			if (hitZombie->GetMesh()->GetMaterial(0) && hitResult.BoneName != "head") {
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, b);
-				if (isSynthSoundOn)
-				{
-					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
-
-					if (distance < 1500.0f)
-					{
-						steelSoundComp->multiplier = 1.0f - distance / 1500.0f;
-					}
-					else
-					{
-						steelSoundComp->multiplier = 0.0f;
-					}
-					steelSoundComp->Start();
-				}
-				else
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
-				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
-			//
-			}
-			else if(hitResult.BoneName == "head")
+			AZombie* hitZombie = Cast<AZombie>(hitResult.GetActor());
+			if (hitZombie && hitZombie->DefaultZombieName != "Security")
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "security no steel attacked");
 				ServerPlayParticleReq(true, hitResult.ImpactPoint);
+				//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
+				//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 				if (HasAuthority())
 					hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				//만약에 데미지를 준 주체가 총알을 쏜 장본인이라면 좀비에게 데미지를 준다.
+
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
+				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint, bodyImpactSound);
+				//사운드 멀티캐스트에서 플레이해주어야함
 
 				FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
 				RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+				//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, hitResult.Component.Get()->GetFName().ToString());
 
+				//UGameplayStatics::SpawnDecalAttached(bloodDecal, FVector(10, 10, 10), hitResult.Component.Get(), hitResult.BoneName, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
 				ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
 
 
@@ -300,6 +213,9 @@ void ABullet::Tick(float DeltaTime)
 				//좀비의 현재 위치 바닥에 피를 뿌린다.
 				//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
 				ServerSpawnBloodDecalReq(true, floorBloodComp, floorBloodPos, RandomDecalRotation);
+
+
+				//그리고 총알 반대 방향으로 피를 더 뿌린다.
 				if (hitZombie->hp > 0.0f)
 				{
 					FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
@@ -334,84 +250,153 @@ void ABullet::Tick(float DeltaTime)
 					}
 				}
 				Destroy();
+
 			}
-
-		}
-		else
-		{
-			isAlive = false;
-			//if (!HasAuthority())
-			ServerPlayParticleReq(false, hitResult.ImpactPoint);
-			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "Call Server Function");
-			//좀비 이외의 액터에 플레이어에 설정한 대미지를 적용
-			auto HittedActor = hitResult.GetActor();
-			UGameplayStatics::ApplyDamage(HittedActor, playerPawn->attackPower, nullptr, this, nullptr);
-
-			//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
-
-			FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
-			FVector  spawnLocation = hitResult.Location;
-			//GetWorld()->SpawnActor<AActor>(bulletHoleBP, spawnLocation, rotator);
-			ServerSpawnBulletHoleDecalReq(spawnLocation, rotator);
-
-			EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
-			//
-			//
-			//  충돌처리는 클라에서 함
-			//if (키카드 2개라면 or 클리어 불리언이라면)
-			//{
-			//		맞은게 뭐냐에따라 스위치로 하고 숫자를올린다 액터의 숫자를올린다
-			//	
-			//		맞은게 입력버튼이라면
-			//		{
-			//		입력을 시키고 비교한다음 맞다면 스테이지 2로 넘어간다.
-			//		}
-			//}
-			// 서버에서 실행해서 게임모드를 가져옴.
-			
-			// 
-			auto tempPlayer = Cast<ASwat>(GetOwner());
-			
-			auto temppuzle = Cast<APuzzle>(hitResult.GetActor());
-		
-
-			if (tempPlayer->hasKeyCard>=2 && HasAuthority())
+			else if (hitZombie && hitZombie->DefaultZombieName == "Security")
 			{
-				switch (surfaceType)
-				{
-				case SurfaceType1: //concrete
-					if (isSynthSoundOn)
-					{
-						cementSoundComp->Start();
-						if (temppuzle)
-						{
-							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
-							temppuzle->inputPassword[temppuzle->tryNumber++] = 3;
-						}
-						
-					}
-					else
-						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+				if (hitZombie->GetMesh()->GetMaterial(0) && hitResult.BoneName != "head") {
+					//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, b);
+					PlaySoundMultiCast(SurfaceType4, hitResult.ImpactPoint, hitResult.ImpactNormal);
+					
 					//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
-					break;
-				case SurfaceType2: //wood
-					if (isSynthSoundOn)
+				//
+				}
+				else if (hitResult.BoneName == "head")
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "security no steel attacked");
+					ServerPlayParticleReq(true, hitResult.ImpactPoint);
+					if (HasAuthority())
+						hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+					FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+					RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+
+					ServerSpawnBloodDecalReq(false, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+
+
+					auto bulletHitLoc = hitResult.ImpactPoint;
+					collisionParams.AddIgnoredActor(hitZombie);
+					GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + FVector(0.0f, 0.0f, -1000.0f), ECollisionChannel::ECC_Camera,
+						collisionParams);
+					auto floorBloodPos = hitResult.ImpactPoint;
+					auto floorBloodComp = hitResult.Component.Get();
+					RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+					RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+					//좀비의 현재 위치 바닥에 피를 뿌린다.
+					//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None, floorBloodPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+					ServerSpawnBloodDecalReq(true, floorBloodComp, floorBloodPos, RandomDecalRotation);
+					if (hitZombie->hp > 0.0f)
 					{
-						woodSoundComp->Start();
-						if (temppuzle)
+						FVector addPos{ this->GetActorForwardVector().X * 200.0f,this->GetActorForwardVector().Y * 200.0f,0.0f };
+
+						GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc, bulletHitLoc + addPos, ECollisionChannel::ECC_Camera,
+							collisionParams);
+
+						if (hitResult.GetActor())
 						{
-							temppuzle->inputPassword[temppuzle->tryNumber++] = 0;
+							RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+							RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+							//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
+								//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+							ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
 						}
-						//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+						else
+						{
+							GetWorld()->LineTraceSingleByChannel(hitResult, bulletHitLoc + addPos, bulletHitLoc + addPos + FVector{ 0.0f,0.0f,-1000.0f }, ECollisionChannel::ECC_Camera,
+								collisionParams);
+							if (hitResult.GetActor())
+							{
+								RandomDecalRotation = hitResult.ImpactNormal.Rotation();
+								RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
+								//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(5, 40, 40), hitResult.Component.Get(), NAME_None,
+									//hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+								ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+							}
+							else
+								//UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1, 40, 40), floorBloodComp, NAME_None,
+									//floorBloodPos + addPos, RandomDecalRotation, EAttachLocation::KeepWorldPosition, 0.0f);
+								ServerSpawnBloodDecalReq(true, hitResult.Component.Get(), hitResult.ImpactPoint, RandomDecalRotation);
+						}
 					}
-					else
-						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
-					//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
-					break;
-				case SurfaceType3: //ceramic
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
-					break;
-				case SurfaceType4: //steel
+					Destroy();
+				}
+
+			}
+			else
+			{
+				isAlive = false;
+				//if (!HasAuthority())
+				ServerPlayParticleReq(false, hitResult.ImpactPoint);
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, "Call Server Function");
+				//좀비 이외의 액터에 플레이어에 설정한 대미지를 적용
+				auto HittedActor = hitResult.GetActor();
+				UGameplayStatics::ApplyDamage(HittedActor, playerPawn->attackPower, nullptr, this, nullptr);
+
+				//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), wallHitParticle, hitResult.ImpactPoint);
+
+				FRotator rotator{ hitResult.ImpactNormal.X * 90.0f, hitResult.ImpactNormal.Z * 90.0f, hitResult.ImpactNormal.Y * 90.0f };
+				FVector  spawnLocation = hitResult.Location;
+				//GetWorld()->SpawnActor<AActor>(bulletHoleBP, spawnLocation, rotator);
+				ServerSpawnBulletHoleDecalReq(spawnLocation, rotator);
+
+				EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
+				//
+				//
+				//  충돌처리는 클라에서 함
+				//if (키카드 2개라면 or 클리어 불리언이라면)
+				//{
+				//		맞은게 뭐냐에따라 스위치로 하고 숫자를올린다 액터의 숫자를올린다
+				//	
+				//		맞은게 입력버튼이라면
+				//		{
+				//		입력을 시키고 비교한다음 맞다면 스테이지 2로 넘어간다.
+				//		}
+				//}
+				// 서버에서 실행해서 게임모드를 가져옴.
+
+				// 
+				auto tempPlayer = Cast<ASwat>(GetOwner());
+
+				auto temppuzle = Cast<APuzzle>(hitResult.GetActor());
+
+
+				if (tempPlayer->hasKeyCard >= 2 && HasAuthority())
+				{
+					switch (surfaceType)
+					{
+					case SurfaceType1: //concrete
+						if (isSynthSoundOn)
+						{
+							cementSoundComp->Start();
+							if (temppuzle)
+							{
+								//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+								temppuzle->inputPassword[temppuzle->tryNumber++] = 3;
+							}
+
+						}
+						else
+							UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+						//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+						break;
+					case SurfaceType2: //wood
+						if (isSynthSoundOn)
+						{
+							woodSoundComp->Start();
+							if (temppuzle)
+							{
+								temppuzle->inputPassword[temppuzle->tryNumber++] = 0;
+							}
+							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+						}
+						else
+							UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+						//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+						break;
+					case SurfaceType3: //ceramic
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
+						break;
+					case SurfaceType4: //steel
 						if (isSynthSoundOn)
 						{
 							steelSoundComp->Start();
@@ -422,138 +407,49 @@ void ABullet::Tick(float DeltaTime)
 							//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
 
 						}
-					else
-						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
-					break;
-				case SurfaceType5: //plastic
-					if (isSynthSoundOn)
-					{
-					//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
-						plasticSoundComp->Start();
-						if (temppuzle)
+						else
+							UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
+						break;
+					case SurfaceType5: //plastic
+						if (isSynthSoundOn)
 						{
-							temppuzle->inputPassword[temppuzle->tryNumber++] = 2;
+							//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Silver, FString::FromInt(GameMode2->passNumber));
+							plasticSoundComp->Start();
+							if (temppuzle)
+							{
+								temppuzle->inputPassword[temppuzle->tryNumber++] = 2;
+							}
 						}
+						else
+							UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
+						break;
+					case SurfaceType6: //soft
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+						break;
+					case SurfaceType7: //glass
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
+						break;
+					default: //else
+						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
+						break;
 					}
-					else
-						UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
-					break;
-				case SurfaceType6: //soft
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-					break;
-				case SurfaceType7: //glass
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
-					break;
-				default: //else
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-					break;
 				}
+
+				//
+				PlaySoundMultiCast(surfaceType, hitResult.ImpactPoint, hitResult.ImpactNormal);
+				
+				projMovComp->SetVelocityInLocalSpace(FVector(0.0f, 0.0f, 0.0f));
+				SetLifeSpan(0.5f);
+				//Destroy();
+
 			}
-
-			//
-			switch (surfaceType)
-			{
-			case SurfaceType1: //concrete
-				if (isSynthSoundOn)
-				{
-					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
-
-					if (distance < 1500.0f)
-					{
-						cementSoundComp->multiplier = 1.0f - distance / 1500.0f;
-					}
-					else
-					{
-						cementSoundComp->multiplier = 0.0f;
-					}
-					cementSoundComp->Start();
-				}
-				else
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
-				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
-				break;
-			case SurfaceType2: //wood
-				if (isSynthSoundOn)
-				{
-					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
-
-					if (distance < 1500.0f)
-					{
-						woodSoundComp->multiplier = 1.0f - distance / 1500.0f;
-					}
-					else
-					{
-						woodSoundComp->multiplier = 0.0f;
-					}
-
-					woodSoundComp->Start();
-				}
-				else
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
-				//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
-				break;
-			case SurfaceType3: //ceramic
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, ceramicImpactSound);
-				break;
-			case SurfaceType4: //steel
-				if (isSynthSoundOn)
-				{
-					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
-					
-					if (distance < 2500.0f)
-					{
-						steelSoundComp->multiplier = 1.0f - distance / 2500.0f;
-					}
-					else
-					{
-						steelSoundComp->multiplier = 0.0f;
-					}
-					steelSoundComp->Start();
-				}
-				else
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, steelImpactSound);
-				break;
-			case SurfaceType5: //plastic
-				if (isSynthSoundOn)
-				{
-					auto distance = (playerPawn->GetActorLocation() - hitResult.ImpactPoint).Size();
-
-					if (distance < 2500.0f)
-					{
-						plasticSoundComp->multiplier = 1.0f - distance / 2500.0f;
-					}
-					else
-					{
-						plasticSoundComp->multiplier = 0.0f;
-					}
-					plasticSoundComp->Start();
-
-				}
-				else
-					UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, plasticImpactSound);
-				break;
-			case SurfaceType6: //soft
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-				break;
-			case SurfaceType7: //glass
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, glassImpactSound);
-				break;
-			default: //else
-				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, softImpactSound);
-				break;
-			}
-			projMovComp->SetVelocityInLocalSpace(FVector(0.0f, 0.0f, 0.0f));
-			SetLifeSpan(0.5f);
-			//Destroy();
-
 		}
+		else
+		{
+			DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Green, true);
+		}
+		befPos = curPos;
 	}
-	else
-	{
-		DrawDebugLine(GetWorld(), startTrace, endTrace, FColor::Green, true);
-	}
-	befPos = curPos;
-		
 }
 
 void ABullet::PlayParticleReq_Implementation(bool isBloodParticle, const FVector& particleSpawnPos)
@@ -568,6 +464,7 @@ void ABullet::PlayParticleReq_Implementation(bool isBloodParticle, const FVector
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Particle Multicast Called");
 	}
 }
+
 void ABullet::ServerPlayParticleReq_Implementation(bool isBloodParticle, const FVector& particleSpawnPos)
 {
 	PlayParticleReq(isBloodParticle, particleSpawnPos);
@@ -601,7 +498,101 @@ void ABullet::ServerSpawnBloodDecalReq_Implementation(bool isFloorBlood, UPrimit
 	SpawnBloodDecalReq(isFloorBlood, component, location, rotation);
 }
 
-void ABullet::SetSynthSoundOnOffReq_Implementation()
+void ABullet::PlaySoundMultiCast_Implementation(EPhysicalSurface surfaceType, FVector_NetQuantize hitPoint, FVector_NetQuantizeNormal hitNormal)
 {
-	
+	if (!HasAuthority())
+	{
+		auto playerPawn = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		switch (surfaceType)
+		{
+		case SurfaceType1: //concrete
+			if (isSynthSoundOn)
+			{
+				auto distance = (playerPawn->GetActorLocation() - hitPoint).Size();
+
+				if (distance < 1500.0f)
+				{
+					cementSoundComp->multiplier = 1.0f - distance / 1500.0f;
+				}
+				else
+				{
+					cementSoundComp->multiplier = 0.0f;
+				}
+				cementSoundComp->Start();
+			}
+			else
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, concreteImpactSound);
+			//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, concreteImpactSound);
+			break;
+		case SurfaceType2: //wood
+			if (isSynthSoundOn)
+			{
+				auto distance = (playerPawn->GetActorLocation() - hitPoint).Size();
+
+				if (distance < 1500.0f)
+				{
+					woodSoundComp->multiplier = 1.0f - distance / 1500.0f;
+				}
+				else
+				{
+					woodSoundComp->multiplier = 0.0f;
+				}
+
+				woodSoundComp->Start();
+			}
+			else
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, woodImpactSound);
+			//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitResult.ImpactPoint + hitResult.ImpactNormal * 30.0f, woodImpactSound);
+			break;
+		case SurfaceType3: //ceramic
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, ceramicImpactSound);
+			break;
+		case SurfaceType4: //steel
+			if (isSynthSoundOn)
+			{
+				auto distance = (playerPawn->GetActorLocation() - hitPoint).Size();
+
+				if (distance < 2500.0f)
+				{
+					steelSoundComp->multiplier = 1.0f - distance / 2500.0f;
+				}
+				else
+				{
+					steelSoundComp->multiplier = 0.0f;
+				}
+				steelSoundComp->Start();
+			}
+			else
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, steelImpactSound);
+			break;
+		case SurfaceType5: //plastic
+			if (isSynthSoundOn)
+			{
+				auto distance = (playerPawn->GetActorLocation() - hitPoint).Size();
+
+				if (distance < 2500.0f)
+				{
+					plasticSoundComp->multiplier = 1.0f - distance / 2500.0f;
+				}
+				else
+				{
+					plasticSoundComp->multiplier = 0.0f;
+				}
+				plasticSoundComp->Start();
+
+			}
+			else
+				UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, plasticImpactSound);
+			break;
+		case SurfaceType6: //soft
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, softImpactSound);
+			break;
+		case SurfaceType7: //glass
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, glassImpactSound);
+			break;
+		default: //else
+			UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerPawn, hitPoint + hitNormal * 30.0f, softImpactSound);
+			break;
+		}
+	}
 }

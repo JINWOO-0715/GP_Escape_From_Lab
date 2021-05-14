@@ -71,7 +71,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void SpawnBulletHoleDecalReq(const FVector& location, const FRotator& rotation);
 	UFUNCTION(NetMulticast, Reliable)
-	void SetSynthSoundOnOffReq();
+	void PlaySoundMultiCast(EPhysicalSurface surfaceType, FVector_NetQuantize hitPoint, FVector_NetQuantizeNormal hitNormal);
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBulletHoleDecalReq(const FVector& location, const FRotator& rotation);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
