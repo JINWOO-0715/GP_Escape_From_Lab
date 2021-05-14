@@ -403,7 +403,7 @@ public:
 	UFUNCTION(Server, Unreliable)
 	void RecoilReq(float recoil);
 
-	UFUNCTION(Server, Unreliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void GunShellEjectionReq(float _gunShellEjection);
 
 	UFUNCTION(Server, Reliable,BlueprintCallable)
