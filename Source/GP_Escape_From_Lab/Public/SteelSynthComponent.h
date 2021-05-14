@@ -29,7 +29,7 @@ class GP_ESCAPE_FROM_LAB_API USteelSynthComponent : public USynthComponent
 
 	// Called to generate more audio
 	virtual int32 OnGenerateAudio(float* OutAudio, int32 NumSamples) override;
-
+	virtual void OnEndGenerate() override;
 	// Sets the oscillator's frequency
 	UFUNCTION(BlueprintCallable, Category = "Synth|Components|Audio")
 	void SetFrequency(const float FrequencyHz = 440.0f);
@@ -50,7 +50,10 @@ protected:
 	float fixedGain[20];
 	maxiOsc originOsc[20];
 	maxiOsc fixedOsc[20];
-	maxiSample sourceSound;
+	static maxiSample sourceSounds[10];
+	static bool isInitLoaded;
+	static bool isBufferUsed[10];
 	maxiEnv modesEnv[20];
 	maxiEnv originEnv;
+	int currentUsingBuffer;
 };

@@ -75,6 +75,10 @@ const int UPlasticSynthComponent::MODES_NUMBER = 60;
 const float UPlasticSynthComponent::SHORTEST_FREQ = 180.340576;
 const float UPlasticSynthComponent::BASE_RELEASE = 300.0f;
 
+bool UPlasticSynthComponent::isInitLoaded = false;
+maxiSample UPlasticSynthComponent::sourceSounds[10];
+bool UPlasticSynthComponent::isBufferUsed[10];
+
 bool UPlasticSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -85,7 +89,23 @@ bool UPlasticSynthComponent::Init(int32& SampleRate)
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
 
-	sourceSound.load(filePath);
+	if (!isInitLoaded)
+	{
+		isInitLoaded = true;
+		for (int i = 0; i < 10; ++i)
+		{
+			sourceSounds[i].load(filePath);
+			isBufferUsed[i] = false;
+		}
+	}
+	for (int i = 0; i < 10; ++i)
+	{
+		if (!isBufferUsed[i])
+		{
+			currentUsingBuffer = i;
+			isBufferUsed[i] = true;
+		}
+	}
 		
 
 	originEnv.setAttack(1.0f);
@@ -116,6 +136,12 @@ bool UPlasticSynthComponent::Init(int32& SampleRate)
 
 }
 
+void UPlasticSynthComponent::OnEndGenerate()
+{
+	isBufferUsed[currentUsingBuffer] = false;
+	sourceSounds[currentUsingBuffer].reset();
+}
+
 int32 UPlasticSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
 	// Perform DSP operations here
@@ -140,7 +166,7 @@ int32 UPlasticSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			}
 		}
 		float out = 0.0f;
-		float sourceSoundValue = sourceSound.play();
+		float sourceSoundValue = sourceSounds[currentUsingBuffer].play();
 		float decayVolume[MODES_NUMBER] = { 0, };
 		for (int i = 0; i < MODES_NUMBER; ++i)
 		{

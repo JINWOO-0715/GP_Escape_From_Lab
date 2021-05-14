@@ -35,6 +35,10 @@ const int USteelSynthComponent::MODES_NUMBER = 20;
 const float USteelSynthComponent::SHORTEST_FREQ = 944.769287f;
 const float USteelSynthComponent::BASE_RELEASE = 400.0f;
 
+bool USteelSynthComponent::isInitLoaded = false;
+maxiSample USteelSynthComponent::sourceSounds[10];
+bool USteelSynthComponent::isBufferUsed[10];
+
 bool USteelSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -44,7 +48,24 @@ bool USteelSynthComponent::Init(int32& SampleRate)
 	std::string filePath = TCHAR_TO_UTF8(*fileFullPath);
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
-	sourceSound.load(filePath);
+	
+	if (!isInitLoaded)
+	{
+		isInitLoaded = true;
+		for (int i = 0; i < 10; ++i)
+		{
+			sourceSounds[i].load(filePath);
+			isBufferUsed[i] = false;
+		}
+	}
+	for (int i = 0; i < 10; ++i)
+	{
+		if (!isBufferUsed[i])
+		{
+			currentUsingBuffer = i;
+			isBufferUsed[i] = true;
+		}
+	}
 	originEnv.setAttack(400.0f);
 	originEnv.setDecay(1.0f);
 	originEnv.setSustain(1.0f);
@@ -73,6 +94,12 @@ bool USteelSynthComponent::Init(int32& SampleRate)
 
 }
 
+void USteelSynthComponent::OnEndGenerate()
+{
+	isBufferUsed[currentUsingBuffer] = false;
+	sourceSounds[currentUsingBuffer].reset();
+}
+
 int32 USteelSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
 	// Perform DSP operations here
@@ -96,7 +123,7 @@ int32 USteelSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 			}
 		}
 		float out = 0.0f;
-		float sourceSoundValue = sourceSound.play();
+		float sourceSoundValue = sourceSounds[currentUsingBuffer].play();
 		float decayVolume[MODES_NUMBER] = { 0, };
 		for (int i = 0; i < MODES_NUMBER; ++i)
 		{

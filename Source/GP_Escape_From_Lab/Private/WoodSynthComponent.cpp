@@ -254,6 +254,8 @@ const int UWoodSynthComponent::MODES_NUMBER = 239;
 const float UWoodSynthComponent::SHORTEST_FREQ = 56.524658;
 const float UWoodSynthComponent::BASE_RELEASE = 650.0f;
 
+
+
 bool UWoodSynthComponent::Init(int32& SampleRate)
 {
 	NumChannels = 1;
@@ -264,16 +266,8 @@ bool UWoodSynthComponent::Init(int32& SampleRate)
 	fileFullPath += findWavName;
 	filePath = TCHAR_TO_UTF8(*fileFullPath);
 
-	bool isSuccess = sourceSound.load(filePath);
-	if (isSuccess)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load Success");
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Load failed");
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, fileFullPath);
-	}
+	
+	sourceSound.load(filePath);
 
 	originEnv.setAttack(15.0f);
 	originEnv.setDecay(35.0f);
@@ -305,6 +299,7 @@ bool UWoodSynthComponent::Init(int32& SampleRate)
 	isPlayOnce = true;
 	return true;
 }
+
 
 int32 UWoodSynthComponent::OnGenerateAudio(float* OutAudio, int32 NumSamples)
 {
