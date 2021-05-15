@@ -1519,11 +1519,11 @@ void ASwat::Tick(float DeltaTime)
 		GetHasKeyCardReq(gamemode->hasKeyCard);
 	}
 
-	if (WasHitted)
+	/*if (WasHitted)
 	{
 		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.0f);
 
-	}
+	}*/
 }
 // Called to bind functionality to input
 void ASwat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
