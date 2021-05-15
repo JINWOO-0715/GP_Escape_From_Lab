@@ -285,8 +285,8 @@ ASwat::ASwat()
 	InGameWidget = ingameadd.Class;
 	//ConstructorHelpers::FClassFinder<UUserWidget> Minimapadd(TEXT("/Game/Movable/UI/BP_MinimapWidget"));
 	//MinimapWidget = Minimapadd.Class;
-	ConstructorHelpers::FClassFinder<UUserWidget> HeatedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
-	HeatedUIWidget = HeatedUiAdd.Class;
+	ConstructorHelpers::FClassFinder<UUserWidget> HittedUiAdd(TEXT("/Game/Movable/UI/SwatAttackedToZombieWiget"));
+	HittedUIWidget = HittedUiAdd.Class;
 
 	//ConstructorHelpers::FClassFinder<UUserWidget> Mission1add(TEXT("/Game/Movable/UI/BP_Mission1Widget"));
 	//Mission1Widget = Mission1add.Class;
@@ -351,12 +351,13 @@ void ASwat::BeginPlay()
 		MainMenu = CreateWidget<UUserWidget>(PlayerController, InventoryWidget);
 		InGameUI = CreateWidget<UUserWidget>(PlayerController, InGameWidget);
 		//MinimapUI = CreateWidget<UUserWidget>(PlayerController, MinimapWidget);
-		HeatedUI = CreateWidget<UUserWidget>(PlayerController, HeatedUIWidget);
+		HittedUI = CreateWidget<UUserWidget>(PlayerController, HittedUIWidget);
 		ClearUI = CreateWidget<UUserWidget>(PlayerController, ClearWidget);
 		QuitMenuUI = CreateWidget<UUserWidget>(PlayerController, QuitMenuWidget);
 		HintUI = CreateWidget<UUserWidget>(PlayerController, HintWidget);
 
 		InGameUI->AddToViewport();
+		HittedUI->AddToViewport();
 
 		//스테이지별 미션용 UI
 		if (NowStage == 1)
@@ -1516,6 +1517,12 @@ void ASwat::Tick(float DeltaTime)
 		auto gamemode = Cast<AMyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
 		this->isSynthOn = gamemode->isSynthSoundOn;
 		GetHasKeyCardReq(gamemode->hasKeyCard);
+	}
+
+	if (WasHitted)
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(CameraShake, 1.0f);
+
 	}
 }
 // Called to bind functionality to input

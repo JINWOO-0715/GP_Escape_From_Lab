@@ -236,7 +236,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UUserWidget> InGameWidget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UUserWidget> HeatedUIWidget;
+	TSubclassOf<class UUserWidget> HittedUIWidget;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//TSubclassOf<class UUserWidget> MinimapWidget;
 
@@ -258,7 +258,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* InGameUI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UUserWidget* HeatedUI;
+	UUserWidget* HittedUI;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//UUserWidget* MinimapUI;
 
