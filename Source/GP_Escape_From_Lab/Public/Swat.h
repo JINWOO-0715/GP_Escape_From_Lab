@@ -341,6 +341,8 @@ public:
 		FVector initGrenadeSpawnRot {
 		0.0f, 0.0f, 0.0f
 	};
+	UPROPERTY(EditAnywhere)
+	UTextureRenderTarget2D* snipeRenderTarger;
 
 private:
 	bool isMapOpen = false;
