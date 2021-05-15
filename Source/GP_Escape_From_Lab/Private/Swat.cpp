@@ -271,13 +271,14 @@ ASwat::ASwat()
 	sceneCaptureCamera = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("sceneCaptureCamera"));
 	sceneCaptureCamera->SetupAttachment(leftScopeMesh);
 	sceneCaptureCamera->FOVAngle = 4.0f;
+	//  sceneCaptureCamera->SetIsReplicated(true);
 	// 	sceneCaptureCamera->SetRelativeRotation(FRotator{ 0.0f,90.0f,0.0f }.Quaternion());
 	// 	sceneCaptureCamera->SetRelativeLocation(FVector{ 0.011162 ,29.592236 ,3.622331 });
 	// 	sceneCaptureCamera->SetRelativeScale3D(FVector{ 0.03f,0.03f ,0.03f });
 
 	ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> renderTarget(TEXT("/Game/NonMovable/FPS_Weapon_Bundle/Weapons/Meshes/Accessories/RT_Scope"));
 	sceneCaptureCamera->TextureTarget = renderTarget.Object;
-
+	
 	ConstructorHelpers::FClassFinder<UUserWidget> add(TEXT("/Game/Movable/UI/BP_InventoryWidget"));
 	InventoryWidget = add.Class;
 	ConstructorHelpers::FClassFinder<UUserWidget> ingameadd(TEXT("/Game/Movable/UI/BP_InGameWidget"));
