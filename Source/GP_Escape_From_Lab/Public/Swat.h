@@ -10,6 +10,7 @@
 #include <vector>
 #include <sstream>
 #include "MySynthComponent.h"
+#include "walkSteelSynthComponent.h"
 #include "Puzzle.h"
 #include "Swat.generated.h"
 
@@ -476,6 +477,8 @@ private:
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UMySynthComponent* walkSoundSynthComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UwalkSteelSynthComponent* walkSteelSoundSynthComp;
 	UFUNCTION(BlueprintCallable)
 	void playWalkSynthSound(float multiplier);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

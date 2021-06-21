@@ -301,6 +301,7 @@ ASwat::ASwat()
 
 
 	walkSoundSynthComp = CreateDefaultSubobject<UMySynthComponent>(TEXT("walkSyntheSoundComp"));
+	walkSteelSoundSynthComp = CreateDefaultSubobject<UwalkSteelSynthComponent >(TEXT("walkSteelSyntheSoundComp"));
 
 }// Called when the game starts or when spawned
 
