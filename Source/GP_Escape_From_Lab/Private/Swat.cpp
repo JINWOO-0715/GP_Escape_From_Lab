@@ -1493,6 +1493,7 @@ void ASwat::Tick(float DeltaTime)
 		if (curWalkSoundCoolTime < 0.0f)
 		{
 			walkSoundSynthComp->Stop();
+			walkSteelSoundSynthComp->Stop();
 			canWalkSoundPlay = true;
 		}
 	}
@@ -1872,5 +1873,16 @@ void ASwat::playWalkSynthSound(float multiplier)
 	canWalkSoundPlay = false;
 	curWalkSoundCoolTime = maxWalkSoundCoolTime;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "WalkSound Call!");
+
+}
+
+void ASwat::playWalkSteelSynthSound(float multiplier)
+{
+	
+	walkSteelSoundSynthComp->multiplier = multiplier;
+	walkSteelSoundSynthComp->Start();
+	canWalkSoundPlay = false;
+	curWalkSoundCoolTime = maxWalkSoundCoolTime;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "SteelWalkSound Call!");
 
 }

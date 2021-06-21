@@ -481,6 +481,8 @@ public:
 	UwalkSteelSynthComponent* walkSteelSoundSynthComp;
 	UFUNCTION(BlueprintCallable)
 	void playWalkSynthSound(float multiplier);
+	UFUNCTION(BlueprintCallable)
+	void playWalkSteelSynthSound(float multiplier);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool canWalkSoundPlay=true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
