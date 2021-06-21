@@ -81,5 +81,9 @@ private:
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
 	bool isAlive = true;
-	const float bulletSpeed = 20000.0f;
+	
+public:
+	UFUNCTION(Server, Reliable)
+	void setBulletSpeed(float speed);
+	
 };

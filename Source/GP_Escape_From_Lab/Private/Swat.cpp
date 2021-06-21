@@ -1723,10 +1723,11 @@ void ASwat::GunShellEjectionReq_Implementation(float _gunShellEjection)
 	gunShellEjection = _gunShellEjection;
 }
 
-void ASwat::SpawnBullet_Implementation(const FVector& startPos, const FVector& location, const FRotator& rotation)
+void ASwat::SpawnBullet_Implementation(const FVector& startPos, const FVector& location, const FRotator& rotation, float bulletSpeed)
 {
 	ABullet* bullet = GetWorld()->SpawnActor<ABullet>(ABullet::StaticClass(), location, rotation);
 	bullet->startPos = startPos;
+	bullet->setBulletSpeed(bulletSpeed);
 	bullet->SetOwner(this);
 }
 
@@ -1872,8 +1873,6 @@ void ASwat::playWalkSynthSound(float multiplier)
 	walkSoundSynthComp->Start();
 	canWalkSoundPlay = false;
 	curWalkSoundCoolTime = maxWalkSoundCoolTime;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "WalkSound Call!");
-
 }
 
 void ASwat::playWalkSteelSynthSound(float multiplier)
@@ -1883,6 +1882,4 @@ void ASwat::playWalkSteelSynthSound(float multiplier)
 	walkSteelSoundSynthComp->Start();
 	canWalkSoundPlay = false;
 	curWalkSoundCoolTime = maxWalkSoundCoolTime;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "SteelWalkSound Call!");
-
 }

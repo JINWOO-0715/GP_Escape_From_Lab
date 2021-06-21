@@ -87,29 +87,6 @@ void AGrenade::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	//Super::EndPlay(EndPlayReason);
-	//for (TActorIterator<AZombie> iter(GetWorld()); iter; ++iter)
-	//{
-	//	auto zombie = Cast<AZombie>(*iter);
-	//	if (zombie)
-	//	{
-	//		auto dist = zombie->GetActorLocation() - this->GetActorLocation();
-	//		if ((dist.X * dist.X) + (dist.Y * dist.Y) + (dist.Z * dist.Z)<=reach)
-	//		{
-	//			dist.Normalize();
-	//			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, dist.ToString());
-	//			zombie->MyReceiveRadialDamageAndImpact(5000.0f, dist, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	//		}
-	//	}
-	//}
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "End Play called");
-	////UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
-	//	//->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
-	
-	//auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	//UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation()+FVector(0.0f,0.0f,30.0f), explosionSound);
-	//TArray<AActor*>ignoredActor;
-	//UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
 
 }
 
@@ -177,6 +154,19 @@ void AGrenade::Tick(float DeltaTime)
 void AGrenade::ServerSpawnExplosionParticle_Implementation()
 {
 	SpawnExplosionParticle();
+	auto ownerObj = Cast<ASwat>(this->GetOwner());
+	auto grenadeLoc = this->GetActorLocation();
+	FRandomStream rand;
+	rand.GenerateNewSeed();
+	
+	
+	for (int i = 0; i < 30; ++i)
+	{
+		//FVector randVector = rand.GetUnitVector();
+		ownerObj->SpawnBullet(grenadeLoc, grenadeLoc, FVector(rand.FRandRange(-1.5f, 1.5f), rand.FRandRange(-1.5f, 1.5f),
+			1.0f).Rotation(), rand.FRandRange(5000.0f, 20000.0f));
+
+	}
 	SetLifeSpan(0.5f);
 }
 

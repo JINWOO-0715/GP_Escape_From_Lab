@@ -410,7 +410,7 @@ public:
 	void GunShellEjectionReq(float _gunShellEjection);
 
 	UFUNCTION(Server, Reliable,BlueprintCallable)
-	void SpawnBullet(const FVector& startPos, const FVector& location, const FRotator& rotation);
+	void SpawnBullet(const FVector& startPos, const FVector& location, const FRotator& rotation, const float bulletSpeed);
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SpawnGrenadeReq(const FVector& location, const FRotator& rotation);

@@ -82,8 +82,10 @@ ABullet::ABullet()
 	projMovComp = CreateDefaultSubobject<UProjectileMovementComponent>("projectileMovComp");
 	if (IsValid(projMovComp))
 	{
-		projMovComp->InitialSpeed = bulletSpeed;
-		projMovComp->MaxSpeed = bulletSpeed;
+		FRandomStream rand;
+		rand.GenerateNewSeed();
+		projMovComp->InitialSpeed = rand.FRandRange(15000.0f, 20000.0f);//20000.0f;//bulletSpeed;
+		projMovComp->MaxSpeed = 20000.0f;//bulletSpeed;
 		projMovComp->UpdatedComponent = boxCollision;
 	}
 
@@ -134,7 +136,13 @@ ABullet::ABullet()
 	woodSoundComp->bOverrideAttenuation = true;
 
 }
-
+void ABullet::setBulletSpeed_Implementation(float speed)
+{
+	//projMovComp->SetVelocityInLocalSpace(GetActorForwardVector() * speed);
+	//projMovComp->SetSpeed(speed);//= speed;
+	//projMovComp->MaxSpeed = speed;
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, "Bullet speed change");
+}
 void ABullet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
