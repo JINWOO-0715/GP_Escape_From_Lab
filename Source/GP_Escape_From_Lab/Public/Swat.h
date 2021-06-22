@@ -11,6 +11,7 @@
 #include <sstream>
 #include "MySynthComponent.h"
 #include "walkSteelSynthComponent.h"
+#include "WoodWalkSynthComponent.h"
 #include "Puzzle.h"
 #include "Swat.generated.h"
 
@@ -479,10 +480,14 @@ public:
 	UMySynthComponent* walkSoundSynthComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UwalkSteelSynthComponent* walkSteelSoundSynthComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWoodWalkSynthComponent* walkWoodSoundSynthComp;
 	UFUNCTION(BlueprintCallable)
 	void playWalkSynthSound(float multiplier);
 	UFUNCTION(BlueprintCallable)
 	void playWalkSteelSynthSound(float multiplier);
+	UFUNCTION(BlueprintCallable)
+	void playWalkWoodSynthSound(float multiplier);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool canWalkSoundPlay=true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -302,6 +302,7 @@ ASwat::ASwat()
 
 	walkSoundSynthComp = CreateDefaultSubobject<UMySynthComponent>(TEXT("walkSyntheSoundComp"));
 	walkSteelSoundSynthComp = CreateDefaultSubobject<UwalkSteelSynthComponent >(TEXT("walkSteelSyntheSoundComp"));
+	walkWoodSoundSynthComp = CreateDefaultSubobject<UWoodWalkSynthComponent>(TEXT("walkWoodSyntheSoundComp"));
 
 }// Called when the game starts or when spawned
 
@@ -1494,6 +1495,7 @@ void ASwat::Tick(float DeltaTime)
 		{
 			walkSoundSynthComp->Stop();
 			walkSteelSoundSynthComp->Stop();
+			walkWoodSoundSynthComp->Stop();
 			canWalkSoundPlay = true;
 		}
 	}
@@ -1880,6 +1882,15 @@ void ASwat::playWalkSteelSynthSound(float multiplier)
 	
 	walkSteelSoundSynthComp->multiplier = multiplier;
 	walkSteelSoundSynthComp->Start();
+	canWalkSoundPlay = false;
+	curWalkSoundCoolTime = maxWalkSoundCoolTime;
+}
+
+void ASwat::playWalkWoodSynthSound(float multiplier)
+{
+
+	walkWoodSoundSynthComp->multiplier = multiplier;
+	walkWoodSoundSynthComp->Start();
 	canWalkSoundPlay = false;
 	curWalkSoundCoolTime = maxWalkSoundCoolTime;
 }
