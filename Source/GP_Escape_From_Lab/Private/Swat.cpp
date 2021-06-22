@@ -625,7 +625,6 @@ AZombie* ASwat::KnifeAttack()
 			ECC_Camera, params);
 		FRotator RandomDecalRotation = hitResult.ImpactNormal.Rotation();
 		RandomDecalRotation.Roll = FMath::FRandRange(-180.0f, 180.0f);
-
 		UGameplayStatics::SpawnDecalAttached(floorBloodDecal, FVector(1.0f, 40.0f, 40.0f), hitResult.Component.Get(),
 			NAME_None, hitResult.ImpactPoint, RandomDecalRotation, EAttachLocation::KeepWorldPosition);
 		//zombieActor->MyReceivePointDmage(50.0f, NAME_None, this);
@@ -1893,4 +1892,16 @@ void ASwat::playWalkWoodSynthSound(float multiplier)
 	walkWoodSoundSynthComp->Start();
 	canWalkSoundPlay = false;
 	curWalkSoundCoolTime = maxWalkSoundCoolTime;
+}
+
+void ASwat::playWalkDirtSynthSound(float multiplier)
+{
+	if (FMath::FRandRange(0.0f, 1.0f) >= 0.5f)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), dirtWalkSound1, this->GetActorLocation(), 1.5f * multiplier);
+	}
+	else
+	{
+		UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), dirtWalkSound2, this->GetActorLocation(), 1.5f * multiplier);
+	}
 }

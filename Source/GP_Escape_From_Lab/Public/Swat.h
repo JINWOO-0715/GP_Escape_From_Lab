@@ -488,6 +488,8 @@ public:
 	void playWalkSteelSynthSound(float multiplier);
 	UFUNCTION(BlueprintCallable)
 	void playWalkWoodSynthSound(float multiplier);
+	UFUNCTION(BlueprintCallable)
+	void playWalkDirtSynthSound(float multiplier);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool canWalkSoundPlay=true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
