@@ -50,6 +50,12 @@ USoundBase* playerAgonySound = nullptr;
 USoundBase* itemPickSound = nullptr;
 USoundBase* dirtWalkSound1 = nullptr;
 USoundBase* dirtWalkSound2 = nullptr;
+USoundBase* grenadeDirtSound = nullptr;
+USoundBase* grenadeCementSound = nullptr;
+USoundBase* grenadeSteelSound = nullptr;
+USoundBase* grenadeWoodSound = nullptr;
+USoundBase* grenadePlasticSound = nullptr;
+
 UMaterialInterface* bloodDecal = nullptr;
 UMaterialInterface* floorBloodDecal = nullptr;
 
@@ -156,6 +162,27 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 
 	if (!itemPickSound)
 		itemPickSound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/pickItem.pickItem")).Object;
+
+	if(!grenadeDirtSound)
+		grenadeDirtSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/GrenadeDirt.GrenadeDirt")).Object;
+
+	if (!grenadeCementSound)
+		grenadeCementSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/grenadeCement.grenadeCement")).Object;
+
+	if (!grenadeWoodSound)
+		grenadeWoodSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/grenadeWood.grenadeWood")).Object;
+
+	if (!grenadeSteelSound)
+		grenadeSteelSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/grenadeSteel.grenadeSteel")).Object;
+
+	if (!grenadePlasticSound)
+		grenadePlasticSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/grenadePlastic.grenadePlastic")).Object;
+
 
 	if (!bloodDecal)
 	{
