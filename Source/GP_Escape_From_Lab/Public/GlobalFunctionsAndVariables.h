@@ -61,6 +61,13 @@ extern USoundBase* itemPickSound;
 extern USoundBase* dirtWalkSound1;
 extern USoundBase* dirtWalkSound2;
 
+extern USoundBase* grenadeDirtSound;
+extern USoundBase* grenadeCementSound;
+extern USoundBase* grenadeSteelSound;
+extern USoundBase* grenadeWoodSound;
+extern USoundBase* grenadePlasticSound;
+
+
 extern UMaterialInterface* bloodDecal;
 extern UMaterialInterface* floorBloodDecal;
 

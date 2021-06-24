@@ -64,6 +64,11 @@ private:
 	FVector befPos{ 0.0f,0.0f,0.0f };
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
+	bool canPlayImpactSound = true;
 	int collisionCount = 0;
 	const int MaxCollisionCount = 3;
+	float soundCoolTime = 0.3f;
+
+protected:
+	virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 };

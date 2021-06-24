@@ -17,6 +17,7 @@
 #include "Zombie.h"
 #include "GlobalFunctionsAndVariables.h"
 #include "Sound/SoundBase.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 USoundBase* explosionSound = nullptr;
@@ -24,9 +25,6 @@ UParticleSystem* explosionParticle = nullptr;
 // Sets default values
 AGrenade::AGrenade()
 {
-
-	
-
 	sphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("sphere collision comp"));
 	if (IsValid(sphereComp))
 	{
@@ -36,6 +34,7 @@ AGrenade::AGrenade()
 		//sphereComp->bEnablePhysicsOn
 		sphereComp->SetIsReplicated(true);
 		RootComponent = sphereComp;
+		sphereComp->SetNotifyRigidBodyCollision(true);
 	}
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("grenade mesh Comp"));
@@ -114,33 +113,101 @@ void AGrenade::Tick(float DeltaTime)
 	FVector endTrace = curPos;
 
 	collisionParams.bTraceComplex = false;
+	collisionParams.bReturnPhysicalMaterial = true;
 	collisionParams.AddIgnoredActor(playerPawn);
 	collisionParams.AddIgnoredActor(this);
 	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
-	DrawDebugLine(
-		GetWorld(),
-		startTrace,
-		endTrace,
-		FColor::Red,
-		false,
-		3.0f,
-		0,
-		5.0f);
-	
-	if (HasAuthority() && collisionCount < MaxCollisionCount && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace, ECollisionChannel::ECC_Camera,	collisionParams))
-	{
-		FVector ReflectionVector = GetActorForwardVector() - 2 * (FVector::DotProduct(GetActorForwardVector(), hitResult.ImpactNormal)) * hitResult.ImpactNormal;
-		ReflectionVector.Normalize();
+// 	DrawDebugLine(
+// 		GetWorld(),
+// 		startTrace,
+// 		endTrace,
+// 		FColor::Red,
+// 		true,
+// 		3.0f,
+// 		0,
+// 		5.0f);
 
-		SetActorLocation(hitResult.ImpactPoint);
+	auto dirVector = endTrace - startTrace;
+	dirVector.Normalize();
+	
+	//dirVector * 30.0f
+	if (!HasAuthority() && collisionCount < MaxCollisionCount && GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + dirVector * 50.0f  , ECollisionChannel::ECC_Camera, collisionParams))
+	{
+		EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
+		if (canPlayImpactSound)
+		{
+			switch (surfaceType)
+			{
+			case SurfaceType1: //conc
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeCementSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+				break;
+			case SurfaceType2: //wood
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeWoodSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+				break;
+			case SurfaceType3: //cera
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeCementSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+			case SurfaceType4: //stel
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeSteelSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+				break;
+			case SurfaceType5: //plas
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadePlasticSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+				break;
+			case SurfaceType7: //glas
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeCementSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+			case SurfaceType8: //dirt
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeDirtSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
+				break;
+			default:
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Default");
+				break;
+			}
+			canPlayImpactSound = false;
+			++collisionCount;
+		}
 		
-		//sphereComp->AddImpulse
-		//(ReflectionVector * 100.0f/((MaxCollisionCount-collisionCount)/MaxCollisionCount));
+		DrawDebugLine(
+			GetWorld(),
+			GetActorLocation(), GetActorLocation() + dirVector * 50.0f,
+			FColor::Red,
+			true,
+			3.0f,
+			0,
+			5.0f);
+		//FVector ReflectionVector = dirVector - 2 * (FVector::DotProduct(dirVector, hitResult.ImpactNormal)) * hitResult.ImpactNormal;
+		//ReflectionVector.Normalize();
+
+		//SetActorLocation(hitResult.ImpactPoint + ReflectionVector * 10.0f);
+		//curPos = GetActorLocation();
+
 		
+		//UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeDirtSound, this->GetActorLocation(), 2.0f);
+		//canPlayImpactSound = true;
 		
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Line Trace Call");
-		++collisionCount;
+		//++collisionCount;
 	}
+	if (!canPlayImpactSound)
+	{
+		soundCoolTime -= DeltaTime;
+		if (soundCoolTime < 0.0f)
+		{
+			canPlayImpactSound = true;
+			soundCoolTime = 0.3f;
+		}
+	}
+	/*if (canPlayImpactSound && collisionCount < MaxCollisionCount - 1 && !HasAuthority() && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace + dirVector * 10.0f, ECollisionChannel::ECC_Camera, collisionParams))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeDirtSound, this->GetActorLocation(), 2.0f);
+		canPlayImpactSound = false;
+		++collisionCount;
+	}*/
+
 	if (lifeTime < 0.0f	&& !HasAuthority()/*&& this->GetOwner() == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)*/)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
@@ -215,4 +282,9 @@ void AGrenade::PlayExplosionSoundMulticast_Implementation()
 {
 	auto playerCharacter = Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	UGlobalFunctionsAndVariables::PlayPhysicsSoundAtLocation(playerCharacter, this->GetActorLocation() + FVector(0.0f, 0.0f, 30.0f), explosionSound);
+}
+
+void AGrenade::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	
 }
