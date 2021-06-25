@@ -158,13 +158,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void playHintSound();
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* coneMeshComp = nullptr;
-	UFUNCTION(BlueprintCallable)
-		void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION(BlueprintCallable)
-		void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCameraComponent* cameraComp = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
