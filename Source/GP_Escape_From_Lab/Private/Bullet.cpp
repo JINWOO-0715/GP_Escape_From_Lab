@@ -195,7 +195,12 @@ void ABullet::Tick(float DeltaTime)
 				//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, hitResult.ImpactNormal.ToString());
 				//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), zombieHitParticle, hitResult.ImpactPoint);
 				if (HasAuthority())
+				{
 					hitZombie->MyReceivePointDmage(playerPawn->attackPower, hitResult.BoneName, UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+					UGameplayStatics::ApplyDamage(hitZombie, playerPawn->attackPower,nullptr, nullptr, nullptr); // 포
+				}
+
 				//만약에 데미지를 준 주체가 총알을 쏜 장본인이라면 좀비에게 데미지를 준다.
 
 				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, hitResult.BoneName.ToString());
