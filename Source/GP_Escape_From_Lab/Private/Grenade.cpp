@@ -133,8 +133,10 @@ void AGrenade::Tick(float DeltaTime)
 	//dirVector * 30.0f
 	if (!HasAuthority() && collisionCount < MaxCollisionCount && GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + dirVector * 50.0f  , ECollisionChannel::ECC_Camera, collisionParams))
 	{
+		auto pc = UGameplayStatics::GetPlayerController(this->GetWorld(), 0);
+		auto distBetGreAndSwat = pc->GetPawn()->GetActorLocation() - this->GetActorLocation();
 		EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(hitResult.PhysMaterial.Get());
-		if (canPlayImpactSound)
+		if (canPlayImpactSound && distBetGreAndSwat.Size() < 1200.0f)
 		{
 			switch (surfaceType)
 			{
@@ -168,6 +170,7 @@ void AGrenade::Tick(float DeltaTime)
 				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Default");
 				break;
 			}
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "grenade hear");
 			canPlayImpactSound = false;
 			++collisionCount;
 		}
