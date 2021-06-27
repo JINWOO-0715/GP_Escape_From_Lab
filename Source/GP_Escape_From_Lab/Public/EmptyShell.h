@@ -28,7 +28,10 @@ public:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* emptyShellComp;
-
+	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp,
+		bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)override;
 private:
 	const float shellLifeSpan = 3.0f;
+	bool isHitOnce = false;
+	float hitSoundCoolTime = 0.3f;
 };

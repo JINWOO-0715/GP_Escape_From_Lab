@@ -67,6 +67,8 @@ extern USoundBase* grenadeSteelSound;
 extern USoundBase* grenadeWoodSound;
 extern USoundBase* grenadePlasticSound;
 
+extern USoundBase* shellDropSound;
+
 
 extern UMaterialInterface* bloodDecal;
 extern UMaterialInterface* floorBloodDecal;

@@ -55,6 +55,7 @@ USoundBase* grenadeCementSound = nullptr;
 USoundBase* grenadeSteelSound = nullptr;
 USoundBase* grenadeWoodSound = nullptr;
 USoundBase* grenadePlasticSound = nullptr;
+USoundBase* shellDropSound = nullptr;
 
 UMaterialInterface* bloodDecal = nullptr;
 UMaterialInterface* floorBloodDecal = nullptr;
@@ -183,6 +184,9 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 		grenadePlasticSound = ConstructorHelpers::FObjectFinder<USoundBase>
 		(TEXT("/Game/Movable/Sound/grenadePlastic.grenadePlastic")).Object;
 
+	if (!shellDropSound)
+		shellDropSound = ConstructorHelpers::FObjectFinder<USoundBase>
+		(TEXT("/Game/Movable/Sound/shellDrop.shellDrop")).Object;
 
 	if (!bloodDecal)
 	{

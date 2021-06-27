@@ -3,8 +3,10 @@
 
 #include "EmptyShell.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GlobalFunctionsAndVariables.h"
 #include "Engine/StaticMesh.h"
-
+#include "Net/UnrealNetwork.h"
 // Sets default values
 AEmptyShell::AEmptyShell()
 {
@@ -17,6 +19,7 @@ AEmptyShell::AEmptyShell()
 		RootComponent = emptyShellComp;
 		emptyShellComp->SetSimulatePhysics(true);
 		emptyShellComp->SetEnableGravity(true);
+		emptyShellComp->SetNotifyRigidBodyCollision(true);
 		emptyShellComp->SetCollisionProfileName(TEXT("EmptyShell"));
 		emptyShellComp->AddAngularImpulseInDegrees(FVector(10000.0f, 0.0f, 10000.0f));
 	}
@@ -38,6 +41,15 @@ void AEmptyShell::BeginPlay()
 void AEmptyShell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	hitSoundCoolTime -= DeltaTime;
 }
 
+void AEmptyShell::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp,
+	bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!isHitOnce && hitSoundCoolTime < 0.0f)//&& UGameplayStatics::GetPlayerController(this->GetWorld(), 0) == GetOwner())
+	{
+		isHitOnce = true;
+		//UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), shellDropSound, this->GetActorLocation(), 0.02f);
+	}
+}
