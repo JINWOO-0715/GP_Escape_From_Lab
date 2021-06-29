@@ -299,6 +299,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool WasHitted = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool ArrivedClearRoom = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float attackPower = 50.0f;
