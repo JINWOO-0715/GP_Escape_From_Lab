@@ -271,7 +271,7 @@ public:
 
 public:
 	// 플레이어 hp
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		int swatHp = 100;
 
 	// 가지고있는 메디킷
@@ -469,6 +469,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Reliable, NetMulticast)
 	void ChangeWeaponMesh(USkeletalMesh* rifleMesh);
+
+	UFUNCTION(BlueprintCallable)
+	void myReceiveDamage(int damage);
+
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void setHPReq(int hp);
+
 private:
 	bool isMyComputer();
 

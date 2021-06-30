@@ -323,6 +323,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, chageAnimint);
 	DOREPLIFETIME(ASwat, hasKeyCard);
 	DOREPLIFETIME(ASwat, isSynthOn);
+	DOREPLIFETIME(ASwat, swatHp);
 }
 void ASwat::BeginPlay()
 {
@@ -1819,6 +1820,16 @@ void ASwat::ChangeWeaponMesh_Implementation(USkeletalMesh* rifleMesh)
 				//FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Scope"));
 		}
 	}
+}
+
+void ASwat::myReceiveDamage(int damage)
+{
+	swatHp -= damage;
+	setHPReq(swatHp);
+}
+void ASwat::setHPReq_Implementation(int hp)
+{
+	swatHp = hp;
 }
 
 void ASwat::playWalkSynthSound(float multiplier)
