@@ -122,6 +122,9 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
 	bool isScreamTime;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Replicated)
+	int inCapacitation;
+
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	APawn* swatPawn;
