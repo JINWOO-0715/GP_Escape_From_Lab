@@ -57,6 +57,8 @@ void AZombie::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AZombie, speed);
 	DOREPLIFETIME(AZombie, isScreamTime);
 	DOREPLIFETIME(AZombie, DefaultZombieName);
+	DOREPLIFETIME(AZombie, inCapacitation);
+	
 	
 }
 
@@ -101,6 +103,10 @@ void AZombie::MyReceivePointDmage(float damage, FName boneName, AActor* damageCa
 	{
 		/*GetMesh()->SetSimulatePhysics(true);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);*/
+	}
+	if (boneName == TEXT("RightHand") || boneName == TEXT("LeftHand"))
+	{
+		inCapacitation -= 1;
 	}
 }
 
