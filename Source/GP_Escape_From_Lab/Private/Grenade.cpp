@@ -82,6 +82,7 @@ void AGrenade::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGrenade, initGrenadeImpact);
+	DOREPLIFETIME(AGrenade, isSpawnFrag);
 }
 
 void AGrenade::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -117,20 +118,11 @@ void AGrenade::Tick(float DeltaTime)
 	collisionParams.AddIgnoredActor(playerPawn);
 	collisionParams.AddIgnoredActor(this);
 	collisionParams.AddIgnoredActor(Cast<ASwat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 1)));
-// 	DrawDebugLine(
-// 		GetWorld(),
-// 		startTrace,
-// 		endTrace,
-// 		FColor::Red,
-// 		true,
-// 		3.0f,
-// 		0,
-// 		5.0f);
+
 
 	auto dirVector = endTrace - startTrace;
 	dirVector.Normalize();
 	
-	//dirVector * 30.0f
 	if (!HasAuthority() && collisionCount < MaxCollisionCount && GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + dirVector * 50.0f  , ECollisionChannel::ECC_Camera, collisionParams))
 	{
 		auto pc = UGameplayStatics::GetPlayerController(this->GetWorld(), 0);
@@ -167,7 +159,8 @@ void AGrenade::Tick(float DeltaTime)
 					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
 				break;
 			default:
-				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, "Default");
+				UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeCementSound, this->GetActorLocation(),
+					1.0f * float(MaxCollisionCount - collisionCount * 1.3f) / float(MaxCollisionCount));
 				break;
 			}
 			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, "grenade hear");
@@ -183,17 +176,7 @@ void AGrenade::Tick(float DeltaTime)
 			3.0f,
 			0,
 			5.0f);
-		//FVector ReflectionVector = dirVector - 2 * (FVector::DotProduct(dirVector, hitResult.ImpactNormal)) * hitResult.ImpactNormal;
-		//ReflectionVector.Normalize();
-
-		//SetActorLocation(hitResult.ImpactPoint + ReflectionVector * 10.0f);
-		//curPos = GetActorLocation();
-
 		
-		//UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeDirtSound, this->GetActorLocation(), 2.0f);
-		//canPlayImpactSound = true;
-		
-		//++collisionCount;
 	}
 	if (!canPlayImpactSound)
 	{
@@ -204,19 +187,27 @@ void AGrenade::Tick(float DeltaTime)
 			soundCoolTime = 0.3f;
 		}
 	}
-	/*if (canPlayImpactSound && collisionCount < MaxCollisionCount - 1 && !HasAuthority() && GetWorld()->LineTraceSingleByChannel(hitResult, startTrace, endTrace + dirVector * 10.0f, ECollisionChannel::ECC_Camera, collisionParams))
-	{
-		UGameplayStatics::PlaySoundAtLocation(this->GetWorld(), grenadeDirtSound, this->GetActorLocation(), 2.0f);
-		canPlayImpactSound = false;
-		++collisionCount;
-	}*/
+	
 
-	if (lifeTime < 0.0f	&& !HasAuthority()/*&& this->GetOwner() == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)*/)
+	if (lifeTime < 0.0f	&& !HasAuthority())
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionParticle, FTransform(GetActorRotation(), GetActorLocation(), FVector(10.0f, 10.0f, 10.0f)))
 			->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 		ServerSpawnExplosionParticle();
 		lifeTime = 100.0f;
+	}
+	if (lifeTime < 0.0f && !isSpawnFrag && HasAuthority())
+	{
+		isSpawnFrag = true;
+	}
+	if (isSpawnFrag && !HasAuthority())
+	{
+		spawnCoolTime -= DeltaTime;
+		if (spawnCoolTime < 0.0f)
+		{
+			spawnCoolTime = 0.07f;
+			SpawnGrenadeFragment();
+		}
 	}
 	befPos = curPos;
 }
@@ -224,21 +215,24 @@ void AGrenade::Tick(float DeltaTime)
 void AGrenade::ServerSpawnExplosionParticle_Implementation()
 {
 	SpawnExplosionParticle();
+	meshComp->ToggleVisibility(false);
+	
+	SetLifeSpan(0.5f);
+}
+
+void AGrenade::SpawnGrenadeFragment_Implementation()
+{
 	auto ownerObj = Cast<ASwat>(this->GetOwner());
 	auto grenadeLoc = this->GetActorLocation();
 	FRandomStream rand;
 	rand.GenerateNewSeed();
-	
-	
-	for (int i = 0; i < 30; ++i)
-	{
-		//FVector randVector = rand.GetUnitVector();
-		ownerObj->SpawnBullet(grenadeLoc, grenadeLoc, FVector(rand.FRandRange(-1.5f, 1.5f), rand.FRandRange(-1.5f, 1.5f),
-			1.0f).Rotation(), rand.FRandRange(5000.0f, 20000.0f));
 
-	}
-	SetLifeSpan(0.5f);
+
+	ownerObj->SpawnBullet(grenadeLoc, grenadeLoc, FVector(rand.FRandRange(-1.5f, 1.5f), rand.FRandRange(-1.5f, 1.5f),
+			1.0f).Rotation(), rand.FRandRange(5000.0f, 20000.0f));
+	
 }
+
 
 void AGrenade::SpawnExplosionParticle_Implementation()
 {

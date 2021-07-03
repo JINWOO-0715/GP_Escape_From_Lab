@@ -45,6 +45,8 @@ public:
 public:
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnExplosionParticle();
+	UFUNCTION(Server, Reliable)
+	void SpawnGrenadeFragment();
 	UFUNCTION(NetMulticast, Reliable)
 	void SpawnExplosionParticle();
 	UFUNCTION(Server, Reliable)
@@ -56,8 +58,8 @@ public:
 	void AddImpactReq(float initImpact, const FVector& SpawnRot);
 	UFUNCTION(NetMulticast, Reliable)
 	void PlayExplosionSoundMulticast();
-
-
+	UPROPERTY(Replicated)
+	bool isSpawnFrag = false;
 private:
 	const float reach = 700.0f * 700.0f;
 	float lifeTime = 3.0f;
@@ -65,6 +67,8 @@ private:
 	FVector curPos{ 0.0f,0.0f,0.0f };
 	bool isFirstCall = true;
 	bool canPlayImpactSound = true;
+	
+	float spawnCoolTime = 0.05f;
 	int collisionCount = 0;
 	const int MaxCollisionCount = 3;
 	float soundCoolTime = 0.3f;
