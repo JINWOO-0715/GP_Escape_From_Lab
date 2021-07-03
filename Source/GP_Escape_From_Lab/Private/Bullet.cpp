@@ -456,6 +456,8 @@ void ABullet::Tick(float DeltaTime)
 				//Destroy();
 
 			}
+			UGameplayStatics::ApplyDamage(hitResult.GetActor(), playerPawn->attackPower, nullptr, nullptr, nullptr); // Æ÷
+
 		}
 		else
 		{
