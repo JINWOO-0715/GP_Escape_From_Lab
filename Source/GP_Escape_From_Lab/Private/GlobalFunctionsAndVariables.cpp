@@ -154,9 +154,9 @@ UGlobalFunctionsAndVariables::UGlobalFunctionsAndVariables()
 		zombieKilledSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/noChanceFel.noChanceFel")).Object;
 	
 	if (!dirtWalkSound1)
-		dirtWalkSound1 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/dirtWalk1.dirtWalk1")).Object;
+		dirtWalkSound1 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/walkWater1")).Object;
 	if (!dirtWalkSound2)
-		dirtWalkSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/dirtWalk2.dirtWalk2")).Object;
+		dirtWalkSound2 = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/walkWater2")).Object;
 		
 	if (!playerAgonySound)
 		playerAgonySound = ConstructorHelpers::FObjectFinder<USoundBase>(TEXT("/Game/Movable/Sound/player/hurt.hurt")).Object;
