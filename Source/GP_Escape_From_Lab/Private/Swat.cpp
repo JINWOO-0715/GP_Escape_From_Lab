@@ -324,6 +324,7 @@ void ASwat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ASwat, hasKeyCard);
 	DOREPLIFETIME(ASwat, isSynthOn);
 	DOREPLIFETIME(ASwat, swatHp);
+	DOREPLIFETIME(ASwat, isDeath);
 }
 void ASwat::BeginPlay()
 {
