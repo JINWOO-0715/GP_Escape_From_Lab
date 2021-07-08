@@ -15,6 +15,9 @@ AMyGameMode::AMyGameMode()
 	static ConstructorHelpers::FObjectFinder<UClass> SwatBP(TEXT("/Game/Movable/MySwat.MySwat_C"));
 	//DefaultPawnClass = ASwat::StaticClass();
 	DefaultPawnClass = SwatBP.Object;
+	static ConstructorHelpers::FObjectFinder<UClass> ControllerBP(TEXT("/Game/Movable/BP_PlayerController.BP_PlayerController_C"));
+	//DefaultPawnClass = ASwat::StaticClass();
+	PlayerControllerClass = ControllerBP.Object;
 	// 생성자에서만 가능하네
 	bUseSeamlessTravel = true;
 	//
@@ -22,13 +25,14 @@ AMyGameMode::AMyGameMode()
 	//if (ZombieBP.Object) {
 	//	ZombieSub = (UClass*)ZombieBP.Object;
 	//}
-
 	
 }
 
 void AMyGameMode::BeginPlay()
 {
-
+	//LoadingUI->AddToViewport();
+	//LoadingUI->SetVisibility(ESlateVisibility::Hidden);
+	
 	/*FVector position(0.0f, 0.0f, 220.f);
 	FRotator rotator(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < 100; i++)

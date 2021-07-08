@@ -10,7 +10,7 @@ public class GP_Escape_From_Lab : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","UMG", "AIModule","AIModule" , "GameplayTasks", "PhysicsCore" , "AudioMixer", "SignalProcessing" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
 		// Uncomment if you are using Slate UI
 		//PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

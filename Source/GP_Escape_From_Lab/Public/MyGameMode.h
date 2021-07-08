@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Zombie.h"
 #include "GameFramework/GameMode.h"
-
+#include "Blueprint/UserWidget.h"
 #include "MyGameMode.generated.h"
 
 /**
@@ -50,4 +50,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int passNumber;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TSubclassOf<class UUserWidget> LoadingWidget;
+
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//UUserWidget* LoadingUI;
 };
