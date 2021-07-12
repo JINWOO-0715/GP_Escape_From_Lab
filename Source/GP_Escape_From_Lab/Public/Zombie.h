@@ -9,6 +9,7 @@
 #include "AIPatrolPointPath2.h"
 #include "AIPatrolPointPath3.h"
 #include "AIPatrolPointPath4.h"
+#include "Animation/AnimMontage.h"
 
 
 #include "Components/SplineComponent.h"
@@ -46,6 +47,9 @@ struct FZombieData : public FTableRowBase
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	 class UAnimBlueprint* ZombieAnimBP;
 
+	//Á»ºñ HP
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		class UAnimMontage* AttackMontage;
 
 };
 
