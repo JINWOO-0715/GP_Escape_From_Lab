@@ -253,8 +253,8 @@ void AGrenade::SpawnExplosionParticle_Implementation()
 	
 	PlayExplosionSoundMulticast();
 
-	TArray<AActor*>ignoredActor;
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
+	//TArray<AActor*>ignoredActor;
+	//UGameplayStatics::ApplyRadialDamage(GetWorld(), 100, GetActorLocation(), reach, nullptr, ignoredActor);
 }
 
 void AGrenade::ServerSetInitGrenadeImpactReq_Implementation(float initImpact)
